@@ -1,0 +1,32 @@
+{
+ "n_garments": 3450,
+ "gt": 104064,
+ "eps": 0.02,
+ "z": -0.3,
+ "rungs": {
+  "greedy": {
+   "tau": 0.2,
+   "precision": 0.4792,
+   "recall": 0.4763,
+   "f1": 0.4778,
+   "perfect": 4,
+   "n_garments": 3450
+  },
+  "sinkhorn": {
+   "tau": 0.1,
+   "precision": 0.4999,
+   "recall": 0.4817,
+   "f1": 0.4906,
+   "perfect": 2,
+   "n_garments": 3450
+  },
+  "mirror": {
+   "tau": 0.1,
+   "precision": 0.5003,
+   "recall": 0.4814,
+   "f1": 0.4907,
+   "perfect": 2,
+   "n_garments": 3450
+  }
+ }
+}
