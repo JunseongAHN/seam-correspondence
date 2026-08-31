@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>noise-inject — 경계 오차와 봉제 대응</title>
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink2:#52514e; --ink3:#898781;
+  --grid:#e1e0d9; --hair:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#eb6834;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark; --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+  --ink3:#898781; --grid:#2c2c2a; --hair:rgba(255,255,255,.10); --s1:#3987e5; --s2:#d95926;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:1.55}
+.mono{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding:32px 22px 60px;display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:0 0 7px}
+h1{margin:0;font-size:clamp(21px,3vw,28px);font-weight:600;letter-spacing:-.02em}
+.lede{margin:10px 0 0;color:var(--ink2);max-width:74ch}
+.prov{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--hair);
+  display:flex;flex-wrap:wrap;gap:5px 20px;font-size:12px;color:var(--ink3)}
+.prov b{color:var(--ink2);font-weight:500}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:18px}
+h2{font-size:13px;font-weight:600;letter-spacing:.04em;margin:0 0 4px}
+.sub{font-size:12px;color:var(--ink3);margin:0 0 13px}
+.bar{display:flex;flex-wrap:wrap;gap:13px 22px;align-items:center;margin-bottom:15px}
+.grp{display:flex;align-items:center;gap:9px}
+label{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)}
+input[type=range]{accent-color:var(--s1);width:150px}
+select{font:inherit;font-size:12.5px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--hair);border-radius:6px;padding:5px 8px;max-width:230px}
+.val{font-family:"IBM Plex Mono",Consolas,monospace;font-size:17px;font-weight:600;min-width:76px}
+.tog{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.tog input{accent-color:var(--s1);width:15px;height:15px}
+button{font:inherit;font-size:12.5px;padding:6px 12px;border:1px solid var(--hair);
+  border-radius:6px;background:var(--surface);color:var(--ink2);cursor:pointer}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:820px){.trio{grid-template-columns:1fr}}
+.cell{display:flex;flex-direction:column;gap:8px}
+.cell .hd{display:flex;align-items:baseline;gap:8px}
+.cell .no{font-family:"IBM Plex Mono",Consolas,monospace;font-size:11px;color:#fff;
+  background:var(--ink3);border-radius:4px;padding:1px 6px;flex:none}
+.cell .ti{font-size:12.5px;font-weight:600}
+.cell .de{font-size:11.5px;color:var(--ink3);min-height:3em;margin:0}
+.stage{position:relative;width:100%;aspect-ratio:3/4;background:#16161a;border-radius:8px;
+  overflow:hidden;cursor:grab;touch-action:none}
+.stage.drag{cursor:grabbing}
+.stage canvas{display:block}
+.ro{position:absolute;right:9px;top:8px;font-family:"IBM Plex Mono",Consolas,monospace;
+  font-size:11px;color:#e8e7e0;background:rgba(0,0,0,.5);border-radius:5px;padding:3px 8px;
+  pointer-events:none}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:12px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:16px;height:3px;border-radius:2px;flex:none}
+.hint{font-size:11.5px;color:var(--ink3);margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--hair)}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+th{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);font-weight:500}
+tr.sm td{background:rgba(42,120,214,.06)}
+.notes{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:8px;max-width:84ch}
+.notes b{color:var(--ink);font-weight:600}
+.tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;border:1px solid var(--hair);color:var(--ink3)}
+#err{display:none;background:#fdecec;border:1px solid #f0b4b4;color:#8a1f1f;
+  border-radius:8px;padding:14px 16px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">GT · 백색 오차 · EMA 평활 — 같은 RMS</p>
+  <h1>부정확하되 GT 윤곽을 따라가는 경계</h1>
+  <p class="lede">패널 윤곽마다 점별 독립 <span class="mono">N(0, σ²I)</span>를 뽑는다.
+    ②는 그대로, ③은 <b>같은 난수</b>를 윤곽 따라 EMA로 거른 뒤 크기를 원래대로 되돌린 것이다.
+    두 칸은 오차 크기가 같고 모양만 다르다.</p>
+  <div class="prov" id="prov"></div>
+</header>
+
+<div id="err"></div>
+
+<section class="panel">
+  <div class="bar">
+    <div class="grp"><label for="sig">σ</label>
+      <input id="sig" type="range" min="0" max="30" step="0.5" value="10">
+      <span class="val" id="sigv">10.0 mm</span></div>
+    <div class="grp"><label for="al">EMA α</label>
+      <input id="al" type="range" min="0.05" max="1" step="0.05" value="0.1">
+      <span class="val" id="alv" style="font-size:14px">0.10</span></div>
+    <div class="grp"><label for="iso">패널</label><select id="iso"><option value="-1">전체</option></select></div>
+    <label class="tog"><input type="checkbox" id="showgt" checked> GT 겹쳐 보기</label>
+    <label class="tog"><input type="checkbox" id="cloud"> 옷 표면</label>
+    <label class="tog"><input type="checkbox" id="spin"> 회전</label>
+    <button id="reset">시점 초기화</button>
+  </div>
+  <div class="trio">
+    <div class="cell"><div class="hd"><span class="no">1</span><span class="ti">GT</span></div>
+      <p class="de">봉제되는 두 패널의 경계가 정확히 같은 자리에 있다.</p>
+      <div class="stage" data-k="0"><span class="ro" id="ro0"></span></div></div>
+    <div class="cell"><div class="hd"><span class="no">2</span><span class="ti">백색 오차</span></div>
+      <p class="de">점마다 독립 <span class="mono">N(0, σ²I)</span>.</p>
+      <div class="stage" data-k="1"><span class="ro" id="ro1"></span></div></div>
+    <div class="cell"><div class="hd"><span class="no">3</span><span class="ti">EMA 평활 · 같은 RMS</span></div>
+      <p class="de">같은 난수를 윤곽 따라 EMA로 거르고 크기를 되돌렸다.</p>
+      <div class="stage" data-k="2"><span class="ro" id="ro2"></span></div></div>
+  </div>
+  <div class="legend">
+    <span><i class="swatch" style="background:#8d8b82"></i>GT 윤곽</span>
+    <span><i class="swatch" style="background:var(--s1)"></i>앞 패널 (z &gt; 0)</span>
+    <span><i class="swatch" style="background:var(--s2)"></i>뒤 패널 (z &lt; 0)</span>
+  </div>
+  <p class="hint">아무 칸이나 드래그하면 세 칸이 같이 돈다 · 휠 = 확대 · 우클릭 드래그 = 이동</p>
+</section>
+
+<section class="panel">
+  <h2>파이프라인 결과</h2>
+  <p class="sub" id="sweepsub"></p>
+  <div style="overflow-x:auto"><table>
+    <thead><tr><th>σ</th><th>오차 모양</th><th>벌어짐</th><th>정점</th><th>상호 NN</th>
+      <th>봉제선 전량</th><th>봉제선 투표</th><th>벌 전량</th></tr></thead>
+    <tbody id="tb"></tbody></table></div>
+</section>
+
+<section class="panel">
+  <h2>방법</h2>
+  <div class="notes">
+    <p><span class="tag">오차 모형</span> 패널 윤곽마다 점별 독립 <span class="mono">N(0, σ²I)</span>. ③은 같은 난수를 윤곽 따라 순방향·역방향 2패스(zero-phase) 순환 EMA로 거른 뒤, 점별 변위 크기의 평균을 백색과 같게 되돌린다.</p>
+    <p><span class="tag">수축 보정</span> EMA를 좌표가 아니라 <b>변위에만</b> 건다. σ=0이면 아무리 평활해도 GT와 정확히 같다.</p>
+    <p><span class="tag">파이프라인</span> 노이즈 → 정면 정사영 depth map(z-buffer로 앞면만) → 리프트(픽셀 중심 xy + 그 픽셀의 앞면 depth) → 1-최근접. 최근접이 같은 <span class="mono">stitch_k</span>를 공유하면 정답.</p>
+    <p><span class="tag">집계</span> 정점 = 최근접이 맞은 비율. 봉제선 전량 = 그 봉제선 정점이 전부 맞음. 봉제선 투표 = 과반이 맞음. 벌 전량 = 모든 봉제선이 투표로 성공한 추첨의 비율.</p>
+    <p><span class="tag">범위</span> 정면에서 보이고 복사본이 2개 이상인 봉제 정점만. GT 드레이프에 노이즈만 준 오라클이다 — 실제 예측기는 모드 오류가 더해진다. depth map은 정점 splat이라 가림이 과소평가된다.</p>
+    <p><span class="tag">재생성</span> <span class="mono">python export.py --garment rand_XXXX</span> 후 새로고침.</p>
+  </div>
+</section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const NS_COL={gt:'141,139,130',front:'57,135,229',back:'217,89,38',cloud:'74,74,70'};
+let D=null,SW=null,loops=[],cloudPts=null;
+
+/* ---------- noise ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function emaClosed(X,n,a){
+  const f=new Float64Array(3*n),o=new Float64Array(3*n),s=[X[0],X[1],X[2]];
+  for(let lap=0;lap<2;lap++)for(let i=0;i<n;i++){const k=3*i;
+    for(let c=0;c<3;c++){s[c]=a*X[k+c]+(1-a)*s[c];if(lap)f[k+c]=s[c];}}
+  const t=[f[3*(n-1)],f[3*(n-1)+1],f[3*(n-1)+2]];
+  for(let lap=0;lap<2;lap++)for(let i=n-1;i>=0;i--){const k=3*i;
+    for(let c=0;c<3;c++){t[c]=a*f[k+c]+(1-a)*t[c];if(lap)o[k+c]=t[c];}}
+  return o;
+}
+let sepW=0,sepS=0;
+function build(sigMM,alpha){
+  const s=sigMM/10,rand=mulberry32(20260831);let sw=0,ss=0,cnt=0;
+  for(const L of loops){
+    const d=new Float64Array(3*L.n);
+    for(let i=0;i<L.n;i++){const k=3*i;
+      d[k]=s?gauss(rand)*s:0;d[k+1]=s?gauss(rand)*s:0;d[k+2]=s?gauss(rand)*s:0;}
+    for(let k=0;k<3*L.n;k++)L.wh[k]=L.base[k]+d[k];
+    let e=d;
+    if(L.n>3&&alpha<1&&s>0){
+      const sn=emaClosed(d,L.n,alpha);let m0=0,m1=0;
+      for(let i=0;i<L.n;i++){const k=3*i;
+        m0+=Math.hypot(d[k],d[k+1],d[k+2]);m1+=Math.hypot(sn[k],sn[k+1],sn[k+2]);}
+      const gsc=m1>1e-12?m0/m1:1;e=new Float64Array(3*L.n);
+      for(let k=0;k<3*L.n;k++)e[k]=sn[k]*gsc;
+    }
+    for(let k=0;k<3*L.n;k++)L.sm[k]=L.base[k]+e[k];
+    for(let i=0;i<L.n;i++){const k=3*i;
+      sw+=Math.hypot(d[k],d[k+1],d[k+2]);ss+=Math.hypot(e[k],e[k+1],e[k+2]);cnt++;}
+  }
+  sepW=cnt?(sw/cnt)*Math.SQRT2*10:0;sepS=cnt?(ss/cnt)*Math.SQRT2*10:0;
+}
+
+/* ---------- camera ---------- */
+let th=0.88,ph=0.15,rad=200,panx=0,pany=0,stages=[];
+function proj(x,y,z,W,H){
+  const ct=Math.cos(th),st=Math.sin(th);
+  const x1=x*ct-z*st,z1=x*st+z*ct;
+  const cp=Math.cos(ph),sp=Math.sin(ph);
+  const y2=y*cp-z1*sp,z2=y*sp+z1*cp;
+  const d=rad-z2;if(d<12)return null;
+  const f=H*0.92;return[W/2+f*x1/d+panx,H/2-f*y2/d+pany,d];
+}
+function drawOne(S){
+  const dpr=Math.min(devicePixelRatio||1,2),W=S.el.clientWidth,H=S.el.clientHeight;
+  if(S.cv.width!==Math.round(W*dpr)){S.cv.width=Math.round(W*dpr);S.cv.height=Math.round(H*dpr);
+    S.cv.style.width=W+'px';S.cv.style.height=H+'px';}
+  const g=S.g;g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle='#16161a';g.fillRect(0,0,W,H);
+  if($('cloud').checked&&cloudPts){
+    g.fillStyle='rgba(74,74,70,.85)';
+    for(let i=0;i<cloudPts.length;i+=3){
+      const q=proj(cloudPts[i],cloudPts[i+1],cloudPts[i+2],W,H);if(!q)continue;
+      g.fillRect(q[0],q[1],1.1,1.1);}
+  }
+  const pick=+$('iso').value,gtOv=$('showgt').checked;
+  const vis=loops.filter(L=>pick<0||L.panel===pick);
+  const ord=vis.map(L=>{let s=0,c=0;
+    for(let i=0;i<L.n;i++){const q=proj(L.base[3*i],L.base[3*i+1],L.base[3*i+2],W,H);
+      if(q){s+=q[2];c++;}}return{L,d:c?s/c:1e9};}).sort((a,b)=>b.d-a.d);
+  const line=(L,arr,rgb,w,al)=>{
+    g.lineWidth=w;g.lineJoin='round';g.beginPath();let on=false;
+    for(let i=0;i<=L.n;i++){const k=(i%L.n)*3;
+      const q=proj(arr[k],arr[k+1],arr[k+2],W,H);
+      if(!q){on=false;continue;}
+      on?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]);on=true;}
+    g.strokeStyle=`rgba(${rgb},${al})`;g.stroke();};
+  for(const{L,d}of ord){
+    const fade=Math.max(.4,Math.min(1,1.4-(d-rad+110)/280));
+    const col=L.front?NS_COL.front:NS_COL.back;
+    if(S.k===0){line(L,L.base,NS_COL.gt,1.7,0.95*fade);}
+    else{if(gtOv)line(L,L.base,NS_COL.gt,1.6,0.55*fade);
+      line(L,S.k===1?L.wh:L.sm,col,1.4,fade);}
+  }
+}
+const drawAll=()=>stages.forEach(drawOne);
+
+/* ---------- boot ---------- */
+async function boot(){
+  let meta;
+  try{
+    const [c,s,m]=await Promise.all([
+      fetch('data/contours.json').then(r=>{if(!r.ok)throw new Error('contours.json '+r.status);return r.json();}),
+      fetch('data/sweep.json').then(r=>r.ok?r.json():null),
+      fetch('data/meta.json').then(r=>r.ok?r.json():null)]);
+    D=c;SW=s;meta=m;
+  }catch(e){
+    $('err').style.display='block';
+    $('err').innerHTML='<b>데이터를 못 읽었습니다.</b><br>'+e.message+
+      '<br><br>먼저 <span class="mono">python export.py</span> 를 돌린 뒤 '+
+      '<span class="mono">python serve.py</span> 로 여세요. '+
+      'index.html 을 파일로 직접 열면 fetch가 막힙니다.';
+    return;
+  }
+  const C=D.center;
+  D.panels.forEach((p,pi)=>p.loops.forEach(L=>{
+    const n=L.length,base=new Float64Array(n*3);
+    for(let i=0;i<n;i++){base[3*i]=L[i][0]-C[0];base[3*i+1]=L[i][1]-C[1];base[3*i+2]=L[i][2]-C[2];}
+    loops.push({panel:pi,name:p.name,front:p.zmed>=0,base,n,
+      wh:new Float64Array(n*3),sm:new Float64Array(n*3)});}));
+  cloudPts=new Float64Array(D.cloud.length*3);
+  D.cloud.forEach((p,i)=>{cloudPts[3*i]=p[0]-C[0];cloudPts[3*i+1]=p[1]-C[1];cloudPts[3*i+2]=p[2]-C[2];});
+
+  const npts=D.panels.reduce((a,p)=>a+p.loops.reduce((b,L)=>b+L.length,0),0);
+  $('prov').innerHTML=[
+    `<span><b>${(meta&&meta.garment)||'garment'}</b> · GarmentCodeData</span>`,
+    `<span>패널 <b>${D.panels.length}</b> · 루프 <b>${loops.length}</b></span>`,
+    `<span>경계점 <b>${npts.toLocaleString()}</b></span>`,
+    `<span>단위 <b>cm</b></span>`].join('');
+
+  D.panels.forEach((p,i)=>{const o=document.createElement('option');
+    o.value=i;o.textContent=`${p.name}  (z ${p.zmed.toFixed(1)})`;$('iso').appendChild(o);});
+
+  stages=[...document.querySelectorAll('.stage')].map(el=>{
+    const cv=document.createElement('canvas');el.appendChild(cv);
+    return{el,cv,g:cv.getContext('2d'),k:+el.dataset.k};});
+  let drag=null;
+  for(const S of stages){
+    S.el.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,b:e.button};
+      S.el.classList.add('drag');S.el.setPointerCapture(e.pointerId);});
+    S.el.addEventListener('pointerup',()=>{drag=null;S.el.classList.remove('drag');});
+    S.el.addEventListener('pointercancel',()=>{drag=null;S.el.classList.remove('drag');});
+    S.el.addEventListener('pointermove',e=>{if(!drag)return;
+      const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+      if(drag.b===2){panx+=dx;pany+=dy;}
+      else{th-=dx*0.007;ph=Math.max(-1.35,Math.min(1.35,ph+dy*0.007));}
+      drawAll();});
+    S.el.addEventListener('contextmenu',e=>e.preventDefault());
+    S.el.addEventListener('wheel',e=>{e.preventDefault();
+      rad=Math.max(45,Math.min(1200,rad*(1+Math.sign(e.deltaY)*0.1)));drawAll();},{passive:false});
+  }
+  function refresh(){
+    const s=+$('sig').value,a=+$('al').value;
+    $('sigv').textContent=s.toFixed(1)+' mm';$('alv').textContent=a.toFixed(2);
+    build(s,a);
+    $('ro0').textContent='GT';
+    $('ro1').textContent='벌어짐 '+sepW.toFixed(1)+' mm';
+    $('ro2').textContent='벌어짐 '+sepS.toFixed(1)+' mm';
+    drawAll();
+  }
+  ['sig','al'].forEach(i=>$(i).addEventListener('input',refresh));
+  ['iso','showgt','cloud'].forEach(i=>$(i).addEventListener('change',refresh));
+  $('reset').addEventListener('click',()=>{th=0.88;ph=0.15;rad=200;panx=0;pany=0;drawAll();});
+  addEventListener('resize',drawAll);
+  let last=performance.now();
+  (function loop(t){requestAnimationFrame(loop);const dt=(t-last)/1000;last=t;
+    if($('spin').checked&&!drag){th+=dt*0.28;drawAll();}})(last);
+
+  if(SW){
+    const m=SW.meta;
+    $('sweepsub').textContent=
+      `봉제 정점 ${m.n_seam_vertices} · 복사본 ${m.n_copies} · 봉제선 ${m.n_seams} · `+
+      `격자 ${m.res}² (픽셀 ${m.px_mm}mm) · 조합마다 ${m.draws}회 추첨`;
+    $('tb').innerHTML=m.sigmas.map(s=>m.shapes.map(([tag,lbl],ri)=>{
+      const v=SW.rows[`${s}|${tag}`];if(!v)return '';
+      return `<tr class="${ri?'sm':''}"><td class="mono">${ri?'':s+' mm'}</td><td>${lbl}</td>
+        <td class="mono">${v.sep_mm.toFixed(1)} mm</td><td class="mono">${(v.vertex*100).toFixed(1)}%</td>
+        <td class="mono">${v.mutual.toFixed(3)}</td><td class="mono">${(v.seam_all*100).toFixed(1)}%</td>
+        <td class="mono">${(v.seam_vote*100).toFixed(1)}%</td>
+        <td class="mono">${(v.garment*100).toFixed(0)}%</td></tr>`;}).join('')).join('');
+  }else{
+    $('sweepsub').textContent='data/sweep.json 이 없습니다 — python export.py 를 돌리세요.';
+  }
+  refresh();
+}
+boot();
+</script>
+</body>
+</html>
