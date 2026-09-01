@@ -1,0 +1,12 @@
+wrote render_placed_init.png
+wrote render_probe_fixed.png
+wrote render_probe_nobody.png
+wrote render_smokebody.png
+wrote render_sym_body_inflated.png
+wrote render_sym_body_seed1.png
+wrote render_sym_body_seed2.png
+wrote render_sym_body_seed3.png
+wrote render_sym_body_seed4.png
+wrote render_sym_body_seed5.png
+wrote render_vs_drape.png
+wrote render_spread.png
