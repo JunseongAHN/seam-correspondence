@@ -133,7 +133,11 @@ def connected_components(faces, n):
 # main entry
 # ---------------------------------------------------------------------------
 
-def load(garment_dir, name=None):
+def load(garment_dir, name=None, rest_override=None):
+    """rest_override replaces the flat pattern coordinates.  The placement is
+    rebuilt from them, since a design change moves both -- see
+    perturb_pattern.py, which uses this to measure whether nearby patterns give
+    nearby shells."""
     g = name or os.path.basename(garment_dir.rstrip("/\\"))
     P = lambda suf: os.path.join(garment_dir, g + suf)
 
@@ -147,6 +151,10 @@ def load(garment_dir, name=None):
 
     Kx, Ky, uv_report = calibrate_uv_scale(uv, faces, wid, orig_lens)
     rest = np.stack([uv[:, 0] * Kx, uv[:, 1] * Ky], 1)          # cm, flat material coords
+    if rest_override is not None:
+        rest = np.asarray(rest_override, float)
+        if rest.shape != (len(xyz), 2):
+            raise ValueError("rest_override must be (%d, 2)" % len(xyz))
 
     # --- panels: one connected component per panel in the raw mesh ----------
     comp, ncomp = connected_components(faces, len(xyz))

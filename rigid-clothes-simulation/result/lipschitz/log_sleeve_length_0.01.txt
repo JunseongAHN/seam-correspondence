@@ -1,0 +1,2 @@
+built: 29784 verts, 57130 faces, 85441 hinges, 967 seam pairs  (4.6s)
+  lambda_b = 0.1  (rung 1/8)

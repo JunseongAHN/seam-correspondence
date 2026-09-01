@@ -96,8 +96,8 @@ def diag_scale(gar):
     return float(dg.mean())
 
 
-def build(gdir=GARMENT, ease=0.0):
-    d = gcd_io.load(gdir)
+def build(gdir=GARMENT, ease=0.0, rest_override=None):
+    d = gcd_io.load(gdir, rest_override=rest_override)
     if ease > 0.0:
         # neither side of a seam is ever compressed; see seam_ease.py.  This edits
         # the rest METRIC only -- d["rest"], the geometry-image domain, is untouched.
@@ -181,6 +181,9 @@ def main():
     ap.add_argument("--tag", default=None)
     ap.add_argument("--garment", default=None, help="garment id or directory")
     ap.add_argument("--outdir", default=None, help="where to write, default result/")
+    ap.add_argument("--rest", default=None,
+                    help="npy of replacement flat pattern coordinates; the "
+                         "placement is rebuilt from them (perturb_pattern.py)")
     a = ap.parse_args()
 
     ladder = FAST_LADDER if a.fast else LADDER
@@ -205,7 +208,8 @@ def main():
     t0 = time.time()
     gdir = garment_dir(a.garment) if a.garment else GARMENT
     outdir = a.outdir or RESULT
-    d, gar = build(gdir, ease=a.ease)
+    ro = np.load(a.rest) if a.rest else None
+    d, gar = build(gdir, ease=a.ease, rest_override=ro)
     log("built: %d verts, %d faces, %d hinges, %d seam pairs  (%.1fs)"
         % (gar["n"], len(gar["faces"]), len(gar["hinges"]), len(gar["pairs"]), time.time() - t0))
 
@@ -249,6 +253,7 @@ def main():
         hs["ax%d_sg%+d" % (ax, sg)] = dict(n=int(m.sum()), frac=float((v > 0).mean()),
                                            max_cm=float(v.max()) if len(v) else 0.0)
     meta = dict(tag=tag, seed=a.seed, inflate=a.inflate, ladder=ladder, mu_rel=a.mu,
+                rest_override=a.rest, amp=a.amp,
                 anchor=a.anchor, body=bool(a.body), ease=a.ease, half_space=hs,
                 placed_dev_p50=float(np.median(np.linalg.norm(P - d["placed"], axis=1))),
                 per_lambda=per_lambda, iterations=len(hist), factorizations=nfac,
