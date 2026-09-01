@@ -67,14 +67,26 @@ def main():
         m["max_sigma_dev_gather"] = float(dv[ruffle_face].max())
         ok_s = m["max_sigma_dev_nogather"] < 1e-3
         ok_g = m.get("seam_gap_max", np.nan) < 1e-4 * char
-        cons[t] = dict(max_sigma_dev=m.get("max_sigma_dev"), seam_gap_max=m.get("seam_gap_max"),
+        cons[t] = dict(max_sigma_dev=m.get("max_sigma_dev"),
+                       max_sigma_dev_nogather=m["max_sigma_dev_nogather"],
+                       max_sigma_dev_gather=m["max_sigma_dev_gather"],
+                       seam_gap_max=m.get("seam_gap_max"),
                        mono_violations=m.get("mono_violations"), iterations=m.get("iterations"),
+                       half_space=m.get("half_space", {}), anchor=m.get("anchor", 0.0),
+                       placed_dev_p50=m.get("placed_dev_p50"),
                        pass_sigma=bool(ok_s), pass_gap=bool(ok_g))
         print("  %-16s %11.3e %11.3e %11.3e %10d %8d   sigma %s  gap %s"
               % (t, m.get("max_sigma_dev", np.nan), m["max_sigma_dev_nogather"],
                  m.get("seam_gap_max", np.nan), m.get("mono_violations", -1),
                  m.get("iterations", -1), "PASS" if ok_s else "FAIL", "PASS" if ok_g else "FAIL"))
     print("  seam-gap tolerance = 1e-4 * characteristic length (%.1f cm) = %.3e cm" % (char, 1e-4 * char))
+    if any(c["half_space"].get("body") for c in cons.values()):
+        print("  body proxy: vertices left inside / max depth cm / median move from the placement")
+        for t, c in cons.items():
+            b = c["half_space"].get("body", {})
+            print("    %-24s %6.3f%%  %6.3f cm   %7.2f cm"
+                  % (t, 100 * b.get("frac", 0.0), b.get("max_cm", 0.0),
+                     c.get("placed_dev_p50") or float("nan")))
     out["consistency"] = cons
 
     # ---------------- (a) initial-value sensitivity --------------------------

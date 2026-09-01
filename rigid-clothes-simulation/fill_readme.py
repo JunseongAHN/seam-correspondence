@@ -5,6 +5,7 @@ so the prose cannot drift from the numbers in the files.
   python fill_readme.py
 """
 
+import glob
 import json
 import os
 
@@ -40,6 +41,30 @@ def main():
              c.get("seam_gap_max", float("nan")),
              c.get("mono_violations", -1), c.get("iterations", -1)))
     A("")
+
+    # half-space constraint compliance
+    rows = []
+    for f in sorted(glob.glob(os.path.join(RESULT, "assembly_*.json"))):
+        j = json.load(open(f))
+        if not j.get("half_space"):
+            continue
+        rows.append((j["tag"], j["half_space"], j.get("mu_rel", 1.0)))
+    if rows:
+        A("### (c-2) 반공간 제약 준수")
+        A("")
+        A("좌우 평면 `x=0`(무게중심 기준)과 앞뒤 평면 `z=0`에 대한 단측 2차 벌점이다.")
+        A("행렬 대각에 상수 `mu`를 얹으므로 활성집합이 바뀌어도 재분해가 없다"
+          " (`mu` = 평균 ARAP 대각 × %.3g)." % rows[0][2])
+        A("")
+        NAME = {"ax0_sg+1": "left_* : x≥0", "ax0_sg-1": "right_* : x≤0",
+                "ax2_sg+1": "front : z≥0", "ax2_sg-1": "back : z≤0"}
+        keys = list(rows[0][1].keys())
+        A("| 실행 | " + " | ".join(NAME.get(k, k) + " 침범율 / 최대(cm)" for k in keys) + " |")
+        A("|---|" + "---|" * len(keys))
+        for t, h, _ in rows:
+            A("| `%s` | " % t + " | ".join(
+                "%.2f%% / %.3f" % (100 * h[k]["frac"], h[k]["max_cm"]) for k in keys) + " |")
+        A("")
 
     # (a)
     A("### (a) 초기값 민감도 — **주 결과**")

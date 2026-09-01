@@ -42,6 +42,7 @@ def main():
     plyio.write_ply(os.path.join(RESULT, "rest_flat.ply"),
                     np.hstack([d["rest"], np.zeros((len(d["rest"]), 1))]), F, pr)
     plyio.write_ply(os.path.join(RESULT, "placed_init.ply"), d["placed"], F, pr)
+    plyio.write_ply(os.path.join(RESULT, "drape_reference.ply"), d["drape"], F, pr)
     panel_figure(d["placed"], F, pf, "initial value: specification placement",
                  os.path.join(RESULT, "render_placed_init.png"))
 
@@ -53,6 +54,8 @@ def main():
         Ps[tag] = P
         panel_figure(P, F, pf, "ARAP assembly - %s" % tag,
                      os.path.join(RESULT, "render_%s.png" % tag))
+        plyio.write_ply(os.path.join(RESULT, "assembly_%s_aligned.ply" % tag),
+                        analyze.procrustes(P, d["drape"]), F, pr)
 
     if Ps:
         ref = list(Ps.values())[0]

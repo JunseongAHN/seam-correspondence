@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\repos\seam-correspondence\rigid-clothes-simulation\render_all.py", line 104, in <module>
+    main()
+    ~~~~^^
+  File "C:\repos\seam-correspondence\rigid-clothes-simulation\render_all.py", line 42, in main
+    plyio.write_ply(os.path.join(RESULT, "rest_flat.ply"),
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    np.hstack([d["rest"], np.zeros((len(d["rest"]), 1))]), F, pr)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\repos\seam-correspondence\rigid-clothes-simulation\plyio.py", line 18, in write_ply
+    with open(path, "w") as f:
+         ~~~~^^^^^^^^^^^
+OSError: [Errno 22] Invalid argument: 'C:\\repos\\seam-correspondence\\rigid-clothes-simulation\\result\\rest_flat.ply'

@@ -167,8 +167,9 @@ class Assembly:
     inside L0, so each rung of the lambda_b ladder costs one factorization.
     """
 
-    def __init__(self, gar, lam_b, eps=1e-8, woodbury=True):
+    def __init__(self, gar, lam_b, eps=1e-8, woodbury=True, mu=None, nu=None, anchor=None):
         self.g, self.lam_b = gar, lam_b
+        self.mu, self.nu, self.anchor = mu, nu, anchor
         n = gar["n"]
         self.G, self.A = gar["G"], gar["area"]
         self.hinges, self.Kb, self.wb = gar["hinges"], gar["Kb"], gar["wb"]
@@ -185,6 +186,16 @@ class Assembly:
                             (np.concatenate([r0, r1]), np.concatenate([c0, c1]))),
                            shape=(n, n)).tocsc()
         L0 = L0 + self.eps * sp.identity(n, format="csc")
+        dg = None
+        if mu is not None:
+            # one-sided obstacle penalty.  mu is CONSTANT (every constrained
+            # vertex carries it, violating or not), so the matrix does not change
+            # with the active set and the single factorisation stands.
+            dg = np.asarray(mu, float)
+        if nu is not None:
+            dg = np.asarray(nu, float) if dg is None else dg + np.asarray(nu, float)
+        if dg is not None:
+            L0 = L0 + sp.diags(dg, format="csc")
         self.lu = spl.splu(L0)
         self.L0 = L0
 
@@ -236,7 +247,7 @@ def geometric_schedule(w0, w1, factor, iters, tail):
     return s
 
 
-def solve(asm, P0, schedule, max_iter, tol=1e-10, log=None):
+def solve(asm, P0, schedule, max_iter, tol=1e-10, log=None, clamp=None, recenter=True):
     g = asm.g
     P = P0.copy()
     hist, viol, it = [], [], 0
@@ -253,12 +264,29 @@ def solve(asm, P0, schedule, max_iter, tol=1e-10, log=None):
             e_b = bending_energy(P, asm.hinges, asm.Kb, asm.wb)
             dd = P[asm.pairs[:, 0]] - P[asm.pairs[:, 1]]
             e_s = float(np.sum(dd * dd))
-            tot = e_a + asm.lam_b * e_b + w_s * e_s
             b = arap_rhs(R, g["faces"], asm.G, asm.A, g["n"])
+            e_c = e_n = 0.0
+            if asm.nu is not None:
+                # two-sided anchor to the specification placement (an input, not
+                # the drape): picks the point of the isometric continuum nearest
+                # the pose the pattern was designed around.
+                e_n = float(np.sum(asm.nu[:, None] * (P - asm.anchor) ** 2))
+                b = b + asm.nu[:, None] * asm.anchor
+            if asm.mu is not None:
+                # Z = the feasible point nearest P.  Adding mu*|x - Z|^2 to the
+                # energy makes the local step exact for a fixed Z and the global
+                # step a linear solve with the SAME matrix; on free coordinates
+                # Z = P so the term is purely proximal and vanishes at the fixed
+                # point, on violating ones it is the half-space penalty itself.
+                Z = clamp(P.copy())
+                e_c = float(np.sum(asm.mu[:, None] * (P - Z) ** 2))
+                b = b + asm.mu[:, None] * Z
+            tot = e_a + asm.lam_b * e_b + w_s * e_s + e_c + e_n
             P = asm.solve_global(b, w_s)
-            P -= P.mean(0)
-            hist.append(dict(it=it, stage=stage, w_s=w_s, E=tot,
-                             E_arap=e_a, E_bend=e_b, E_stitch=e_s))
+            if recenter:
+                P -= P.mean(0)
+            hist.append(dict(it=it, stage=stage, w_s=w_s, E=tot, E_arap=e_a,
+                             E_bend=e_b, E_stitch=e_s, E_half=e_c, E_anchor=e_n))
             it += 1
             if prev is not None:
                 if tot > prev * (1 + 1e-9) + 1e-14:
@@ -268,16 +296,19 @@ def solve(asm, P0, schedule, max_iter, tol=1e-10, log=None):
                     break
             prev = tot
         if log:
-            log("    stage %2d  w_s=%9.3g  it=%5d  E=%.8g  E_arap=%.4g E_bend=%.4g E_stitch=%.3g"
+            log("    stage %2d  w_s=%9.3g  it=%5d  E=%.8g  E_arap=%.4g E_bend=%.4g "
+                "E_stitch=%.3g E_obst=%.3g E_anch=%.3g"
                 % (stage, w_s, it, hist[-1]["E"], hist[-1]["E_arap"],
-                   hist[-1]["E_bend"], hist[-1]["E_stitch"]))
+                   hist[-1]["E_bend"], hist[-1]["E_stitch"], hist[-1]["E_half"],
+                   hist[-1]["E_anchor"]))
         if it >= max_iter:
             break
     return P, hist, viol
 
 
 def solve_annealed(gar, P0, ladder, w0=1e-2, w1=1e4, factor=2.0, iters_per_stage=10,
-                   per_lambda=400, max_iter=20000, log=None):
+                   per_lambda=400, max_iter=20000, log=None, mu=None, clamp=None,
+                   nu=None, anchor=None, recenter=True):
     """lambda_b continuation, stiff -> target.  From a flat/placed start a single
     small lambda_b folds the sheet flat instead of finding the shape; starting
     stiff picks the long-wavelength mode and softening afterwards removes the
@@ -287,12 +318,13 @@ def solve_annealed(gar, P0, ladder, w0=1e-2, w1=1e4, factor=2.0, iters_per_stage
     for i, lam in enumerate(ladder):
         if log:
             log("  lambda_b = %g  (rung %d/%d)" % (lam, i + 1, len(ladder)))
-        asm = Assembly(gar, lam)
+        asm = Assembly(gar, lam, mu=mu, nu=nu, anchor=anchor)
         sched = geometric_schedule(w0 if i == 0 else w1, w1, factor, iters_per_stage, per_lambda)
         budget = min(per_lambda + iters_per_stage * len(sched), max_iter - used)
         if budget <= 0:
             break
-        P, h, v = solve(asm, P, sched, max_iter=budget, log=log)
+        P, h, v = solve(asm, P, sched, max_iter=budget, log=log, clamp=clamp,
+                        recenter=recenter)
         for rec in h:
             rec["stage"] += off
             rec["lam_b"] = lam
