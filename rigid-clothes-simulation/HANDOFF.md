@@ -150,21 +150,44 @@ in the measurements file, `shoulder_w`, paired with the chest circumference the
 back arc implies. The `*_back_width` entries are arcs, not widths -- no ellipse of
 circumference 103.48 reaches a semi-axis of 27.41.
 
-**The seam ease edits the metric, never the domain.** The waist seam does not
-match: 45.23 cm of waistband front against 42.10 of skirt front, 39.16 of
-waistband back against 42.10 of skirt back, though the totals agree to 0.2%, so it
-is the front/back split that is placed differently on the two pieces. Sewn, one
-side has to change length, and the two directions are not equivalent -- a side
-that must lengthen resolves it in plane and stays smooth, a side that must shorten
-buckles, and that buckling is the pinch. Setting the shared rest length to the
-longer of the two removes it: measured across the seam, 3D/rest went from 0.995
-(compressed) to 1.025 (in tension). Only rest edge lengths change, over a 5 cm
-band, along the seam tangent; `d["rest"]` -- the geometry-image domain -- does not
-move by a single value.
+**The seam ease was removed, and the audit that removed it.**  A `seam_ease.py`
+scaled the rest metric near a seam so that neither side is ever compressed,
+gated by a RELATIVE threshold of 25%.  That was wrong on three counts and the
+module is deleted; git history has it.
 
-Designed gathers are excluded from this. The cuff seam is 1.8438, exactly
-`design.sleeve.cuff.top_ruffle`, and lengthening a cuff by 84% is not what a
-gather is.
+*It eased gathers.*  This repo already classifies seams by an absolute
+tau_l = 10 mm (`run_baseline.py`, from arXiv 2607.21213): dart/self, equal
+(<=1 mm), ease (1-10 mm), gather (>10 mm).  Of 54 stitches, 6 are gathers, and
+the modification eased **2 of them** -- both waist seams, dL = 30.31 mm, three
+times tau_l, applied at s = 1.0750 and 1.0744.  They slipped through because a
+25% relative gate cannot see a 30 mm mismatch on a 42 cm seam, so the gate
+systematically misses gathers on long seams.  86.2% of all the rest area the
+modification added came from those two seams.
+
+*Most of the rest was noise.*  13 of the 16 applied scales are smaller than the
+mesh's own UV calibration error (median 0.35%, p90 0.74%), and some flip sign
+against the specification -- `left_hood`/`left_ftorso` was eased because the mesh
+says ftorso is 0.43 mm longer while the spec says the hood is 0.06 mm longer.
+
+*And it was applied at the wrong granularity.*  `seam_scales` keys on panel
+pairs, not stitches, and 10 of 29 pairs bundle two or three stitches. An `equal`
+stitch received 0.90 pp more correction than its own mismatch while an `ease`
+stitch received 6.68 pp less.
+
+Removing it costs nothing.  Measured against the TRUE flat metric, the sweep run
+without it is better than the run with it -- max |sigma-1| 0.4069 against 0.6319,
+p50 0.0029 against 0.0042, and on the 710 gathered-seam faces p50 0.0400 against
+0.0640.  The ease was absorbing about half the designed gather at the median and
+making those faces merely look unstretched.
+
+One fact cuts the other way and is recorded because it is true: the waist seam
+carries no designed excess.  Specification arc lengths sum to 84.333800 cm on
+both sides, identical to six decimals, `design.waistband.waist` is 1.0 and there
+is no waist ruffle parameter.  The 30.31 mm is a front/back distribution
+difference -- waistband cut 45.198/39.136, skirt 42.167/42.167 -- that an
+absolute per-edge rule reads as a gather.  The classification is correct by the
+stated rule; the design-intent reading it invites is not.  The module is still
+removed, because the two other defects stand on their own.
 
 ## Parameter sensitivity
 
@@ -177,7 +200,7 @@ Measured, not guessed:
 | `--amp` perturbation | 0.01 / 0.10 / 0.30 | 0.01 is right; larger only worsens the stretch |
 | soft-first ladder | no stiff rung | no effect whatsoever |
 | `--anchor` to the placement | 0.05 / 1e-3 / 1e-4 | 0.05 pins the panels so hard they cannot sew (E_anchor 9.1e4 against E_arap 3.9e4). Left off |
-| `--ease` band | 5 cm only | **untested** |
+| `lambda_b` ladder END | 1e-4 / 1e-6 / 1e-8 | all three converge, 0 monotonicity violations, and **smaller is better**: max \|σ−1\| 0.4573 / 0.4054 / 0.4069, p99 0.0864 / 0.0641 / 0.0548.  The skirt is unchanged -- 2 lobes and a 20.2 cm hem radius in all three -- so the buckling wavelength does not depend on it |
 
 The dangerous knobs are the continuation schedule -- `lambda_b` start and
 perturbation amplitude -- where two decades gives a qualitatively different
