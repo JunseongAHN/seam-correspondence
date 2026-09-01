@@ -78,7 +78,7 @@ def main():
     d = gcd_io.load(RG.GARMENT)
     pn = np.array(d["panel_names"], dtype=object)[np.maximum(d["panel_of_raw"], 0)]
     m = body.load_measurements(RG.MEASURES)
-    prim = body.primitives(m, d["placed"], pn)
+    prim = body.primitives(m, d["placed"], pn, d["rest"])
     C, S = prim
     Vb, Fb = build_proxy(prim)
     plyio.write_ply(os.path.join(OUT, "body_proxy.ply"), Vb, Fb, np.full(len(Vb), 7))

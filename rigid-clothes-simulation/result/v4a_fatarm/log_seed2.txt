@@ -1,4 +1,4 @@
-built: 29784 verts, 57130 faces, 85441 hinges, 967 seam pairs  (3.8s)
+built: 29784 verts, 57130 faces, 85441 hinges, 967 seam pairs  (3.5s)
   lambda_b = 0.1  (rung 1/8)
     stage  0  w_s=     0.01  it=   10  E=57801.285  E_arap=2.523e+04 E_bend=3.033e+05 E_stitch=1.58e+05 E_obst=674 E_anch=0
     stage  1  w_s=     0.02  it=   20  E=38164.653  E_arap=2.074e+04 E_bend=1.528e+05 E_stitch=8.11e+04 E_obst=526 E_anch=0
@@ -20,3 +20,19 @@ built: 29784 verts, 57130 faces, 85441 hinges, 967 seam pairs  (3.8s)
     stage 17  w_s= 1.31e+03  it=  180  E=16369.731  E_arap=1.312e+04 E_bend=1.286e+04 E_stitch=0.000471 E_obst=1.97e+03 E_anch=0
     stage 18  w_s= 2.62e+03  it=  190  E=16297.897  E_arap=1.334e+04 E_bend=1.362e+04 E_stitch=0.000143 E_obst=1.6e+03 E_anch=0
     stage 19  w_s= 5.24e+03  it=  200  E=17153.643  E_arap=1.326e+04 E_bend=1.307e+04 E_stitch=4.02e-05 E_obst=2.59e+03 E_anch=0
+    stage 20  w_s=    1e+04  it=  600  E=28695.715  E_arap=2.236e+04 E_bend=2.771e+04 E_stitch=7.67e-06 E_obst=3.56e+03 E_anch=0
+  lambda_b = 0.01  (rung 2/8)
+    stage  0  w_s=    1e+04  it=  400  E=16673.966  E_arap=1.508e+04 E_bend=5.597e+04 E_stitch=3.78e-06 E_obst=1.03e+03 E_anch=0
+  lambda_b = 0.001  (rung 3/8)
+    stage  0  w_s=    1e+04  it=  400  E=14205.967  E_arap=1.321e+04 E_bend=8.926e+04 E_stitch=1.26e-05 E_obst=912 E_anch=0
+  lambda_b = 0.0001  (rung 4/8)
+    stage  0  w_s=    1e+04  it=  400  E=15429.14  E_arap=1.438e+04 E_bend=1.135e+05 E_stitch=3.94e-06 E_obst=1.04e+03 E_anch=0
+  lambda_b = 1e-05  (rung 5/8)
+    stage  0  w_s=    1e+04  it=  400  E=16979.053  E_arap=1.612e+04 E_bend=1.29e+05 E_stitch=1.52e-05 E_obst=860 E_anch=0
+  lambda_b = 1e-06  (rung 6/8)
+    stage  0  w_s=    1e+04  it=  400  E=19561.696  E_arap=1.863e+04 E_bend=1.426e+05 E_stitch=2.44e-06 E_obst=930 E_anch=0
+  lambda_b = 1e-07  (rung 7/8)
+    stage  0  w_s=    1e+04  it=  400  E=23777.041  E_arap=2.28e+04 E_bend=1.601e+05 E_stitch=2.77e-07 E_obst=979 E_anch=0
+  lambda_b = 1e-08  (rung 8/8)
+    stage  0  w_s=    1e+04  it=  400  E=28092.866  E_arap=2.649e+04 E_bend=1.758e+05 E_stitch=2.64e-07 E_obst=1.61e+03 E_anch=0
+sym_body_seed2: 3400 iters, 8 fac, 18.2 min | max|s-1| 8.981e+00  gap max 8.182e-05 cm  mono viol 1602

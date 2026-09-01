@@ -74,7 +74,22 @@ def half_depth(C, k):
     return C / ellipse_perimeter(k, 1.0)
 
 
-def arm_axis(placed, panel_names, m):
+def ring_radius(rest, panel_names, keys):
+    """Radius of the tube the listed panels can form, from the FLAT pattern.
+
+    In this pattern the panel's x extent is the "around the body" direction, and
+    that reading validates against the measurements it should reproduce: the four
+    torso panels sum to 99.90 cm against a measured bust of 99.84, and the two
+    waistband panels to 84.39 against a measured waist of 84.33 -- 0.07%.
+    """
+    tot = 0.0
+    for nm in sorted(set(str(x) for x in panel_names)):
+        if any(k in nm for k in keys):
+            tot += float(np.ptp(rest[panel_names == nm][:, 0]))
+    return tot / (2.0 * np.pi)
+
+
+def arm_axis(placed, panel_names, m, rest):
     """[(p0, p1, r)] for the two arms, from the placed sleeve panels.
 
     The two sides are averaged and mirrored so the proxy is exactly symmetric
@@ -99,7 +114,14 @@ def arm_axis(placed, panel_names, m):
     p1 = np.mean(P1s, 0)
 
     f = min(np.linalg.norm(p1 - p0) / m["arm_length"], 1.0)
-    r = r_armscye + f * (r_wrist - r_armscye)         # taper at the far end -> inscribed
+    r = r_armscye + f * (r_wrist - r_armscye)         # taper at the far end
+    # ...but the obstacle must also fit inside what the GARMENT can wrap, which
+    # here is the binding constraint: the cuff ring is only 19.9 cm around
+    # (r = 3.17) against an arm of r = 5.15 there.  This dress has no ease at all
+    # -- its torso ring is 99.90 cm against a measured bust of 99.84 -- so an
+    # obstacle even slightly too large has no isometric solution and the solver
+    # answers by tearing: with r = 5.15 the cuff came out at p50 |sigma-1| = 1.49.
+    r = min(r, ring_radius(rest, panel_names, ("left_cuff",)))   # one arm's ring
     out = []
     for sg in (1.0, -1.0):
         M = np.array([sg, 1.0, 1.0])
@@ -107,7 +129,7 @@ def arm_axis(placed, panel_names, m):
     return out
 
 
-def primitives(m, placed, panel_names):
+def primitives(m, placed, panel_names, rest):
     """(cylinders, spheres) = ([(p0, p1, r)], [(centre, r)]), centimetres."""
     tau = 2.0 * np.pi
     k = aspect_ratio(m)
@@ -141,7 +163,7 @@ def primitives(m, placed, panel_names):
         C.append(col(s * dx, y_knee, y_hip, r_knee))
         C.append(col(s * dx, 0.0, y_knee, r_ankle))
 
-    C += arm_axis(placed, panel_names, m)
+    C += arm_axis(placed, panel_names, m, rest)
 
     S = [(np.array([0.0, m["height"] - r_head, 0.0]), r_head)]
     return C, S
@@ -212,7 +234,10 @@ def penetration(X, packed):
         sdep = Sr[None] - ds
         q = np.argmax(sdep, axis=1)
         sd = sdep[i, q]
-        take = sd > dep                                     # the sphere is deeper
+        # BOTH conditions: the sphere must be deeper AND actually contain the
+        # vertex.  Without "sd > 0" every vertex merely nearer the sphere than to
+        # any cylinder -- both distances negative -- gets teleported onto it.
+        take = (sd > dep) & (sd > 0.0)
         if take.any():
             if out is X:
                 out = X.copy()

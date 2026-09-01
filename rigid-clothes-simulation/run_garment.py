@@ -176,7 +176,7 @@ def main():
     if a.body:
         # the obstacle is fixed in the absolute placement frame, so the solve must
         # not re-centre the garment each iteration
-        pk = body.pack(body.primitives(body.load_measurements(MEASURES), d["placed"], np.array(d["panel_names"], dtype=object)[np.maximum(d["panel_of_raw"], 0)]))
+        pk = body.pack(body.primitives(body.load_measurements(MEASURES), d["placed"], np.array(d["panel_names"], dtype=object)[np.maximum(d["panel_of_raw"], 0)], d["rest"]))
         clamp = body.projector(pk)
         mu = np.full(gar["n"], a.mu * diag_scale(gar))
         recenter = False
