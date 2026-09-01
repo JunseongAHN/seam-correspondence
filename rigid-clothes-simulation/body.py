@@ -102,6 +102,13 @@ def arm_axis(placed, panel_names, m, rest):
         is_side = np.array([side in str(x) for x in panel_names])
         cuff = is_side & np.array(["cuff" in str(x) for x in panel_names])
         slv = is_side & np.array(["sleeve" in str(x) for x in panel_names])
+        if not slv.any():
+            return []                                 # sleeveless garment
+        if not cuff.any():
+            # no cuff: the sleeve's own lowest ring is the far end
+            Y = placed[slv][:, 1]
+            cuff = slv.copy()
+            cuff[slv] = Y <= np.quantile(Y, 0.15)
         far = placed[cuff].mean(0)                    # centre of the cuff ring
         Y = placed[slv][:, 1]
         top = placed[slv][Y >= np.quantile(Y, 0.85)]
@@ -121,7 +128,10 @@ def arm_axis(placed, panel_names, m, rest):
     # -- its torso ring is 99.90 cm against a measured bust of 99.84 -- so an
     # obstacle even slightly too large has no isometric solution and the solver
     # answers by tearing: with r = 5.15 the cuff came out at p50 |sigma-1| = 1.49.
-    r = min(r, ring_radius(rest, panel_names, ("left_cuff",)))   # one arm's ring
+    # cap by what one arm's tightest ring can wrap, when there is a cuff to read
+    cap = ring_radius(rest, panel_names, ("left_cuff",))
+    if cap > 1e-6:
+        r = min(r, cap)
     out = []
     for sg in (1.0, -1.0):
         M = np.array([sg, 1.0, 1.0])
@@ -163,7 +173,7 @@ def primitives(m, placed, panel_names, rest):
         C.append(col(s * dx, y_knee, y_hip, r_knee))
         C.append(col(s * dx, 0.0, y_knee, r_ankle))
 
-    C += arm_axis(placed, panel_names, m, rest)
+    C += list(arm_axis(placed, panel_names, m, rest))
 
     S = [(np.array([0.0, m["height"] - r_head, 0.0]), r_head)]
     return C, S

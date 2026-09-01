@@ -27,7 +27,17 @@ MIRROR_X = 0.0          # the specification places the garment about x = 0
 RESULT = os.path.join(HERE, "result")
 GARMENT = r"C:\Users\PC\Downloads\data\rand_00YONAPXZE"
 
+DATA = os.path.dirname(GARMENT)
 MEASURES = os.path.join(GARMENT, os.path.basename(GARMENT) + "_body_measurements.yaml")
+
+
+def garment_dir(name):
+    """accept either a full path or a bare id under the dataset directory"""
+    return name if os.path.sep in name else os.path.join(DATA, name)
+
+
+def measures_of(gdir):
+    return os.path.join(gdir, os.path.basename(gdir) + "_body_measurements.yaml")
 
 LADDER = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8]
 FAST_LADDER = [1e-1, 1e-3, 1e-5, 1e-7]
@@ -86,8 +96,8 @@ def diag_scale(gar):
     return float(dg.mean())
 
 
-def build(garment_dir=GARMENT, ease=0.0):
-    d = gcd_io.load(garment_dir)
+def build(gdir=GARMENT, ease=0.0):
+    d = gcd_io.load(gdir)
     if ease > 0.0:
         # neither side of a seam is ever compressed; see seam_ease.py.  This edits
         # the rest METRIC only -- d["rest"], the geometry-image domain, is untouched.
@@ -169,6 +179,8 @@ def main():
     ap.add_argument("--per-lambda", type=int, default=None)
     ap.add_argument("--max-iter", type=int, default=20000)
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--garment", default=None, help="garment id or directory")
+    ap.add_argument("--outdir", default=None, help="where to write, default result/")
     a = ap.parse_args()
 
     ladder = FAST_LADDER if a.fast else LADDER
@@ -191,7 +203,9 @@ def main():
 
     log = lambda s: (sys.stdout.write(s + "\n"), sys.stdout.flush())
     t0 = time.time()
-    d, gar = build(ease=a.ease)
+    gdir = garment_dir(a.garment) if a.garment else GARMENT
+    outdir = a.outdir or RESULT
+    d, gar = build(gdir, ease=a.ease)
     log("built: %d verts, %d faces, %d hinges, %d seam pairs  (%.1fs)"
         % (gar["n"], len(gar["faces"]), len(gar["hinges"]), len(gar["pairs"]), time.time() - t0))
 
@@ -201,7 +215,10 @@ def main():
     if a.body:
         # the obstacle is fixed in the absolute placement frame, so the solve must
         # not re-centre the garment each iteration
-        pk = body.pack(body.primitives(body.load_measurements(MEASURES), d["placed"], np.array(d["panel_names"], dtype=object)[np.maximum(d["panel_of_raw"], 0)], d["rest"]))
+        pk = body.pack(body.primitives(
+            body.load_measurements(measures_of(gdir)), d["placed"],
+            np.array(d["panel_names"], dtype=object)[np.maximum(d["panel_of_raw"], 0)],
+            d["rest"]))
         clamp = body.projector(pk)
         mu = np.full(gar["n"], a.mu * diag_scale(gar))
         recenter = False
@@ -241,10 +258,10 @@ def main():
                 p50_sigma_dev=float(np.median(np.abs(s - 1).max(1))),
                 seam_gap_max=float(gap.max()), seam_gap_p50=float(np.median(gap)),
                 history=hist[::5])
-    os.makedirs(RESULT, exist_ok=True)
-    plyio.write_ply(os.path.join(RESULT, "assembly_%s.ply" % tag), P, d["faces"], d["panel_of_raw"])
-    np.save(os.path.join(RESULT, "assembly_%s.npy" % tag), P)
-    with open(os.path.join(RESULT, "assembly_%s.json" % tag), "w") as f:
+    os.makedirs(outdir, exist_ok=True)
+    plyio.write_ply(os.path.join(outdir, "assembly_%s.ply" % tag), P, d["faces"], d["panel_of_raw"])
+    np.save(os.path.join(outdir, "assembly_%s.npy" % tag), P)
+    with open(os.path.join(outdir, "assembly_%s.json" % tag), "w") as f:
         json.dump(meta, f)
     log("%s: %d iters, %d fac, %.1f min | max|s-1| %.3e  gap max %.3e cm  mono viol %d"
         % (tag, len(hist), nfac, secs / 60, meta["max_sigma_dev"], meta["seam_gap_max"], len(viol)))

@@ -1,6 +1,7 @@
 """Colour every panel differently and paint the panel outlines black.
 
-  python render_patches.py            ->  result/v4d_skirt/*.ply
+  python render_patches.py                          ->  result/v4d_skirt/*.ply
+  python render_patches.py <garment_id> <outdir>    ->  <outdir>/*.ply
 
 Panels are separate connected components in the raw mesh, so a mesh boundary
 edge -- one belonging to a single face -- is exactly a panel outline.  Those
@@ -59,9 +60,10 @@ def write_ply(path, P, faces, rgb):
             f.write("3 %d %d %d\n" % (t[0], t[1], t[2]))
 
 
-def main():
-    os.makedirs(OUT, exist_ok=True)
-    d = gcd_io.load(RG.GARMENT)
+def main(gid=None, out=None):
+    out = out or OUT
+    os.makedirs(out, exist_ok=True)
+    d = gcd_io.load(RG.garment_dir(gid) if gid else RG.GARMENT)
     F, pr = d["faces"], np.maximum(d["panel_of_raw"], 0)
     bnd = boundary_vertices(F, len(pr))
     rgb = PALETTE[pr % len(PALETTE)].copy()
@@ -72,14 +74,18 @@ def main():
     import glob
     todo = [("rest_flat", d["rest"]), ("placement", d["placed"]),
             ("drape_reference", d["drape"])]
-    for f in sorted(glob.glob(os.path.join(RG.RESULT, "assembly_sym_body_ease5_*.npy"))):
-        todo.append((os.path.basename(f)[len("assembly_sym_body_ease5_"):-4], np.load(f)))
+    runs = sorted(glob.glob(os.path.join(out, "assembly_*.npy")))
+    if not runs:
+        runs = sorted(glob.glob(os.path.join(RG.RESULT, "assembly_sym_body_ease5_*.npy")))
+    for f in runs:
+        b = os.path.basename(f)[len("assembly_"):-4].replace("sym_body_ease5_", "")
+        todo.append((b, np.load(f)))
     for name, P in todo:
-        write_ply(os.path.join(OUT, "%s_patches.ply" % name), P, F, rgb)
+        write_ply(os.path.join(out, "%s_patches.ply" % name), P, F, rgb)
         print("  wrote %s_patches.ply" % name)
 
     # a legend, so the colours can be read back to panel names
-    with open(os.path.join(OUT, "panel_colours.txt"), "w") as f:
+    with open(os.path.join(out, "panel_colours.txt"), "w") as f:
         f.write("panel colours (black = panel outline)\n\n")
         for i, nm in enumerate(d["panel_names"]):
             c = (PALETTE[i % len(PALETTE)] * 255).astype(int)
@@ -88,4 +94,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(*sys.argv[1:3])
