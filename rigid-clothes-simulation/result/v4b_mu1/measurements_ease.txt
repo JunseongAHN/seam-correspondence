@@ -1,0 +1,109 @@
+garment rand_00YONAPXZE | 6 runs: sym_body_ease5_inflated, sym_body_ease5_seed1, sym_body_ease5_seed2, sym_body_ease5_seed3, sym_body_ease5_seed4, sym_body_ease5_seed5
+
+(c) INTERNAL CONSISTENCY
+  seam rest-length ratio: non-gathered p50 1.00000 (max 1.02569) | designed gathers 175 of 845 edges, up to 1.84380
+  faces touching a gathered seam: 710 (1.24%) -- reported separately
+  run              max|s-1| all excl.gather  gap max cm  mono viol    iters
+  sym_body_ease5_inflated   3.289e+00   3.289e+00   2.042e-04          0     3400   sigma FAIL  gap PASS
+  sym_body_ease5_seed1   2.823e+00   2.823e+00   7.493e-05          0     3400   sigma FAIL  gap PASS
+  sym_body_ease5_seed2   8.786e-01   8.793e-01   6.656e-05          0     3400   sigma FAIL  gap PASS
+  sym_body_ease5_seed3   2.591e+00   2.591e+00   1.292e-04          0     3400   sigma FAIL  gap PASS
+  sym_body_ease5_seed4   2.331e+00   2.331e+00   1.239e-04          0     3400   sigma FAIL  gap PASS
+  sym_body_ease5_seed5   2.843e+00   2.843e+00   8.004e-05          0     3400   sigma FAIL  gap PASS
+  seam-gap tolerance = 1e-4 * characteristic length (230.4 cm) = 2.304e-02 cm
+  body proxy: vertices left inside / max depth cm / median move from the placement
+    sym_body_ease5_inflated   0.839%   0.735 cm     17.63 cm
+    sym_body_ease5_seed1      2.871%   0.952 cm      2.94 cm
+    sym_body_ease5_seed2      3.196%   0.151 cm      3.55 cm
+    sym_body_ease5_seed3      2.730%   0.863 cm      3.03 cm
+    sym_body_ease5_seed4      4.147%   0.826 cm      3.28 cm
+    sym_body_ease5_seed5      3.764%   0.964 cm      4.09 cm
+
+(a) INITIAL-VALUE SENSITIVITY  -- the main result
+  per-vertex spread across 6 runs, Procrustes aligned (reflection NOT allowed)
+  panel class       std p50    std p90 maxdev p50
+  btorso              6.445      7.570     14.262
+  cuff_b              8.274      8.852     18.310
+  cuff_f              8.254      8.849     18.209
+  ftorso              6.140      7.349     13.617
+  hood               10.085     11.537     22.330
+  skirt_back          5.145      7.159     11.223
+  skirt_front         5.453      7.137     12.033
+  sleeve_b            7.701      8.303     16.865
+  sleeve_f            7.647      8.313     16.682
+  wb_back             4.381      4.994      9.658
+  wb_front            4.693      5.139     10.300
+  overall             5.644      7.643     12.478
+
+(b) ANGLE DEFICIT of the welded REST mesh
+  interior vertices 28309 | boundary 508
+  interior deficit rad  p1 -0.0000  p25 -0.0000  p50 +0.0000  p75 +0.0000  p99 +0.0000
+  sum over interior = -13.7764 rad  (Gauss-Bonnet scale)
+  panel class      sum defc        p50 p90 |defc|          n
+  btorso             -8.860     0.0000     0.0000       1996
+  cuff_b             -0.000     0.0000     0.0000        164
+  cuff_f             -0.000     0.0000     0.0000        164
+  ftorso             -7.418     0.0000     0.0000       2223
+  hood                1.649     0.0000     0.0294       1255
+  skirt_back         -2.091     0.0000     0.0000      10144
+  skirt_front        -2.094     0.0000     0.0000      10154
+  sleeve_b           -6.640     0.0000     0.0000        693
+  sleeve_f           -6.664     0.0000     0.0000        715
+  wb_back            -2.987     0.0000     0.0075        806
+  wb_front           -2.314     0.0000     0.0000        952
+
+  (a) vs (b): correlation of per-vertex |deficit| with per-vertex spread
+  panel class     pearson spread p50 |defc| p50
+  btorso            0.140      6.445     0.0000
+  cuff_b           -0.194      8.215     0.0000
+  cuff_f           -0.026      8.170     0.0000
+  ftorso            0.196      6.140     0.0000
+  hood             -0.166     10.097     0.0000
+  skirt_back       -0.119      5.118     0.0000
+  skirt_front      -0.122      5.429     0.0000
+  sleeve_b         -0.160      7.701     0.0000
+  sleeve_f         -0.147      7.647     0.0000
+  wb_back          -0.246      4.381     0.0000
+  wb_front         -0.386      4.693     0.0000
+  overall           0.067
+
+(d) DISPLACEMENT FROM THE PLACEMENT, Delta_xy (front-view plane, cm)
+  panel class        ARAP p50    drape p50      ratio
+  btorso                20.39            -          -
+  cuff_b                21.40            -          -
+  cuff_f                21.59         3.09       6.99
+  ftorso                18.44         9.11       2.02
+  hood                  22.99        12.88       1.78
+  skirt_back            12.40            -          -
+  skirt_front           12.93        15.82       0.82
+  sleeve_b              20.06            -          -
+  sleeve_f              20.59         6.26       3.29
+  wb_back               12.64            -          -
+  wb_front              12.45        11.13       1.12
+
+(e) DISTANCE TO THE ACTUAL DRAPE after Procrustes (cm) -- not a target
+  panel class           p50        p90
+  btorso               5.28       9.28
+  cuff_b              13.21      15.21
+  cuff_f              12.60      14.64
+  ftorso               3.14       7.51
+  hood                21.65      26.11
+  skirt_back          27.09      59.05
+  skirt_front         26.03      58.87
+  sleeve_b             8.16      11.38
+  sleeve_f             7.19      10.86
+  wb_back              3.74       5.49
+  wb_front             3.27       4.66
+  overall             19.21      53.33
+
+(f) SELF-INTERSECTION (counted, never fixed)
+  intersecting triangle pairs: 205   (2.2s)
+    left_sleeve_b x left_sleeve_f              68
+    right_sleeve_b x right_sleeve_f            65
+    left_hood x right_hood                     56
+    sl_right_cuff_b x sl_right_cuff_f           9
+    sl_left_cuff_b x sl_left_cuff_f             4
+    left_sleeve_b x sl_left_cuff_b              2
+    left_sleeve_f x sl_left_cuff_f              1
+
+wrote result/measurements.json, result/angle_deficit.json

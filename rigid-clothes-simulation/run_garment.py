@@ -20,6 +20,7 @@ import assembly as A
 import body
 import gcd_io
 import plyio
+import seam_ease
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MIRROR_X = 0.0          # the specification places the garment about x = 0
@@ -85,9 +86,16 @@ def diag_scale(gar):
     return float(dg.mean())
 
 
-def build(garment_dir=GARMENT):
+def build(garment_dir=GARMENT, ease=0.0):
     d = gcd_io.load(garment_dir)
-    rest_tri = d["rest"][d["faces"]]
+    if ease > 0.0:
+        # neither side of a seam is ever compressed; see seam_ease.py.  This edits
+        # the rest METRIC only -- d["rest"], the geometry-image domain, is untouched.
+        rep = []
+        rest_tri = seam_ease.eased_rest(d, band=ease, report=rep)
+        d["ease_report"] = rep
+    else:
+        rest_tri = d["rest"][d["faces"]]
     G, area = A.shape_gradients(rest_tri)
     H, R4 = A.build_hinges(d["faces"], d["wid"], rest_tri, d["panel_of_face"])
     Kb, wb = A.hinge_stencils(R4)
@@ -135,6 +143,12 @@ def main():
     ap.add_argument("--fast", action="store_true")
     ap.add_argument("--lam-stop", type=float, default=None,
                     help="stop the lambda_b ladder here instead of 1e-8")
+    ap.add_argument("--lam-start", type=float, default=None,
+                    help="begin the ladder above 1e-1, decade by decade.  The "
+                         "placement puts the skirt panels flat and 30 cm apart, "
+                         "an envelope whose bending energy is 3.2x that of the "
+                         "round tube it should become; a stiffer opening rung is "
+                         "what has to carry it out of that basin.")
     ap.add_argument("--mu", type=float, default=1.0,
                     help="half-space penalty weight, relative to the mean ARAP diagonal")
     ap.add_argument("--half-lr", action="store_true",
@@ -147,6 +161,9 @@ def main():
     ap.add_argument("--anchor", type=float, default=0.0,
                     help="weight of a weak pull towards the specification placement, "
                          "relative to the mean ARAP diagonal; 0 = off")
+    ap.add_argument("--ease", type=float, default=0.0,
+                    help="band width in cm over which a seam length mismatch is "
+                         "worked into the rest metric; 0 = off")
     ap.add_argument("--sym", action="store_true",
                     help="mirror-symmetric perturbation, so the whole problem stays symmetric")
     ap.add_argument("--per-lambda", type=int, default=None)
@@ -155,18 +172,26 @@ def main():
     a = ap.parse_args()
 
     ladder = FAST_LADDER if a.fast else LADDER
+    if a.lam_start and a.lam_start > ladder[0]:
+        pre, w = [], a.lam_start
+        while w > ladder[0]:
+            pre.append(w)
+            w /= 10.0
+        ladder = pre + ladder
     if a.lam_stop:
         ladder = [x for x in ladder if x >= a.lam_stop]
     per_lambda = a.per_lambda if a.per_lambda else (120 if a.fast else 400)
     tag = a.tag or (("fast_" if a.fast else "") + ("sym_" if a.sym else "")
                     + ("lr_" if a.half_lr else "") + ("fb_" if a.half_fb else "")
                     + ("body_" if a.body else "")
+                    + (("ease%g_" % a.ease) if a.ease else "")
+                    + (("lam%g_" % a.lam_start) if a.lam_start else "")
                     + (("anch%g_" % a.anchor) if a.anchor else "") +
                     ("inflated" if a.inflate != 1.0 else "seed%d" % a.seed))
 
     log = lambda s: (sys.stdout.write(s + "\n"), sys.stdout.flush())
     t0 = time.time()
-    d, gar = build()
+    d, gar = build(ease=a.ease)
     log("built: %d verts, %d faces, %d hinges, %d seam pairs  (%.1fs)"
         % (gar["n"], len(gar["faces"]), len(gar["hinges"]), len(gar["pairs"]), time.time() - t0))
 
@@ -207,7 +232,7 @@ def main():
         hs["ax%d_sg%+d" % (ax, sg)] = dict(n=int(m.sum()), frac=float((v > 0).mean()),
                                            max_cm=float(v.max()) if len(v) else 0.0)
     meta = dict(tag=tag, seed=a.seed, inflate=a.inflate, ladder=ladder, mu_rel=a.mu,
-                anchor=a.anchor, body=bool(a.body), half_space=hs,
+                anchor=a.anchor, body=bool(a.body), ease=a.ease, half_space=hs,
                 placed_dev_p50=float(np.median(np.linalg.norm(P - d["placed"], axis=1))),
                 per_lambda=per_lambda, iterations=len(hist), factorizations=nfac,
                 seconds=secs, mono_violations=len(viol),
