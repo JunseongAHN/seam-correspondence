@@ -235,16 +235,20 @@ class Assembly:
             self.D = D
             self.Y = self.lu.solve(np.asarray(D.T.todense()))     # (n, n_pairs)
             self.C = D @ self.Y
-        self._cache_w = None
+            # C = D L0^-1 D^T is symmetric PSD, and the w_s continuation only
+            # shifts its spectrum: (C + I/w_s)^-1 = V (Lam + I/w_s)^-1 V^T.  One
+            # eigendecomposition per factorisation therefore carries every rung of
+            # the w_s ladder, instead of one dense inverse per w_s value (~25 of
+            # them, and each cost more than this eigh).
+            self._lam, self._V = np.linalg.eigh(self.C)
 
     def solve_global(self, b, w_s):
         z = self.lu.solve(b)
         if not self.woodbury or w_s == 0.0:
             return z
-        if self._cache_w != w_s:
-            self._M = np.linalg.inv(self.C + np.eye(len(self.C)) / w_s)
-            self._cache_w = w_s
-        return z - self.Y @ (self._M @ (self.D @ z))
+        t = self._V.T @ (self.D @ z)
+        t /= (self._lam + 1.0 / w_s)[:, None]
+        return z - self.Y @ (self._V @ t)
 
     def energies(self, P, R=None):
         F = deformation_gradients(P, self.g["faces"], self.G)
