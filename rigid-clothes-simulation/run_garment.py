@@ -170,6 +170,9 @@ def main():
     ap.add_argument("--tag", default=None)
     ap.add_argument("--garment", default=None, help="garment id or directory")
     ap.add_argument("--outdir", default=None, help="where to write, default result/")
+    ap.add_argument("--seams", default=None,
+                    help="npy of (K,2) vertex pairs replacing the welded seam "
+                         "correspondence -- e.g. a predicted stitching")
     ap.add_argument("--rest", default=None,
                     help="npy of replacement flat pattern coordinates; the "
                          "placement is rebuilt from them (perturb_pattern.py)")
@@ -198,6 +201,10 @@ def main():
     outdir = a.outdir or RESULT
     ro = np.load(a.rest) if a.rest else None
     d, gar = build(gdir, rest_override=ro)
+    if a.seams:
+        # the welded correspondence is the ground truth the drape mesh carries;
+        # this replaces it so a PREDICTED stitching can be assembled instead
+        d["pairs"] = gar["pairs"] = np.load(a.seams)
     log("built: %d verts, %d faces, %d hinges, %d seam pairs  (%.1fs)"
         % (gar["n"], len(gar["faces"]), len(gar["hinges"]), len(gar["pairs"]), time.time() - t0))
 
