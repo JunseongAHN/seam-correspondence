@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# run_batch.py output: one ~7 MB directory per garment, thousands of them
+rigid-clothes-simulation/proxy/rand_*/
+rigid-clothes-simulation/proxy/_batch_log.jsonl
+rigid-clothes-simulation/proxy/_batch_stdout.txt
+
+# scratch copies of plys for viewing
+rigid-clothes-simulation/img/

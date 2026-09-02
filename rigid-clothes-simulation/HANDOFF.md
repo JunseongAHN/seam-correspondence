@@ -65,8 +65,8 @@ drape wrinkles", not "simpler in every respect".
 ## How to reproduce it
 
 ```
-python run_garment.py --garment <id> --outdir <dir> --seed 1 \
-                      --body --sym --ease 5.0 --mu 0.02
+python run_garment.py --garment <id> --outdir <dir> --amp 0 \
+                      --body --sym --mu 0.02
 ```
 
 lambda_b runs 1e-1 down to 1e-8 in eight rungs of 400 iterations, 3400 in all,
@@ -88,18 +88,22 @@ OMP_NUM_THREADS=2 MKL_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
 | `gcd_io.py` | reads a GarmentCode sample: flat panels, seam correspondence, placement. The drape is loaded only for comparison and returned under `drape` so any accidental use is visible |
 | `assembly.py` | ARAP with per-triangle rotations, Bergou quadratic bending, seam stitching, the lambda_b continuation |
 | `body.py` | the analytic body: 9 plain cylinders and 1 sphere, from the measurements file and the placement, never from the drape |
-| `seam_ease.py` | rescales the rest metric near a seam so no side is ever compressed |
 | `run_garment.py` | the driver |
 | `gi_complexity.py` | the geometry-image measurements above |
+| `perturb_pattern.py` | Lipschitz test: does a nearby pattern give a nearby shell |
 | `render_patches.py` | per-panel colours, panel outlines in black |
 | `measure_all.py`, `analyze.py` | the full measurement battery |
 
 ### Results in the tree
 
 ```
+result/lambda_sweep/   the lambda_b endpoint sweep, on the true flat metric
 result/v4c_skirt2/     six runs of rand_00YONAPXZE, measurements, renders, README
+                       -- produced WITH the deleted ease, so they describe a
+                       pattern whose waist gather was erased.  Regenerate.
 result/v4d_skirt/      the same, coloured per panel with black outlines
-proxy/<garment_id>/    three further garments, one run each
+proxy/<garment_id>/    run_batch.py output, one directory per garment.  Not in
+                       the repo: gitignored, and rebuilt by run_batch.py
 result/v1_noconstraint/  v2_hardclamp/  v3_plane/  v4a_fatarm/  v4b_mu1/
                        earlier attempts, kept because their failures are the
                        argument for the current design
@@ -216,8 +220,7 @@ should be checked against convergence first.
 
 ## Generality
 
-`assembly.py` reads no panel names at all. `seam_ease.py` reads seam topology
-only. The single place a panel name is read is three lines in `body.py` that
+`assembly.py` reads no panel names at all. The single place a panel name is read is three lines in `body.py` that
 locate the arm axis from the sleeve panels, because taking `arm_pose_angle` from
 the vertical puts the axis 13 cm above the cuff. A sleeveless garment gets no arm
 cylinders and works unchanged.
