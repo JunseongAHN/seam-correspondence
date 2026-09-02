@@ -230,3 +230,10 @@ webdemo/node_modules/
 webdemo/dist/
 # the root `lib/` rule above is for build output elsewhere; this is source
 !webdemo/src/lib/
+
+# simcpp build output and dumped fixtures
+simcpp/build-native/
+simcpp/build-wasm/
+simcpp/data/
+simcpp/ref/
+simcpp/out/
