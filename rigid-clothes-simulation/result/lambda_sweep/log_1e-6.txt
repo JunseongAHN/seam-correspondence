@@ -1,0 +1,34 @@
+built: 29784 verts, 57130 faces, 85441 hinges, 967 seam pairs  (2.2s)
+  lambda_b = 0.1  (rung 1/6)
+    stage  0  w_s=     0.01  it=   10  E=2317.6815  E_arap=1805 E_bend=4348 E_stitch=2.72e+03 E_obst=50.9 E_anch=0
+    stage  1  w_s=     0.02  it=   20  E=996.48023  E_arap=722.2 E_bend=2087 E_stitch=1.33e+03 E_obst=39 E_anch=0
+    stage  2  w_s=     0.04  it=   30  E=618.54765  E_arap=401 E_bend=1506 E_stitch=791 E_obst=35.3 E_anch=0
+    stage  3  w_s=     0.08  it=   40  E=459.42606  E_arap=264.2 E_bend=1254 E_stitch=453 E_obst=33.6 E_anch=0
+    stage  4  w_s=     0.16  it=   50  E=384.22301  E_arap=198.2 E_bend=1163 E_stitch=235 E_obst=32.2 E_anch=0
+    stage  5  w_s=     0.32  it=   60  E=346.81624  E_arap=165.3 E_bend=1170 E_stitch=105 E_obst=30.9 E_anch=0
+    stage  6  w_s=     0.64  it=   70  E=325.16136  E_arap=147.8 E_bend=1222 E_stitch=39.1 E_obst=30.1 E_anch=0
+    stage  7  w_s=     1.28  it=   80  E=309.30859  E_arap=137.2 E_bend=1269 E_stitch=12.3 E_obst=29.5 E_anch=0
+    stage  8  w_s=     2.56  it=   90  E=296.00568  E_arap=129.6 E_bend=1286 E_stitch=3.47 E_obst=28.9 E_anch=0
+    stage  9  w_s=     5.12  it=  100  E=282.44264  E_arap=123.1 E_bend=1265 E_stitch=0.94 E_obst=28 E_anch=0
+    stage 10  w_s=     10.2  it=  110  E=269.21551  E_arap=116.5 E_bend=1233 E_stitch=0.248 E_obst=26.9 E_anch=0
+    stage 11  w_s=     20.5  it=  120  E=259.70644  E_arap=111.2 E_bend=1213 E_stitch=0.0648 E_obst=25.8 E_anch=0
+    stage 12  w_s=       41  it=  130  E=252.13235  E_arap=106.8 E_bend=1197 E_stitch=0.0166 E_obst=25 E_anch=0
+    stage 13  w_s=     81.9  it=  140  E=245.58314  E_arap=103 E_bend=1181 E_stitch=0.0042 E_obst=24.2 E_anch=0
+    stage 14  w_s=      164  it=  150  E=239.74205  E_arap=99.56 E_bend=1165 E_stitch=0.00105 E_obst=23.5 E_anch=0
+    stage 15  w_s=      328  it=  160  E=234.53527  E_arap=96.56 E_bend=1151 E_stitch=0.000259 E_obst=22.8 E_anch=0
+    stage 16  w_s=      655  it=  170  E=229.92057  E_arap=93.91 E_bend=1139 E_stitch=6.42e-05 E_obst=22.1 E_anch=0
+    stage 17  w_s= 1.31e+03  it=  180  E=225.9487  E_arap=91.55 E_bend=1128 E_stitch=1.59e-05 E_obst=21.6 E_anch=0
+    stage 18  w_s= 2.62e+03  it=  190  E=222.39104  E_arap=89.43 E_bend=1118 E_stitch=3.91e-06 E_obst=21.2 E_anch=0
+    stage 19  w_s= 5.24e+03  it=  200  E=218.91043  E_arap=87.39 E_bend=1108 E_stitch=9.63e-07 E_obst=20.7 E_anch=0
+    stage 20  w_s=    1e+04  it=  600  E=128.68532  E_arap=43.54 E_bend=772.3 E_stitch=1.76e-07 E_obst=7.91 E_anch=0
+  lambda_b = 0.01  (rung 2/6)
+    stage  0  w_s=    1e+04  it=  400  E=36.976686  E_arap=22.04 E_bend=1168 E_stitch=2.2e-08 E_obst=3.26 E_anch=0
+  lambda_b = 0.001  (rung 3/6)
+    stage  0  w_s=    1e+04  it=  400  E=19.211952  E_arap=15.03 E_bend=2311 E_stitch=1.22e-08 E_obst=1.87 E_anch=0
+  lambda_b = 0.0001  (rung 4/6)
+    stage  0  w_s=    1e+04  it=  400  E=13.548381  E_arap=11.82 E_bend=3892 E_stitch=9.56e-09 E_obst=1.34 E_anch=0
+  lambda_b = 1e-05  (rung 5/6)
+    stage  0  w_s=    1e+04  it=  400  E=11.294142  E_arap=10.18 E_bend=5010 E_stitch=8.36e-09 E_obst=1.07 E_anch=0
+  lambda_b = 1e-06  (rung 6/6)
+    stage  0  w_s=    1e+04  it=  400  E=9.9528537  E_arap=9.09 E_bend=5828 E_stitch=7.68e-09 E_obst=0.857 E_anch=0
+lam1e-6: 2600 iters, 6 fac, 7.0 min | max|s-1| 4.054e-01  gap max 2.009e-05 cm  mono viol 0

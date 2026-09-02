@@ -1,0 +1,44 @@
+{
+ "spec": "/sessions/rcw-01a7cizt5lualohxf5akrwcz/work/specs/rand_PHC6QWDX16.json",
+ "baseline": {
+  "manifold": true,
+  "violations": [],
+  "components": 1,
+  "orientable": true,
+  "boundary_loops": [
+   4
+  ],
+  "chi": [
+   -2
+  ],
+  "genus": [
+   0.0
+  ],
+  "total_loops": 4
+ },
+ "calibration_repaired": 0,
+ "delete": {
+  "n": 44,
+  "caught": 34
+ },
+ "swap": {
+  "n": 946,
+  "caught": 914,
+  "sym_n": 36,
+  "sym_caught": 36
+ },
+ "flip": {
+  "n": 44,
+  "caught": 44,
+  "absorbed": []
+ },
+ "add": {
+  "n": 45,
+  "caught": 41,
+  "free_edges": 10
+ },
+ "reuse": {
+  "n": 20,
+  "caught": 20
+ }
+}

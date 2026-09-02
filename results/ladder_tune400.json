@@ -1,0 +1,50 @@
+{
+ "n_garments": 400,
+ "gt": 12244,
+ "rungs": {
+  "R0_len": {
+   "w_pos": 0.0,
+   "w_name": 0.0,
+   "tau": 0.6,
+   "rank1_rate": 0.2422,
+   "precision": 0.2242,
+   "recall": 0.2686,
+   "f1": 0.2444,
+   "perfect": 0,
+   "n_garments": 400
+  },
+  "R1_shape": {
+   "w_pos": 0.0,
+   "w_name": 0.0,
+   "tau": 0.35,
+   "rank1_rate": 0.2043,
+   "precision": 0.1559,
+   "recall": 0.1867,
+   "f1": 0.1699,
+   "perfect": 0,
+   "n_garments": 400
+  },
+  "R2_place": {
+   "w_pos": 0.5,
+   "w_name": 0.0,
+   "tau": 0.14,
+   "rank1_rate": 0.5041,
+   "precision": 0.4132,
+   "recall": 0.4328,
+   "f1": 0.4228,
+   "perfect": 2,
+   "n_garments": 400
+  },
+  "R3_name": {
+   "w_pos": 0.5,
+   "w_name": 0.2,
+   "tau": 0.2,
+   "rank1_rate": 0.5563,
+   "precision": 0.4786,
+   "recall": 0.4747,
+   "f1": 0.4766,
+   "perfect": 0,
+   "n_garments": 400
+  }
+ }
+}

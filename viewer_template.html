@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R3 매칭 3D 검토기</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F2ED; --surface:#FCFBF8; --surface-2:#EFEDE6;
+  --ink:#17191C; --muted:#6E6A61; --line:#DCD7CD;
+  --accent:#1F6F7C;
+  --tp:#2E7D52; --fp:#B4691F; --fn:#A82F44;
+  --tp-soft:#2E7D5222; --fp-soft:#B4691F22; --fn-soft:#A82F4422;
+  --panel-fill:#8A8578; --panel-line:#4A4740;
+  --canvas-bg:#E9E6DE;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111317; --surface:#181B20; --surface-2:#1F2329;
+    --ink:#E7E4DD; --muted:#8F8A80; --line:#2B2F36;
+    --accent:#54B4C2;
+    --tp:#5CC98D; --fp:#E0A055; --fn:#EE7285;
+    --tp-soft:#5CC98D22; --fp-soft:#E0A05522; --fn-soft:#EE728522;
+    --panel-fill:#9AA3AE; --panel-line:#C3CAD3;
+    --canvas-bg:#0C0E11;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111317; --surface:#181B20; --surface-2:#1F2329;
+  --ink:#E7E4DD; --muted:#8F8A80; --line:#2B2F36;
+  --accent:#54B4C2;
+  --tp:#5CC98D; --fp:#E0A055; --fn:#EE7285;
+  --tp-soft:#5CC98D22; --fp-soft:#E0A05522; --fn-soft:#EE728522;
+  --panel-fill:#9AA3AE; --panel-line:#C3CAD3;
+  --canvas-bg:#0C0E11;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans","Segoe UI","Malgun Gothic",system-ui,-apple-system,sans-serif;
+  font-size:14px; line-height:1.5;
+}
+.app{display:grid; grid-template-columns:minmax(0,1fr) 400px; height:100vh; height:100dvh}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr; grid-template-rows:56vh minmax(0,1fr); height:auto}
+}
+
+/* ---- stage ---- */
+.stage{position:relative; background:var(--canvas-bg); min-height:0; overflow:hidden}
+.stage canvas{display:block; width:100%; height:100%; cursor:grab; touch-action:none}
+.stage canvas:active{cursor:grabbing}
+.stage-top{
+  position:absolute; top:0; left:0; right:0; padding:14px 16px;
+  display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; pointer-events:none;
+}
+.cases{display:flex; gap:6px; pointer-events:auto; background:var(--surface);
+  border:1px solid var(--line); border-radius:2px; padding:4px}
+.case-btn{
+  appearance:none; border:0; background:transparent; color:var(--muted);
+  font:500 12px/1 "IBM Plex Sans","Segoe UI","Malgun Gothic",sans-serif; letter-spacing:.02em;
+  padding:8px 12px; cursor:pointer; border-radius:1px; display:flex; gap:8px; align-items:center;
+}
+.case-btn:hover{color:var(--ink)}
+.case-btn[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.case-btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.dot{width:7px; height:7px; border-radius:50%; flex:none}
+.dot.ok{background:var(--tp)} .dot.bad{background:var(--fn)}
+
+.banner{
+  position:absolute; left:16px; top:64px; max-width:min(52%,460px); margin:0;
+  background:var(--surface); border:1px solid var(--line); border-left:2px solid var(--fp);
+  padding:9px 11px; font:400 11.5px/1.55 "IBM Plex Sans","Segoe UI","Malgun Gothic",sans-serif;
+  color:var(--muted); pointer-events:none;
+}
+.banner b{color:var(--ink); font-weight:600}
+.hint{
+  position:absolute; left:16px; bottom:14px; color:var(--muted);
+  font:400 11px/1.6 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; pointer-events:none; letter-spacing:.01em;
+}
+.readout{
+  position:absolute; right:16px; bottom:14px; max-width:min(60%,420px);
+  background:var(--surface); border:1px solid var(--line); border-left:2px solid var(--accent);
+  padding:10px 12px; font:400 11.5px/1.55 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace;
+  pointer-events:none; white-space:pre-wrap;
+}
+
+/* ---- rail ---- */
+.rail{
+  border-left:1px solid var(--line); background:var(--surface);
+  display:flex; flex-direction:column; min-height:0; overflow-y:auto;
+}
+@media (max-width:900px){.rail{border-left:0; border-top:1px solid var(--line)}}
+.rail section{border-bottom:1px solid var(--line); padding:18px 20px}
+.rail section:last-child{border-bottom:0}
+h1{
+  margin:0 0 2px; font-size:15px; font-weight:600; letter-spacing:-.01em; text-wrap:balance;
+}
+.sub{margin:0; color:var(--muted); font-size:12px}
+.eyebrow{
+  font:500 10px/1 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--muted); margin:0 0 12px;
+}
+
+.stats{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line);
+  border:1px solid var(--line); margin-top:14px}
+.stat{background:var(--surface); padding:10px 12px}
+.stat .k{font:500 10px/1 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; letter-spacing:.1em; color:var(--muted);
+  text-transform:uppercase}
+.stat .v{font:500 20px/1.2 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; font-variant-numeric:tabular-nums; margin-top:6px}
+.stat.tp .v{color:var(--tp)} .stat.fp .v{color:var(--fp)} .stat.fn .v{color:var(--fn)}
+.pr{margin-top:10px; font:400 11.5px/1.6 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; color:var(--muted);
+  font-variant-numeric:tabular-nums}
+
+.layers{display:flex; flex-wrap:wrap; gap:6px}
+.chip{
+  appearance:none; cursor:pointer; background:var(--surface-2); color:var(--muted);
+  border:1px solid var(--line); border-radius:2px; padding:6px 10px;
+  font:500 11.5px/1 "IBM Plex Sans","Segoe UI","Malgun Gothic",sans-serif; display:flex; align-items:center; gap:7px;
+}
+.chip:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.chip[aria-pressed="true"]{color:var(--ink); background:var(--surface); border-color:currentColor}
+.chip .swatch{width:12px; height:3px; flex:none; border-radius:1px}
+
+.group{margin-top:16px}
+.group:first-of-type{margin-top:0}
+.group-h{display:flex; align-items:baseline; gap:8px; margin-bottom:6px}
+.group-h .name{font:500 11px/1 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; letter-spacing:.1em; text-transform:uppercase}
+.group-h .n{font:400 11px/1 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; color:var(--muted);
+  font-variant-numeric:tabular-nums}
+.group-h .why{font-size:11.5px; color:var(--muted); margin-left:auto}
+.g-tp .name{color:var(--tp)} .g-fp .name{color:var(--fp)} .g-fn .name{color:var(--fn)}
+
+ul.rows{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px}
+li.row{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 10px; align-items:baseline;
+  padding:7px 9px; cursor:default; border-left:2px solid transparent; background:var(--surface-2);
+}
+li.row:hover,li.row.hot{background:var(--bg)}
+.g-tp li.row{border-left-color:var(--tp)} .g-tp li.row:hover{background:var(--tp-soft)}
+.g-fp li.row{border-left-color:var(--fp)} .g-fp li.row:hover{background:var(--fp-soft)}
+.g-fn li.row{border-left-color:var(--fn)} .g-fn li.row:hover{background:var(--fn-soft)}
+.pair{font:400 11.5px/1.45 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; word-break:break-all}
+.pair .arrow{color:var(--muted); padding:0 4px}
+.meta{font:400 11px/1.45 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; color:var(--muted);
+  font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap}
+.meta .warn{color:var(--fn)}
+.meta .para{color:var(--fp)}
+
+details.inputs summary{
+  cursor:pointer; font:500 11px/1 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); list-style:none;
+}
+details.inputs summary::-webkit-details-marker{display:none}
+details.inputs summary::before{content:"▸ "; color:var(--accent)}
+details.inputs[open] summary::before{content:"▾ "}
+table.panels{width:100%; border-collapse:collapse; margin-top:12px;
+  font:400 11px/1.5 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,"D2Coding",monospace}
+table.panels th{text-align:left; color:var(--muted); font-weight:500; padding:4px 6px 4px 0;
+  border-bottom:1px solid var(--line); text-transform:uppercase; letter-spacing:.08em; font-size:10px}
+table.panels td{padding:4px 6px 4px 0; border-bottom:1px solid var(--line); vertical-align:top}
+table.panels td.num{text-align:right; font-variant-numeric:tabular-nums; color:var(--muted)}
+.selcard{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 12px; align-items:baseline}
+.selcard dt{font:500 10px/1.6 "IBM Plex Mono",ui-monospace,Consolas,monospace; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted)}
+.selcard dd{margin:0; font:400 11.5px/1.5 "IBM Plex Mono",ui-monospace,Consolas,monospace;
+  word-break:break-all; font-variant-numeric:tabular-nums}
+.selcard dd .dim{color:var(--muted)}
+.selcard dt.k-gt{color:var(--fn)} .selcard dt.k-pred{color:var(--fp)}
+.verdict{margin-top:12px; padding:8px 10px; border-left:2px solid currentColor;
+  font:500 12px/1.5 "IBM Plex Sans","Segoe UI","Malgun Gothic",sans-serif}
+.verdict.ok{color:var(--tp); background:var(--tp-soft)}
+.verdict.bad{color:var(--fn); background:var(--fn-soft)}
+.verdict.extra{color:var(--fp); background:var(--fp-soft)}
+.verdict small{display:block; font-weight:400; color:var(--muted); margin-top:3px; font-size:11px}
+.note{color:var(--muted); font-size:12px; margin:10px 0 0}
+.note b{color:var(--ink); font-weight:600}
+.scrollx{overflow-x:auto}
+</style>
+
+</head>
+<body>
+<div class="app">
+  <div class="stage">
+    <canvas id="gl"></canvas>
+    <div class="stage-top">
+      <div class="cases" id="cases" role="group" aria-label="케이스 선택"></div>
+      <div class="cases" id="modes" role="group" aria-label="배치 선택"></div>
+    </div>
+    <p class="banner" id="banner" hidden></p>
+    <div class="hint">드래그 회전(2D는 이동) · 휠 확대 · Shift+드래그 이동<br>엣지를 클릭하면 GT 짝과 예측 짝을 함께 그립니다 (Esc 해제)<br>목록 위에 커서를 올리면 해당 접합만 남습니다</div>
+    <div class="readout" id="readout" hidden></div>
+  </div>
+
+  <aside class="rail">
+    <section>
+      <p class="eyebrow">사다리 R3 · 배치+이름 규칙</p>
+      <h1 id="gname">—</h1>
+      <p class="sub" id="gsub">—</p>
+      <div class="stats">
+        <div class="stat tp"><div class="k">TP</div><div class="v" id="s-tp">0</div></div>
+        <div class="stat fp"><div class="k">FP</div><div class="v" id="s-fp">0</div></div>
+        <div class="stat fn"><div class="k">FN</div><div class="v" id="s-fn">0</div></div>
+      </div>
+      <p class="pr" id="s-pr">—</p>
+    </section>
+
+    <section id="selwrap">
+      <p class="eyebrow">선택한 엣지</p>
+      <div id="sel"><p class="note">3D 화면에서 엣지를 클릭하면 그 엣지의 GT 짝과 예측 짝을 나란히 봅니다.</p></div>
+    </section>
+
+    <section>
+      <p class="eyebrow">레이어</p>
+      <div class="layers" id="layers"></div>
+    </section>
+
+    <section id="lists"></section>
+
+    <section>
+      <details class="inputs">
+        <summary>입력 — 패널과 엣지</summary>
+        <div class="scrollx"><table class="panels" id="ptable"></table></div>
+      </details>
+    </section>
+
+    <section>
+      <p class="eyebrow">읽는 법</p>
+      <p class="note" id="story"></p>
+    </section>
+  </aside>
+</div>
+
+
+<script>
+/* R3 매칭 3D 검토기 — 외부 라이브러리 없음.
+   평면 다각형(패널)과 선분(봉제선)뿐이라 캔버스 2D 위에 직접 투영해 그린다.
+   비볼록 패널은 canvas 의 nonzero winding fill 이 그대로 처리한다. */
+const DATA = __DATA__;
+
+const canvas = document.getElementById('gl');
+const ctx = canvas.getContext('2d');
+const KEYS = ['tp','fp','fn'];
+
+let scene = null;
+let mode = '3d';
+let view = {az:0.7, el:0.18, dist:200, t:[0,0,0]};
+let visible = {panel:true, tp:true, fp:true, fn:true};
+let isolated = null;
+let selected = null;
+let hovered = null;
+let COL = null;
+let dirty = true;
+
+function colors(){
+  const g = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  return {bg:g('--canvas-bg'), fill:g('--panel-fill'), line:g('--panel-line'),
+          tp:g('--tp'), fp:g('--fp'), fn:g('--fn'), sel:g('--accent')};
+}
+function hexA(hex, a){
+  let h = hex.replace('#','');
+  if(h.length===3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n = parseInt(h.slice(0,6),16);
+  return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';
+}
+
+/* ---------- scene ---------- */
+function mul(R,T,q){                       // R is row-major 3x3
+  return [R[0]*q[0]+R[1]*q[1]+R[2]*0+T[0],
+          R[3]*q[0]+R[4]*q[1]+R[5]*0+T[1],
+          R[6]*q[0]+R[7]*q[1]+R[8]*0+T[2]];
+}
+function prepare(d){
+  const panels = d.panels.map(p=>({name:p.name, pts:p.outline.map(q=>mul(p.R,p.T,q))}));
+
+  /* ★평면 배치는 데이터에 없다. spec 의 vertices 는 패널 로컬 좌표라 공용 2D 레이아웃이 존재하지 않는다.
+     아래 격자는 내가 임의로 늘어놓은 것 — 그래서 2D 화면의 접합선이 사방으로 뻗는다.
+     그게 곧 "배치 근접성은 실무에서 정보가 아니다"의 그림이다. */
+  const boxes = d.panels.map(p=>{
+    const xs=p.outline.map(q=>q[0]), ys=p.outline.map(q=>q[1]);
+    return {x0:Math.min(...xs), y0:Math.min(...ys),
+            w:Math.max(...xs)-Math.min(...xs), h:Math.max(...ys)-Math.min(...ys)};
+  });
+  const area = boxes.reduce((a,b)=>a+b.w*b.h,0);
+  const rowW = Math.max(Math.sqrt(area)*1.7, Math.max(...boxes.map(b=>b.w))*1.05);
+  const gap = Math.max(rowW*0.03, 2);
+  const order = boxes.map((b,i)=>i).sort((a,b)=>boxes[b].h-boxes[a].h);
+  const off = new Array(boxes.length);
+  let cx=0, cy=0, rowH=0;
+  for(const i of order){
+    const b=boxes[i];
+    if(cx>0 && cx+b.w>rowW){ cx=0; cy-=rowH+gap; rowH=0; }
+    off[i]=[cx-b.x0, cy-b.y0-b.h];
+    cx+=b.w+gap; rowH=Math.max(rowH,b.h);
+  }
+  const flat = d.panels.map((p,i)=>({name:p.name,
+    pts:p.outline.map(q=>[q[0]+off[i][0], q[1]+off[i][1], 0])}));
+
+  /* 엣지 폴리라인을 두 좌표계 모두에 대해 만든다 (클릭 판정과 접합선이 같은 소스를 쓰게) */
+  const mk = (P)=>{
+    const E=[];
+    d.panels.forEach((p,pi)=>{
+      const W=P[pi].pts, n=W.length;
+      for(const e of p.edges){
+        const pts=[]; for(let i=0;i<=e.n;i++) pts.push(W[(e.s+i)%n]);
+        E[e.g]={g:e.g, panel:p.name, k:e.k, L:e.L, pts};
+      }
+    });
+    return E;
+  };
+  const edges3 = mk(panels), edges2 = mk(flat);
+
+  const gt={}, pred={}, info={};
+  const put=(m,l)=>{ m[l.a]=l.b; m[l.b]=l.a; info[l.a+'-'+l.b]=l; info[l.b+'-'+l.a]=l; };
+  for(const l of d.tp){ put(gt,l); put(pred,l); }
+  for(const l of d.fn){ put(gt,l); }
+  for(const l of d.fp){ put(pred,l); }
+
+  const seams={};
+  for(const k of KEYS) seams[k]=d[k].map(l=>({a:l.a, b:l.b, anti:l.anti}));
+
+  const bounds = (P)=>{
+    const lo=[1e30,1e30,1e30], hi=[-1e30,-1e30,-1e30];
+    for(const p of P) for(const q of p.pts) for(let i=0;i<3;i++){
+      if(q[i]<lo[i])lo[i]=q[i]; if(q[i]>hi[i])hi[i]=q[i];
+    }
+    return {center:[0,1,2].map(i=>(lo[i]+hi[i])/2),
+            size:Math.hypot(hi[0]-lo[0],hi[1]-lo[1],hi[2]-lo[2])||100};
+  };
+  return {views:{'3d':{panels, edges:edges3, ...bounds(panels)},
+                 '2d':{panels:flat, edges:edges2, ...bounds(flat)}},
+          seams, gt, pred, info, names:d.names};
+}
+function V(){ return scene.views[mode]; }
+function linkPts(l){
+  const E=V().edges, A=E[l.a], B=E[l.b];
+  if(!A||!B) return null;
+  return [A.pts, l.anti ? B.pts.slice().reverse() : B.pts];
+}
+
+/* ---------- camera ---------- */
+function cam(){
+  const el=Math.max(-1.45,Math.min(1.45,view.el));
+  const t=view.t;
+  const eye=[t[0]+view.dist*Math.cos(el)*Math.sin(view.az),
+             t[1]+view.dist*Math.sin(el),
+             t[2]+view.dist*Math.cos(el)*Math.cos(view.az)];
+  const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+  const norm=v=>{const n=Math.hypot(v[0],v[1],v[2])||1;return [v[0]/n,v[1]/n,v[2]/n]};
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+  const f=norm(sub(t,eye));
+  let r=cross(f,[0,1,0]);
+  if(Math.hypot(r[0],r[1],r[2])<1e-6) r=[1,0,0];
+  r=norm(r);
+  const u=cross(r,f);
+  return {eye,f,r,u};
+}
+function projector(){
+  const C=cam();
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  const foc=(h/2)/Math.tan(38*Math.PI/180/2);
+  const near=view.dist*0.01+0.5;
+  return q=>{
+    const v=[q[0]-C.eye[0], q[1]-C.eye[1], q[2]-C.eye[2]];
+    const z=v[0]*C.f[0]+v[1]*C.f[1]+v[2]*C.f[2];
+    if(z<near) return null;
+    const x=v[0]*C.r[0]+v[1]*C.r[1]+v[2]*C.r[2];
+    const y=v[0]*C.u[0]+v[1]*C.u[1]+v[2]*C.u[2];
+    return [w/2 + foc*x/z, h/2 - foc*y/z, z];
+  };
+}
+
+/* ---------- draw ---------- */
+function fitDistance(size){
+  /* 바운딩 구가 세로·가로 화각 안에 다 들어오는 거리. 대각선에 상수를 곱하면 잘린다. */
+  const w=canvas.clientWidth||1000, h=canvas.clientHeight||700;
+  const fovY=38*Math.PI/180, r=size/2;
+  const fovX=2*Math.atan(Math.tan(fovY/2)*(w/h));
+  return Math.max(r/Math.tan(fovY/2), r/Math.tan(fovX/2))*1.12;
+}
+function draw(){
+  if(!scene) return;
+  const dpr=Math.min(devicePixelRatio||1,2);
+  const w=canvas.clientWidth, h=canvas.clientHeight;
+  if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){
+    canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
+  }
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(!COL) COL=colors();
+  ctx.fillStyle=COL.bg; ctx.fillRect(0,0,w,h);
+  const P=projector();
+
+  if(visible.panel){
+    const items=[];
+    const PN=V().panels;
+    for(let i=0;i<PN.length;i++){
+      const pr=PN[i].pts.map(P);
+      if(pr.some(q=>q===null)) continue;
+      let z=0; for(const q of pr) z+=q[2];
+      items.push({pr, z:z/pr.length, i});
+    }
+    items.sort((a,b)=>b.z-a.z);
+    for(const it of items){
+      const dim = (isolated || selected!=null) ? 0.35 : 1;
+      ctx.beginPath();
+      ctx.moveTo(it.pr[0][0], it.pr[0][1]);
+      for(let k=1;k<it.pr.length;k++) ctx.lineTo(it.pr[k][0], it.pr[k][1]);
+      ctx.closePath();
+      ctx.fillStyle=hexA(COL.fill, 0.15*dim);
+      ctx.fill();
+      ctx.strokeStyle=hexA(COL.line, 0.55*dim);
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+  }
+
+  for(const key of KEYS){
+    if(!visible[key]) continue;
+    const col=COL[key];
+    scene.seams[key].forEach((s,idx)=>{
+      const on = !isolated || (isolated.key===key && isolated.i===idx);
+      /* 엣지를 선택하면 나머지 봉제선은 배경으로 물러난다 — 안 그러면 선택이 묻힌다 */
+      const a = on ? (selected!=null ? 0.10 : 1) : 0.07;
+      const LP=linkPts(s); if(!LP) return;
+      const A=LP[0].map(P), B=LP[1].map(P);
+      ctx.strokeStyle=hexA(col, 0.55*a);
+      ctx.lineWidth=on?1:1;
+      ctx.beginPath();
+      for(let k=0;k<A.length;k++){
+        if(!A[k]||!B[k]) continue;
+        ctx.moveTo(A[k][0],A[k][1]); ctx.lineTo(B[k][0],B[k][1]);
+      }
+      ctx.stroke();
+      ctx.strokeStyle=hexA(col, a);
+      ctx.lineWidth=on?2.2:1.2;
+      for(const S of [A,B]){
+        ctx.beginPath(); let started=false;
+        for(const q of S){
+          if(!q){started=false;continue}
+          if(!started){ctx.moveTo(q[0],q[1]);started=true} else ctx.lineTo(q[0],q[1]);
+        }
+        ctx.stroke();
+      }
+    });
+  }
+
+  if(hovered!=null && hovered!==selected && V().edges[hovered])
+    strokePath(P, V().edges[hovered].pts, COL.sel, 2.5, 0.55);
+  drawSelection(P);
+}
+function strokePath(P, pts, color, width, alpha, dash){
+  ctx.save();
+  ctx.setLineDash(dash||[]);
+  ctx.strokeStyle=hexA(color, alpha); ctx.lineWidth=width;
+  ctx.lineJoin='round'; ctx.lineCap='round';
+  ctx.beginPath(); let started=false;
+  for(const q of pts.map(P)){
+    if(!q){started=false;continue}
+    if(!started){ctx.moveTo(q[0],q[1]);started=true} else ctx.lineTo(q[0],q[1]);
+  }
+  ctx.stroke(); ctx.restore();
+}
+function drawSelection(P){
+  if(selected==null || !V().edges[selected]) return;
+  const E=V().edges[selected];
+  const g=scene.gt[selected], p=scene.pred[selected];
+  if(g!=null && V().edges[g])
+    strokePath(P, V().edges[g].pts, (g===p)?COL.tp:COL.fn, 3, 0.95, (g===p)?[]:[7,4]);
+  if(p!=null && p!==g && V().edges[p])
+    strokePath(P, V().edges[p].pts, COL.fp, 3, 0.95);
+  for(const [other,color] of [[g,(g===p)?COL.tp:COL.fn],[p!==g?p:null,COL.fp]]){
+    if(other==null || !V().edges[other]) continue;
+    const A=E.pts.map(P), B=V().edges[other].pts.map(P);
+    const rev = (()=>{ // 가까운 쪽으로 사다리를 건다
+      const d=(u,v)=>u&&v?Math.hypot(u[0]-v[0],u[1]-v[1]):1e9;
+      let f=0,r=0; for(let i=0;i<A.length;i++){f+=d(A[i],B[i]); r+=d(A[i],B[B.length-1-i]);}
+      return r<f;
+    })();
+    ctx.strokeStyle=hexA(color,0.5); ctx.lineWidth=1; ctx.beginPath();
+    for(let i=0;i<A.length;i++){
+      const b=rev?B[B.length-1-i]:B[i];
+      if(!A[i]||!b) continue;
+      ctx.moveTo(A[i][0],A[i][1]); ctx.lineTo(b[0],b[1]);
+    }
+    ctx.stroke();
+  }
+  strokePath(P, E.pts, COL.sel, 4, 1);
+}
+function loop(){ if(dirty){ dirty=false; draw(); } requestAnimationFrame(loop); }
+const invalidate=()=>{dirty=true};
+
+/* ---------- interaction ---------- */
+function pick(cx,cy){
+  if(!scene) return null;
+  const P=projector();
+  const r=canvas.getBoundingClientRect();
+  const x=cx-r.left, y=cy-r.top;
+  let best=null, bestD=10;                      // 10px 안쪽만 집는다
+  for(const E of V().edges){
+    if(!E) continue;
+    const pr=E.pts.map(P);
+    for(let i=0;i<pr.length-1;i++){
+      const a=pr[i], b=pr[i+1];
+      if(!a||!b) continue;
+      const vx=b[0]-a[0], vy=b[1]-a[1], L2=vx*vx+vy*vy;
+      let t = L2>0 ? ((x-a[0])*vx+(y-a[1])*vy)/L2 : 0;
+      t=Math.max(0,Math.min(1,t));
+      const d=Math.hypot(x-(a[0]+t*vx), y-(a[1]+t*vy));
+      if(d<bestD){ bestD=d; best=E.g; }
+    }
+  }
+  return best;
+}
+
+let drag=null, downAt=null;
+canvas.addEventListener('pointerdown',e=>{
+  drag={x:e.clientX,y:e.clientY,pan:e.shiftKey||e.button===1||e.button===2};
+  downAt={x:e.clientX,y:e.clientY};
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('click',e=>{
+  if(downAt && Math.hypot(e.clientX-downAt.x, e.clientY-downAt.y)>4) return;  // 회전 드래그는 선택 아님
+  selectEdge(pick(e.clientX,e.clientY));
+});
+canvas.addEventListener('pointerup',()=>{drag=null});
+canvas.addEventListener('pointercancel',()=>{drag=null});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('pointermove',e=>{
+  if(!drag){
+    const h=pick(e.clientX,e.clientY);
+    if(h!==hovered){ hovered=h; canvas.style.cursor = h!=null?'pointer':'grab'; invalidate(); }
+    return;
+  }
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY;
+  if(drag.pan){
+    const C=cam(), s=view.dist*0.0016;
+    for(let i=0;i<3;i++) view.t[i] += -dx*s*C.r[i] + dy*s*C.u[i];
+  } else if(mode==='2d'){
+    const C=cam(), sc=view.dist*0.0016;
+    for(let i=0;i<3;i++) view.t[i] += -dx*sc*C.r[i] + dy*sc*C.u[i];   // 평면도는 회전 잠금
+  } else { view.az-=dx*0.006; view.el+=dy*0.006; }
+  invalidate();
+});
+canvas.addEventListener('wheel',e=>{
+  e.preventDefault();
+  view.dist=Math.max(1, view.dist*Math.exp(e.deltaY*0.0011));
+  invalidate();
+},{passive:false});
+addEventListener('resize',invalidate);
+addEventListener('keydown',e=>{ if(e.key==='Escape') selectEdge(null); });
+
+/* ---------- rail ---------- */
+const LAYERS=[['panel','패널','var(--panel-line)'],['tp','TP 맞음','var(--tp)'],
+              ['fp','FP 틀린 예측','var(--fp)'],['fn','FN 놓침','var(--fn)']];
+const layersEl=document.getElementById('layers');
+LAYERS.forEach(([k,label,color])=>{
+  const b=document.createElement('button');
+  b.className='chip'; b.type='button'; b.setAttribute('aria-pressed','true');
+  b.innerHTML='<span class="swatch" style="background:'+color+'"></span>'+label;
+  b.onclick=()=>{visible[k]=!visible[k]; b.setAttribute('aria-pressed',String(visible[k])); invalidate()};
+  layersEl.appendChild(b);
+});
+
+const STORY={
+  perfect:'전량 정답이 나온 4벌은 <b>전부 스티치 4~6개짜리 최소 벌</b>이다. 이 벌은 같은 고어 6장이 원통으로 둘러앉은 스커트라, 모든 참 접합의 ΔL이 0.0mm이고 배치상 서로 맞닿아 있다. 규칙이 이기는 조건이 무엇인지를 보여주는 벌이지, 규칙이 통한다는 증거가 아니다.',
+  fail:'티어드 스커트. 참 접합 <b>skirt_front_0#3 ↔ skirt_front#0</b>은 개더라서 ΔL이 <b>148.6mm</b>인데, 매처가 대신 고른 짝 <b>skirt_front_0#3 ↔ skirt_back_0#0</b>은 ΔL이 <b>0.0mm</b>다. 길이 유사도가 정답이 아니라 오답을 가리킨다 — 논문의 s₁=exp(−ΔL²/τ_l²), τ_l=10mm가 정확히 여기서 0이 된다. 그리고 FP 11건 중 8건이 <b>para</b>인데, GT 스티치는 데이터 전체에서 96.6%가 <b>anti</b>다. 방향 일관성만 봐도 걸러지는 오답이고, 그게 위상 게이트가 검사하는 바로 그 조건이다.'
+};
+const LNAME={tp:'TP — 예측이 GT와 일치',fp:'FP — GT에 없는 접합',fn:'FN — 놓친 GT 접합'};
+const WHY={tp:'예측 = GT',fp:'GT에 없는 접합을 만들었다',fn:'GT 접합을 못 찾았다'};
+
+function selectEdge(g){
+  selected = g;
+  invalidate();
+  const box=document.getElementById('sel');
+  if(g==null || !scene || !V().edges[g]){
+    box.innerHTML='<p class="note">3D 화면에서 엣지를 클릭하면 그 엣지의 GT 짝과 예측 짝을 나란히 봅니다.</p>';
+    return;
+  }
+  const E=V().edges[g], N=scene.names;
+  const gtP=scene.gt[g], prP=scene.pred[g];
+  const li=(a,b)=> (a==null||b==null) ? null : scene.info[a+'-'+b];
+  const cell=(other,link)=>{
+    if(other==null) return '<span class="dim">없음 — 자유 엣지(열린 경계)</span>';
+    const l=link;
+    return N[other]+(l?'   <span class="dim">ΔL '+l.dL.toFixed(1)+'mm · '+(l.anti?'anti':'para')+'</span>':'');
+  };
+  let v, cls, sub;
+  if(gtP!=null && prP!=null && gtP===prP){ cls='ok'; v='맞음'; sub='예측이 GT와 같은 엣지를 골랐다 (TP)'; }
+  else if(gtP!=null && prP!=null){ cls='bad'; v='틀린 짝';
+    sub='GT 접합을 놓치고(FN) 다른 엣지에 붙였다(FP) — 한 번의 실수가 두 개의 오류가 된다'; }
+  else if(gtP!=null){ cls='bad'; v='놓침 (FN)'; sub='GT에 접합이 있는데 예측이 이 엣지를 비워뒀다'; }
+  else if(prP!=null){ cls='extra'; v='없는 접합 (FP)'; sub='GT에서는 자유 엣지인데 예측이 뭔가에 붙였다'; }
+  else { cls='ok'; v='자유 엣지 — 맞음'; sub='GT도 예측도 비워뒀다 (네크라인·밑단 같은 열린 경계)'; }
+  box.innerHTML=
+    '<dl class="selcard">'+
+      '<dt>엣지</dt><dd>'+N[g]+'   <span class="dim">호길이 '+E.L.toFixed(1)+'mm</span></dd>'+
+      '<dt class="k-gt">GT</dt><dd>'+cell(gtP, li(g,gtP))+'</dd>'+
+      '<dt class="k-pred">예측</dt><dd>'+cell(prP, li(g,prP))+'</dd>'+
+    '</dl>'+
+    '<div class="verdict '+cls+'">'+v+'<small>'+sub+'</small></div>';
+}
+
+function renderRail(d, idx){
+  document.getElementById('gname').textContent=d.id;
+  document.getElementById('gsub').textContent=
+    (d.kind==='perfect'?'전량 정답 — ':'실패 — ')+d.stats.panels+'개 패널 · '+
+    d.stats.edges+'개 엣지 · GT 스티치 '+d.stats.gt+'개';
+  document.getElementById('s-tp').textContent=d.stats.tp;
+  document.getElementById('s-fp').textContent=d.stats.fp;
+  document.getElementById('s-fn').textContent=d.stats.fn;
+  document.getElementById('s-pr').textContent=
+    'precision '+d.stats.precision.toFixed(3)+'   recall '+d.stats.recall.toFixed(3)+
+    '   벌 단위 판정 '+(d.stats.fp===0&&d.stats.fn===0?'통과':'실패');
+  document.getElementById('story').innerHTML=STORY[d.kind];
+
+  const lists=document.getElementById('lists'); lists.innerHTML='';
+  for(const key of ['fn','fp','tp']){
+    const g=document.createElement('div'); g.className='group g-'+key;
+    const h=document.createElement('div'); h.className='group-h';
+    h.innerHTML='<span class="name">'+key.toUpperCase()+'</span><span class="n">'+d[key].length+
+                '</span><span class="why">'+WHY[key]+'</span>';
+    g.appendChild(h);
+    if(!d[key].length){
+      const p=document.createElement('p'); p.className='note'; p.textContent='없음'; g.appendChild(p);
+    }
+    const ul=document.createElement('ul'); ul.className='rows';
+    d[key].forEach((l,i)=>{
+      const li=document.createElement('li'); li.className='row';
+      li.innerHTML='<span class="pair">'+d.names[l.a]+'<span class="arrow">↔</span>'+d.names[l.b]+
+        '</span><span class="meta"><span class="'+(l.dL>10?'warn':'')+'">ΔL '+l.dL.toFixed(1)+
+        'mm</span> · <span class="'+(l.anti?'':'para')+'">'+(l.anti?'anti':'para')+'</span></span>';
+      li.onmouseenter=()=>{
+        isolated={key,i}; invalidate();
+        const r=document.getElementById('readout'); r.hidden=false;
+        r.textContent=LNAME[key]+'\n'+d.names[l.a]+'  ↔  '+d.names[l.b]+
+          '\nΔL '+l.dL.toFixed(1)+' mm · 끝점 짝 '+(l.anti?'anti (방향 반전)':'para (같은 방향)');
+      };
+      li.onmouseleave=()=>{
+        isolated=null; invalidate(); document.getElementById('readout').hidden=true;
+      };
+      ul.appendChild(li);
+    });
+    g.appendChild(ul); lists.appendChild(g);
+  }
+
+  document.getElementById('ptable').innerHTML=
+    '<tr><th>패널</th><th>label</th><th class="num">엣지</th><th>엣지 길이 (mm)</th></tr>'+
+    d.panels.map(p=>'<tr><td>'+p.name+'</td><td>'+p.label+'</td><td class="num">'+p.edges.length+
+      '</td><td class="num">'+p.edges.map(e=>e.L.toFixed(0)).join(' · ')+'</td></tr>').join('');
+
+  [...document.querySelectorAll('.case-btn')].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===idx)));
+}
+
+function resetCamera(){
+  const v=V();
+  view.t=v.center.slice();
+  view.dist=fitDistance(v.size);
+  if(mode==='2d'){ view.az=0; view.el=0; }      // XY 평면을 정면으로
+  else { view.az=0.7; view.el=0.18; }
+  invalidate();
+}
+function load(idx){
+  const d=DATA[idx];
+  renderRail(d, idx);
+  scene=prepare(d);
+  selected=null; hovered=null; selectEdge(null);
+  resetCamera();
+  isolated=null;
+  invalidate();
+}
+
+const MODES=[['3d','3D — GT 배치'],['2d','2D — 패널 원본']];
+const modesEl=document.getElementById('modes');
+MODES.forEach(([k,label])=>{
+  const b=document.createElement('button');
+  b.className='case-btn'; b.type='button'; b.setAttribute('aria-pressed',String(k===mode));
+  b.textContent=label;
+  b.onclick=()=>{
+    if(mode===k) return;
+    mode=k;
+    [...modesEl.children].forEach((c,i)=>c.setAttribute('aria-pressed',String(MODES[i][0]===mode)));
+    document.getElementById('banner').hidden = (mode!=='2d');
+    resetCamera();
+  };
+  modesEl.appendChild(b);
+});
+document.getElementById('banner').innerHTML=
+  '<b>이 격자는 데이터에 없습니다.</b> spec 의 <code>vertices</code> 는 패널 로컬 좌표라 '+
+  '공용 2D 레이아웃이 존재하지 않습니다. 여기 배치는 제가 임의로 늘어놓은 것이고, '+
+  '접합선이 사방으로 뻗는 게 곧 <b>배치 근접성이 실무에서 정보가 아니라는</b> 그림입니다.';
+
+const casesEl=document.getElementById('cases');
+DATA.forEach((d,i)=>{
+  const b=document.createElement('button');
+  b.className='case-btn'; b.type='button'; b.setAttribute('aria-pressed',String(i===0));
+  b.innerHTML='<span class="dot '+(d.kind==='perfect'?'ok':'bad')+'"></span>'+
+              (d.kind==='perfect'?'성공 · 스티치 ':'실패 · 스티치 ')+d.stats.gt;
+  b.onclick=()=>load(i);
+  casesEl.appendChild(b);
+});
+
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{COL=null; invalidate()});
+
+load(0);
+loop();
+</script>
+</body>
+</html>

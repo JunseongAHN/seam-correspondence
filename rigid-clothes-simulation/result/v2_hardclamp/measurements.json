@@ -1,0 +1,357 @@
+{
+ "garment": "rand_00YONAPXZE",
+ "runs": [
+  "sym_lr_fb_inflated",
+  "sym_lr_fb_seed1",
+  "sym_lr_fb_seed2",
+  "sym_lr_fb_seed3",
+  "sym_lr_fb_seed4",
+  "sym_lr_fb_seed5"
+ ],
+ "uv_report": {
+  "n_edges": 7555,
+  "Kx": 397.0266849032366,
+  "Ky": 228.215732670251,
+  "err_median": 0.0034606727143461358,
+  "err_p90": 0.007361683977256272,
+  "isotropic_K": 273.43702429639814,
+  "isotropic_err_median": 0.17375512169190244
+ },
+ "consistency": {
+  "sym_lr_fb_inflated": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 6.182000236804088,
+   "mono_violations": 1507,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  },
+  "sym_lr_fb_seed1": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 2.602156829877492,
+   "mono_violations": 674,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  },
+  "sym_lr_fb_seed2": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 2.281594553528869,
+   "mono_violations": 602,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  },
+  "sym_lr_fb_seed3": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 2.04973721468893,
+   "mono_violations": 846,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  },
+  "sym_lr_fb_seed4": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 4.381355937096418,
+   "mono_violations": 775,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  },
+  "sym_lr_fb_seed5": {
+   "max_sigma_dev": 1.0,
+   "seam_gap_max": 4.65149881787955,
+   "mono_violations": 625,
+   "iterations": 1800,
+   "pass_sigma": false,
+   "pass_gap": false
+  }
+ },
+ "sensitivity_cm": {
+  "btorso": {
+   "std_p50": 4.474433377172529,
+   "std_p90": 7.356849921127027,
+   "maxdev_p50": 7.59123840275209,
+   "n": 1996
+  },
+  "cuff_b": {
+   "std_p50": 10.288498081965518,
+   "std_p90": 11.660425153526244,
+   "maxdev_p50": 14.754331928131808,
+   "n": 186
+  },
+  "cuff_f": {
+   "std_p50": 10.316914042022763,
+   "std_p90": 11.563780100014387,
+   "maxdev_p50": 14.56156870398739,
+   "n": 186
+  },
+  "ftorso": {
+   "std_p50": 6.0252339168445825,
+   "std_p90": 7.964299756531143,
+   "maxdev_p50": 8.763793011328067,
+   "n": 2225
+  },
+  "hood": {
+   "std_p50": 7.578875179811142,
+   "std_p90": 9.467180499561813,
+   "maxdev_p50": 11.131467198789686,
+   "n": 1347
+  },
+  "skirt_back": {
+   "std_p50": 6.060140791420061,
+   "std_p90": 9.77579253512756,
+   "maxdev_p50": 10.00629141152848,
+   "n": 10334
+  },
+  "skirt_front": {
+   "std_p50": 6.768003434292405,
+   "std_p90": 9.423450780319666,
+   "maxdev_p50": 10.555528215381848,
+   "n": 10344
+  },
+  "sleeve_b": {
+   "std_p50": 8.78498552220989,
+   "std_p90": 10.790432741394302,
+   "maxdev_p50": 13.295294441539443,
+   "n": 693
+  },
+  "sleeve_f": {
+   "std_p50": 8.943667505057768,
+   "std_p90": 10.957797095898297,
+   "maxdev_p50": 13.318326154075846,
+   "n": 715
+  },
+  "wb_back": {
+   "std_p50": 4.401410946408172,
+   "std_p90": 7.158911813616305,
+   "maxdev_p50": 7.5754183645846505,
+   "n": 806
+  },
+  "wb_front": {
+   "std_p50": 4.108388108633565,
+   "std_p90": 7.062428275013017,
+   "maxdev_p50": 7.01485281580183,
+   "n": 952
+  }
+ },
+ "angle_deficit": {
+  "btorso": {
+   "sum": -8.860376110382369,
+   "p50": 0.0,
+   "p90_abs": 7.993605777301127e-15,
+   "n": 1996
+  },
+  "cuff_b": {
+   "sum": -3.375077994860476e-14,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 164
+  },
+  "cuff_f": {
+   "sum": -3.019806626980426e-14,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 164
+  },
+  "ftorso": {
+   "sum": -7.41767029231822,
+   "p50": 0.0,
+   "p90_abs": 3.552713678800501e-15,
+   "n": 2223
+  },
+  "hood": {
+   "sum": 1.6488135710417442,
+   "p50": 0.0,
+   "p90_abs": 0.02939419379050187,
+   "n": 1255
+  },
+  "skirt_back": {
+   "sum": -2.090855002225613,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 10144
+  },
+  "skirt_front": {
+   "sum": -2.09393611179168,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 10154
+  },
+  "sleeve_b": {
+   "sum": -6.640233832926914,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 693
+  },
+  "sleeve_f": {
+   "sum": -6.664046379370267,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 715
+  },
+  "wb_back": {
+   "sum": -2.9870608849517835,
+   "p50": 0.0,
+   "p90_abs": 0.007484019505871853,
+   "n": 806
+  },
+  "wb_front": {
+   "sum": -2.3142647182682605,
+   "p50": 0.0,
+   "p90_abs": 8.881784197001252e-16,
+   "n": 952
+  }
+ },
+ "deficit_spread_corr": {
+  "per_class": {
+   "btorso": 0.10302255966417383,
+   "cuff_b": -0.09686771458409835,
+   "cuff_f": 0.0220878422641866,
+   "ftorso": 0.0815455391486878,
+   "hood": -0.014735808871869772,
+   "skirt_back": -0.013225644889960426,
+   "skirt_front": -0.06017586655127053,
+   "sleeve_b": -0.09029341175723796,
+   "sleeve_f": -0.11066748258627476,
+   "wb_back": 0.07204314921107148,
+   "wb_front": 0.08867451005797543
+  },
+  "overall": 0.005650936552609414
+ },
+ "delta_xy_cm": {
+  "btorso": {
+   "arap_p50": 9.310609802639163,
+   "drape_p50": null
+  },
+  "cuff_b": {
+   "arap_p50": 15.612252021566341,
+   "drape_p50": null
+  },
+  "cuff_f": {
+   "arap_p50": 15.900835277640518,
+   "drape_p50": 3.09
+  },
+  "ftorso": {
+   "arap_p50": 10.630755010679374,
+   "drape_p50": 9.11
+  },
+  "hood": {
+   "arap_p50": 21.18799969115739,
+   "drape_p50": 12.88
+  },
+  "skirt_back": {
+   "arap_p50": 11.390093158417706,
+   "drape_p50": null
+  },
+  "skirt_front": {
+   "arap_p50": 9.36361252736122,
+   "drape_p50": 15.82
+  },
+  "sleeve_b": {
+   "arap_p50": 13.777361073361073,
+   "drape_p50": null
+  },
+  "sleeve_f": {
+   "arap_p50": 13.67252756926308,
+   "drape_p50": 6.26
+  },
+  "wb_back": {
+   "arap_p50": 11.928825953674565,
+   "drape_p50": null
+  },
+  "wb_front": {
+   "arap_p50": 9.259996561004687,
+   "drape_p50": 11.13
+  }
+ },
+ "drape_distance_cm": {
+  "btorso": {
+   "p50": 17.018622773913357,
+   "p90": 20.65494284857556
+  },
+  "cuff_b": {
+   "p50": 18.91971008267577,
+   "p90": 23.617594479521728
+  },
+  "cuff_f": {
+   "p50": 20.08693207848031,
+   "p90": 23.996656144784428
+  },
+  "ftorso": {
+   "p50": 20.934532986303015,
+   "p90": 23.294111131601536
+  },
+  "hood": {
+   "p50": 21.312414427493273,
+   "p90": 24.467951505241746
+  },
+  "skirt_back": {
+   "p50": 19.1804905542409,
+   "p90": 46.79726432159991
+  },
+  "skirt_front": {
+   "p50": 14.425888076556433,
+   "p90": 33.7200104180967
+  },
+  "sleeve_b": {
+   "p50": 20.108706294355713,
+   "p90": 21.93013514779191
+  },
+  "sleeve_f": {
+   "p50": 21.544572203204662,
+   "p90": 23.68524505216961
+  },
+  "wb_back": {
+   "p50": 15.19859235176466,
+   "p90": 22.69933212441736
+  },
+  "wb_front": {
+   "p50": 19.272212801732795,
+   "p90": 22.739337958026727
+  }
+ },
+ "self_intersections": {
+  "pairs": 2917,
+  "by_panel": {
+   "right_sleeve_b x right_sleeve_f": 41,
+   "right_btorso x right_sleeve_b": 5,
+   "sl_right_cuff_b x sl_right_cuff_f": 18,
+   "right_btorso x right_sleeve_f": 97,
+   "right_ftorso x right_sleeve_f": 34,
+   "right_btorso x wb_back": 23,
+   "right_btorso x right_ftorso": 220,
+   "right_btorso x right_btorso": 127,
+   "right_btorso x right_hood": 20,
+   "right_ftorso x right_ftorso": 13,
+   "right_ftorso x wb_back": 43,
+   "right_ftorso x wb_front": 9,
+   "left_btorso x right_ftorso": 120,
+   "right_ftorso x right_hood": 15,
+   "skirt_back x skirt_front": 646,
+   "skirt_back x wb_back": 175,
+   "skirt_back x wb_front": 264,
+   "skirt_back x skirt_back": 107,
+   "left_btorso x skirt_back": 24,
+   "skirt_front x skirt_front": 21,
+   "skirt_front x wb_front": 22,
+   "wb_back x wb_front": 383,
+   "wb_back x wb_back": 71,
+   "wb_front x wb_front": 17,
+   "left_ftorso x wb_front": 6,
+   "left_ftorso x left_hood": 22,
+   "left_btorso x left_hood": 1,
+   "left_btorso x left_ftorso": 136,
+   "left_btorso x left_btorso": 66,
+   "left_btorso x left_sleeve_b": 24,
+   "left_btorso x left_sleeve_f": 7,
+   "left_ftorso x left_ftorso": 58,
+   "left_ftorso x left_sleeve_b": 7,
+   "left_ftorso x left_sleeve_f": 2,
+   "left_sleeve_b x left_sleeve_f": 48,
+   "left_sleeve_b x left_sleeve_b": 7,
+   "sl_left_cuff_b x sl_left_cuff_f": 17,
+   "left_sleeve_f x left_sleeve_f": 1
+  }
+ }
+}

@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><body><pre id=o>probing…</pre><script>
+const L=[];
+function tryCtx(t,opts){try{const c=document.createElement('canvas');const g=c.getContext(t,opts);
+  if(!g) return t+': null'; const d=g.getExtension('WEBGL_debug_renderer_info');
+  return t+': OK | '+(d?g.getParameter(d.UNMASKED_VENDOR_WEBGL)+' / '+g.getParameter(d.UNMASKED_RENDERER_WEBGL):'(no debug ext)')
+    +' | '+g.getParameter(g.VERSION);}catch(e){return t+': THREW '+e.message;}}
+L.push(tryCtx('webgl2',{}));L.push(tryCtx('webgl',{}));
+L.push('UA: '+navigator.userAgent);
+document.getElementById('o').textContent=L.join('\n');
+document.title='PROBE_DONE';
+</script></body>

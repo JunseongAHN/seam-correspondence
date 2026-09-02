@@ -1,0 +1,12746 @@
+{
+ "n_garments": 352,
+ "errors": 0,
+ "seed": 0,
+ "max_swaps": 600,
+ "kinds": {
+  "delete": {
+   "caught": 7306,
+   "n": 10826,
+   "rate": 0.6749,
+   "per_garment": {
+    "min": 0.0,
+    "p25": 0.5,
+    "med": 0.7059,
+    "p75": 0.7857,
+    "max": 1.0
+   }
+  },
+  "swap": {
+   "caught": 126207,
+   "n": 131430,
+   "rate": 0.9603,
+   "per_garment": {
+    "min": 0.0,
+    "p25": 0.9415,
+    "med": 0.9601,
+    "p75": 0.9684,
+    "max": 1.0
+   }
+  },
+  "flip": {
+   "caught": 10826,
+   "n": 10826,
+   "rate": 1.0,
+   "per_garment": {
+    "min": 1.0,
+    "p25": 1.0,
+    "med": 1.0,
+    "p75": 1.0,
+    "max": 1.0
+   }
+  },
+  "add": {
+   "caught": 27657,
+   "n": 30722,
+   "rate": 0.9002,
+   "per_garment": {
+    "min": 0.7333,
+    "p25": 0.8788,
+    "med": 0.9053,
+    "p75": 0.9123,
+    "max": 1.0
+   }
+  },
+  "reuse": {
+   "caught": 6754,
+   "n": 6754,
+   "rate": 1.0,
+   "per_garment": {
+    "min": 1.0,
+    "p25": 1.0,
+    "med": 1.0,
+    "p75": 1.0,
+    "max": 1.0
+   }
+  }
+ },
+ "mirror_named_single_swap": {
+  "caught": 6558,
+  "n": 6748
+ },
+ "per_garment": [
+  {
+   "id": "rand_G9ZOGMVY3A",
+   "panels": 10,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    38
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_W8ATX34VN2",
+   "panels": 14,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    52,
+    60
+   ],
+   "swap": [
+    587,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HQSQU8EISM",
+   "panels": 16,
+   "stitches": 35,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    23,
+    35
+   ],
+   "swap": [
+    571,
+    595
+   ],
+   "flip": [
+    35,
+    35
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1M2JK33RS6",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    65,
+    78
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_ALJMKS3Y28",
+   "panels": 8,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    108,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_LLX5FNZK9M",
+   "panels": 16,
+   "stitches": 47,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    39,
+    47
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    47,
+    47
+   ],
+   "add": [
+    24,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KGILMXZO62",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_H4W4DSSMT8",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    266,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_X5IFQNTAGM",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZDS58IDFQ8",
+   "panels": 12,
+   "stitches": 37,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    6
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    25,
+    37
+   ],
+   "swap": [
+    575,
+    600
+   ],
+   "flip": [
+    37,
+    37
+   ],
+   "add": [
+    112,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CLL1CX4D1F",
+   "panels": 8,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    40
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_K0MEV1US72",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_F1QCRYL0KQ",
+   "panels": 18,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    38
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_OGRBIPWYAS",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    14
+   ],
+   "swap": [
+    89,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8SZBAG6VT5",
+   "panels": 22,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    56
+   ],
+   "swap": [
+    586,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    303,
+    325
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_LARM4BWVL6",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_5LNA3DD267",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_BP0FMHPISQ",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_5LSN9RF38E",
+   "panels": 16,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    32
+   ],
+   "swap": [
+    467,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_W49R43LF03",
+   "panels": 16,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3LO1N1TSJC",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_Q4QYZ7LLSY",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XVGJ19FBZQ",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_AABLTVNKVD",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_MGCWD43503",
+   "panels": 18,
+   "stitches": 37,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    27,
+    37
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    37,
+    37
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TSIR8ASZDQ",
+   "panels": 19,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    33,
+    52
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    191,
+    210
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YIHBGFAU3G",
+   "panels": 8,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    542,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PEAX9IQARX",
+   "panels": 14,
+   "stitches": 46,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    36,
+    46
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    46,
+    46
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_5W8D2GOBW3",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    24
+   ],
+   "swap": [
+    258,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CTK2QSY7DJ",
+   "panels": 12,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    32
+   ],
+   "swap": [
+    473,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3PMR52UWHN",
+   "panels": 10,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    36
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_UY7F3I0FI7",
+   "panels": 18,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    38
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2UT239WX5N",
+   "panels": 20,
+   "stitches": 57,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    45,
+    57
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    57,
+    57
+   ],
+   "add": [
+    85,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SX6W8HM4CH",
+   "panels": 8,
+   "stitches": 17,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    9,
+    17
+   ],
+   "swap": [
+    127,
+    136
+   ],
+   "flip": [
+    17,
+    17
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DQ9N5LHWWU",
+   "panels": 14,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    40
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_JT4WETVK1B",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NJRP2DLW5B",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3SXGFM7CM0",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_EWXJOLYIJC",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_I98Z8M7QJ4",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_D4WTYT0XBE",
+   "panels": 14,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    30
+   ],
+   "swap": [
+    411,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PPV2PFREHR",
+   "panels": 18,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    48
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_R4XBJY4GFM",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    14
+   ],
+   "swap": [
+    89,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8DLUVPOI9D",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    255,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_N7YD46O3J7",
+   "panels": 10,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_K0YROUA3OG",
+   "panels": 22,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    50,
+    60
+   ],
+   "swap": [
+    586,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IKAOAUYW89",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_M1J4JIJ017",
+   "panels": 10,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    92,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ANH5I7LR7V",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2FRK437VBO",
+   "panels": 14,
+   "stitches": 46,
+   "euler": "intrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    36,
+    46
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    46,
+    46
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Y92L7L8B2Y",
+   "panels": 10,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    22
+   ],
+   "swap": [
+    217,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    108,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_N346070VNC",
+   "panels": 18,
+   "stitches": 64,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    54,
+    64
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    64,
+    64
+   ],
+   "add": [
+    141,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_0KPIEGFOIJ",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    262,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    156,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3KT4Q4TMFH",
+   "panels": 18,
+   "stitches": 54,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    44,
+    54
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    54,
+    54
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_UKP12M48AO",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_GR0Y96XSTC",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TZCQIGTBOA",
+   "panels": 18,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    52
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Z7HMB363IC",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    14,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_X88B8AAQLW",
+   "panels": 14,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    26
+   ],
+   "swap": [
+    295,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_S8X43YSDMO",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_QF4BW3XQSC",
+   "panels": 12,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    26
+   ],
+   "swap": [
+    306,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_04ANOD2PBA",
+   "panels": 8,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    477,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    119,
+    136
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PSCQZ2SHN4",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KT95A16SHZ",
+   "panels": 30,
+   "stitches": 82,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    82
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    82,
+    82
+   ],
+   "add": [
+    598,
+    630
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DT6XXWAUF3",
+   "panels": 18,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    52
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_A1R9FRW6IH",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_UZ8P9JK598",
+   "panels": 10,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    22
+   ],
+   "swap": [
+    217,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DHSYSVGCAZ",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TRCKGCRVZU",
+   "panels": 10,
+   "stitches": 19,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    7,
+    19
+   ],
+   "swap": [
+    160,
+    171
+   ],
+   "flip": [
+    19,
+    19
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2G3NXUWEZY",
+   "panels": 22,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    58
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    303,
+    325
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7UHCFD1S6Y",
+   "panels": 18,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    58
+   ],
+   "swap": [
+    587,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    354,
+    378
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NUUNO4436N",
+   "panels": 16,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    46,
+    58
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_90EXM8GJ5B",
+   "panels": 14,
+   "stitches": 50,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    50
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    50,
+    50
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9SUFVZTY0W",
+   "panels": 16,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    38,
+    48
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Y606T3QT7P",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    65,
+    78
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_5POH1MHN4D",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Y3XLPKFANH",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    37,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_MTBEP28RKI",
+   "panels": 8,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    14
+   ],
+   "swap": [
+    76,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IPUXDUR8D4",
+   "panels": 14,
+   "stitches": 50,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    50
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    50,
+    50
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3HKSI5OSB3",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    29,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_33K33OZ01S",
+   "panels": 12,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    32
+   ],
+   "swap": [
+    473,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_D9RMV2SYPC",
+   "panels": 22,
+   "stitches": 78,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    66,
+    78
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    78,
+    78
+   ],
+   "add": [
+    112,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_LGO318I5OJ",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_KN6A3O334C",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_49LBT1FE8X",
+   "panels": 6,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    22
+   ],
+   "swap": [
+    224,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CIK3XYSJPJ",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    135,
+    153
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_N5HRZ5IPTW",
+   "panels": 8,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    40
+   ],
+   "swap": [
+    587,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_C2XSY1SKHV",
+   "panels": 10,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    28
+   ],
+   "swap": [
+    355,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TV95FERTAT",
+   "panels": 16,
+   "stitches": 47,
+   "euler": "extrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    35,
+    47
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    47,
+    47
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4XCU32VYML",
+   "panels": 14,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    36
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    254,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_N1ZU84KUG4",
+   "panels": 18,
+   "stitches": 37,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    25,
+    37
+   ],
+   "swap": [
+    572,
+    600
+   ],
+   "flip": [
+    37,
+    37
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DSWI854YJ0",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YPZ62DOWYT",
+   "panels": 12,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    28
+   ],
+   "swap": [
+    359,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_MPA93NHOR3",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    14
+   ],
+   "swap": [
+    89,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8CI4BKALGP",
+   "panels": 12,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    34
+   ],
+   "swap": [
+    536,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZQNFVIHN18",
+   "panels": 6,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PFDW1N82B4",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_N17U4EJAG2",
+   "panels": 16,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    36
+   ],
+   "swap": [
+    572,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_OOU0PY537C",
+   "panels": 16,
+   "stitches": 50,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    50
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    50,
+    50
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_BZ4PA90D3P",
+   "panels": 8,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    8,
+    16
+   ],
+   "swap": [
+    111,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IL01DB7P03",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    27,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3IE1SL43UW",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_P46OB055YT",
+   "panels": 14,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    30
+   ],
+   "swap": [
+    411,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XSRWDTQLQI",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_G9PRHLSBWS",
+   "panels": 12,
+   "stitches": 25,
+   "euler": "extrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    13,
+    25
+   ],
+   "swap": [
+    285,
+    300
+   ],
+   "flip": [
+    25,
+    25
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_D5KX7TPSIU",
+   "panels": 14,
+   "stitches": 57,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    43,
+    57
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    57,
+    57
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_O98WOBOZDN",
+   "panels": 13,
+   "stitches": 29,
+   "euler": "extrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    29
+   ],
+   "swap": [
+    388,
+    406
+   ],
+   "flip": [
+    29,
+    29
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9XBR2LLQ2S",
+   "panels": 14,
+   "stitches": 43,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    35,
+    43
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    43,
+    43
+   ],
+   "add": [
+    67,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_C211LQ42IT",
+   "panels": 22,
+   "stitches": 73,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    6
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    65,
+    73
+   ],
+   "swap": [
+    589,
+    600
+   ],
+   "flip": [
+    73,
+    73
+   ],
+   "add": [
+    112,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7JW3QMSKDB",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7ST06O54OC",
+   "panels": 7,
+   "stitches": 13,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    13
+   ],
+   "swap": [
+    71,
+    78
+   ],
+   "flip": [
+    13,
+    13
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7PIGHYNRHV",
+   "panels": 10,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    36
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1DGYFK46D0",
+   "panels": 20,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    40
+   ],
+   "swap": [
+    570,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PTQIAC6C2O",
+   "panels": 14,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    40
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RUVV2T25Q3",
+   "panels": 7,
+   "stitches": 13,
+   "euler": "intrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    13
+   ],
+   "swap": [
+    71,
+    78
+   ],
+   "flip": [
+    13,
+    13
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_AMNKGDMK91",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_K0JTWL8WBN",
+   "panels": 16,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    32
+   ],
+   "swap": [
+    467,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2O342R1R14",
+   "panels": 10,
+   "stitches": 20,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    20
+   ],
+   "swap": [
+    176,
+    190
+   ],
+   "flip": [
+    20,
+    20
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3F83YWFDRI",
+   "panels": 14,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    46,
+    58
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SQUP25CM4W",
+   "panels": 18,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    56
+   ],
+   "swap": [
+    586,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    405,
+    435
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_W8681A4EWD",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_53QD6WH0ST",
+   "panels": 12,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    14,
+    22
+   ],
+   "swap": [
+    210,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_6130G2A3QF",
+   "panels": 20,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    42
+   ],
+   "swap": [
+    573,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1IPAPWY5UN",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_314WIE6LW0",
+   "panels": 12,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    32
+   ],
+   "swap": [
+    473,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TNBF2AFSR9",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_MPGK783J8Z",
+   "panels": 8,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    40
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SWJZSYFWFY",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_GFQ0STYHXQ",
+   "panels": 14,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    56
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    24,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZPLK3P4SKS",
+   "panels": 8,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    14
+   ],
+   "swap": [
+    83,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_M5AGCN79YC",
+   "panels": 8,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    14
+   ],
+   "swap": [
+    83,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_BCI7Y65BH0",
+   "panels": 10,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_M26LOOZ5XO",
+   "panels": 8,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    477,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    170,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9MLVNASM0F",
+   "panels": 10,
+   "stitches": 18,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    14,
+    18
+   ],
+   "swap": [
+    133,
+    153
+   ],
+   "flip": [
+    18,
+    18
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8PETK28LAN",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    209,
+    231
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SRM8RO260U",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    56,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ORKKZDDR3W",
+   "panels": 14,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    38
+   ],
+   "swap": [
+    574,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HPYEW41GIE",
+   "panels": 10,
+   "stitches": 37,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    29,
+    37
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    37,
+    37
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_OCKB0V1X2Y",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_BC8PYBM7KO",
+   "panels": 24,
+   "stitches": 59,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    47,
+    59
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    59,
+    59
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IUODWJQ55F",
+   "panels": 6,
+   "stitches": 10,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    10
+   ],
+   "swap": [
+    35,
+    45
+   ],
+   "flip": [
+    10,
+    10
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KQTKIXUCPQ",
+   "panels": 20,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    42
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RZ7CSH4BP7",
+   "panels": 18,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    40
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    256,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_R5WUYWCPBX",
+   "panels": 12,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    28
+   ],
+   "swap": [
+    353,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TO41L69M7H",
+   "panels": 10,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    106,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XLDXJC96RF",
+   "panels": 8,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    22
+   ],
+   "swap": [
+    219,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_F0EEVPENK4",
+   "panels": 22,
+   "stitches": 62,
+   "euler": "extrinsic_xyz",
+   "repaired": 7,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    62
+   ],
+   "swap": [
+    590,
+    600
+   ],
+   "flip": [
+    62,
+    62
+   ],
+   "add": [
+    174,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_36BCSWBUBV",
+   "panels": 10,
+   "stitches": 35,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    25,
+    35
+   ],
+   "swap": [
+    577,
+    595
+   ],
+   "flip": [
+    35,
+    35
+   ],
+   "add": [
+    73,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DGPO0097ND",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YWS5X9EY9V",
+   "panels": 8,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    22
+   ],
+   "swap": [
+    219,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4HA65J35I0",
+   "panels": 12,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    24
+   ],
+   "swap": [
+    257,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KGQ7W8HHZP",
+   "panels": 20,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    46,
+    56
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_OO8AS30FLR",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_QO63X4HNS7",
+   "panels": 6,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    16
+   ],
+   "swap": [
+    116,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DY4T6J94X2",
+   "panels": 6,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    119,
+    136
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7TYHTZRDKW",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9ZMN81TTFW",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_0O9URARTRE",
+   "panels": 20,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    574,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_V0WMU4XVIF",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    65,
+    78
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_B3S5T029OW",
+   "panels": 10,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    36
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4IV046C01B",
+   "panels": 8,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    30
+   ],
+   "swap": [
+    416,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TSRX0JYPFD",
+   "panels": 22,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    60
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8XNSZGK39J",
+   "panels": 16,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    534,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_FMLXZV6K9N",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_XN21WM295Z",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    14
+   ],
+   "swap": [
+    89,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_6XEAYD7M11",
+   "panels": 8,
+   "stitches": 20,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    20
+   ],
+   "swap": [
+    183,
+    190
+   ],
+   "flip": [
+    20,
+    20
+   ],
+   "add": [
+    135,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YWZN7N88H5",
+   "panels": 12,
+   "stitches": 25,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    17,
+    25
+   ],
+   "swap": [
+    280,
+    300
+   ],
+   "flip": [
+    25,
+    25
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HZA6NDNT4A",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    56,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2FPTWA78B3",
+   "panels": 7,
+   "stitches": 7,
+   "euler": "extrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    7,
+    7
+   ],
+   "swap": [
+    21,
+    21
+   ],
+   "flip": [
+    7,
+    7
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    14,
+    14
+   ]
+  },
+  {
+   "id": "rand_ZK2S3N05Z1",
+   "panels": 14,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    30
+   ],
+   "swap": [
+    411,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_X58XL2FO15",
+   "panels": 28,
+   "stitches": 76,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    66,
+    76
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    76,
+    76
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_5VQB41E4W8",
+   "panels": 26,
+   "stitches": 69,
+   "euler": "intrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    53,
+    69
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    69,
+    69
+   ],
+   "add": [
+    108,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TL6OSG9ZXU",
+   "panels": 12,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    34
+   ],
+   "swap": [
+    540,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8UD2D9WFQQ",
+   "panels": 8,
+   "stitches": 8,
+   "euler": "extrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    8,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_1SE6KLSL01",
+   "panels": 22,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    60
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_O5787RCHEQ",
+   "panels": 18,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    52
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_QSQOMAHSTA",
+   "panels": 31,
+   "stitches": 63,
+   "euler": "extrinsic_xyz",
+   "repaired": 8,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    63
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    63,
+    63
+   ],
+   "add": [
+    197,
+    210
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_MHT8CYTJUP",
+   "panels": 8,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    40
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PEBH8PY9IJ",
+   "panels": 12,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    32
+   ],
+   "swap": [
+    480,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    172,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SSJIJMSMY3",
+   "panels": 18,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    60
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    174,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2V6PI0FOKB",
+   "panels": 18,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    38
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_14S3RGMSRG",
+   "panels": 24,
+   "stitches": 74,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    64,
+    74
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    74,
+    74
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4VC2YTSS7G",
+   "panels": 18,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    58
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_QUG1QX0WXB",
+   "panels": 20,
+   "stitches": 54,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    54
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    54,
+    54
+   ],
+   "add": [
+    85,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7QUPVGLVPI",
+   "panels": 12,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    22
+   ],
+   "swap": [
+    206,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PIW7KVSQMB",
+   "panels": 17,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    15,
+    32
+   ],
+   "swap": [
+    479,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    121,
+    136
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_O9LN5X325O",
+   "panels": 14,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    36
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    254,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4LAR840DIU",
+   "panels": 18,
+   "stitches": 47,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    35,
+    47
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    47,
+    47
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YJIMMLVETB",
+   "panels": 10,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    40
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3I08EKHVFP",
+   "panels": 12,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    48
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_FKYMC7JY0P",
+   "panels": 14,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    32
+   ],
+   "swap": [
+    472,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4IJPPX3FPH",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1H4FZDX1GV",
+   "panels": 6,
+   "stitches": 26,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    26
+   ],
+   "swap": [
+    311,
+    325
+   ],
+   "flip": [
+    26,
+    26
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PI1MMT5YWK",
+   "panels": 10,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    22
+   ],
+   "swap": [
+    215,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_0V45X4ELM8",
+   "panels": 10,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    32
+   ],
+   "swap": [
+    478,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_80WLCY6UC1",
+   "panels": 10,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    474,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7M5JV54HV1",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_UHBKG5D61O",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_4UPXJZYWQ3",
+   "panels": 16,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    530,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_K3GF9VMGTO",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8KSPZBRHU8",
+   "panels": 20,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    42
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    409,
+    435
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_UUC6NDEA84",
+   "panels": 6,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    28
+   ],
+   "swap": [
+    364,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2EJ1B8VRYH",
+   "panels": 21,
+   "stitches": 59,
+   "euler": "intrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    44,
+    59
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    59,
+    59
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SR23T5TTIW",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_0XE7PZWP00",
+   "panels": 10,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    36
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    60,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_MWBIJJVQ05",
+   "panels": 8,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    30
+   ],
+   "swap": [
+    416,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HYKYHF8PEU",
+   "panels": 24,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    60
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    328,
+    351
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Q78NIBNAHY",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_3TJXPEM7V2",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_AMDY1MK6P4",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    266,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2OPP4EQLWG",
+   "panels": 14,
+   "stitches": 31,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    21,
+    31
+   ],
+   "swap": [
+    441,
+    465
+   ],
+   "flip": [
+    31,
+    31
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8XXMSSIB7Q",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_2S62Y2DTMT",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RE0YN8HUGI",
+   "panels": 8,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    542,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CIFM3PUGDK",
+   "panels": 2,
+   "stitches": 2,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    2
+   ],
+   "swap": [
+    0,
+    1
+   ],
+   "flip": [
+    2,
+    2
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    4,
+    4
+   ]
+  },
+  {
+   "id": "rand_EN1BZPDYFA",
+   "panels": 19,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 5,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    17,
+    38
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    156,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IBRIITJ54O",
+   "panels": 18,
+   "stitches": 53,
+   "euler": "extrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    37,
+    53
+   ],
+   "swap": [
+    592,
+    600
+   ],
+   "flip": [
+    53,
+    53
+   ],
+   "add": [
+    174,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7E15O3SB5F",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_XL6E9AVJEI",
+   "panels": 18,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    56
+   ],
+   "swap": [
+    589,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    405,
+    435
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_L9H8ZSEFKJ",
+   "panels": 10,
+   "stitches": 18,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    14,
+    18
+   ],
+   "swap": [
+    133,
+    153
+   ],
+   "flip": [
+    18,
+    18
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_JLALI9PQSB",
+   "panels": 14,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    48
+   ],
+   "swap": [
+    587,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    189,
+    210
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1KMN65OI4O",
+   "panels": 16,
+   "stitches": 31,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    19,
+    31
+   ],
+   "swap": [
+    440,
+    465
+   ],
+   "flip": [
+    31,
+    31
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_P4BUHMBPRO",
+   "panels": 10,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    48
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    24,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_3T2IO849QH",
+   "panels": 10,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    38
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YLFH5J4WH5",
+   "panels": 14,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XPD43ODKHA",
+   "panels": 10,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    22,
+    32
+   ],
+   "swap": [
+    478,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_87DZXC0RPK",
+   "panels": 20,
+   "stitches": 59,
+   "euler": "extrinsic_xyz",
+   "repaired": 5,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    45,
+    59
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    59,
+    59
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_YPE48FFAUQ",
+   "panels": 8,
+   "stitches": 18,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    8,
+    18
+   ],
+   "swap": [
+    142,
+    153
+   ],
+   "flip": [
+    18,
+    18
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_F234OK9CDN",
+   "panels": 16,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    532,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Y6B45SQ026",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    4,
+    14
+   ],
+   "swap": [
+    88,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_JR424WP53D",
+   "panels": 6,
+   "stitches": 27,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    21,
+    27
+   ],
+   "swap": [
+    337,
+    351
+   ],
+   "flip": [
+    27,
+    27
+   ],
+   "add": [
+    67,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NYOHNMX16D",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_6VFYUI3EF9",
+   "panels": 20,
+   "stitches": 45,
+   "euler": "extrinsic_xyz",
+   "repaired": 5,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    33,
+    45
+   ],
+   "swap": [
+    576,
+    600
+   ],
+   "flip": [
+    45,
+    45
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XWKNLIIEFS",
+   "panels": 16,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    42
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SI1OUCEK3D",
+   "panels": 12,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    38
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    11,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8CM6BN2FQK",
+   "panels": 10,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_WL5Q8YBDXQ",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    24
+   ],
+   "swap": [
+    263,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2CGKDFGAON",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SM87ZO7LRL",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_6CR3Z6G0YX",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    104,
+    120
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_6ICXDB68FO",
+   "panels": 14,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    572,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_E8PFU4F3YJ",
+   "panels": 18,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    52
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_MBHYH9OBU0",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZQFHURJ27G",
+   "panels": 16,
+   "stitches": 50,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    50
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    50,
+    50
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_4J6SQ3YX1G",
+   "panels": 16,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    38,
+    48
+   ],
+   "swap": [
+    574,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_P56F8JWP4S",
+   "panels": 8,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    22
+   ],
+   "swap": [
+    219,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IJBCV1642B",
+   "panels": 16,
+   "stitches": 60,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    50,
+    60
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    60,
+    60
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_S5F51J8RI9",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_757UA22T1I",
+   "panels": 10,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    42
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    154,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_0IQLMC4K63",
+   "panels": 20,
+   "stitches": 57,
+   "euler": "intrinsic_xyz",
+   "repaired": 3,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    43,
+    57
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    57,
+    57
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_JSNLZVWQ1J",
+   "panels": 18,
+   "stitches": 35,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    23,
+    35
+   ],
+   "swap": [
+    564,
+    595
+   ],
+   "flip": [
+    35,
+    35
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ST2M11K84D",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    252,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HBH110KNBV",
+   "panels": 18,
+   "stitches": 37,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    29,
+    37
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    37,
+    37
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NY8PDT0OHH",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_LIDJZALFNJ",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    119,
+    136
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CVWXK9BGAB",
+   "panels": 16,
+   "stitches": 33,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    25,
+    33
+   ],
+   "swap": [
+    498,
+    528
+   ],
+   "flip": [
+    33,
+    33
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RGH9DN47T5",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_EZVZ6T5SCU",
+   "panels": 18,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    38,
+    48
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_GDJTGIR2WL",
+   "panels": 20,
+   "stitches": 39,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    27,
+    39
+   ],
+   "swap": [
+    572,
+    600
+   ],
+   "flip": [
+    39,
+    39
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RW2J0R0ZZ6",
+   "panels": 10,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    474,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_AARLYLBUTE",
+   "panels": 19,
+   "stitches": 53,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    36,
+    53
+   ],
+   "swap": [
+    589,
+    600
+   ],
+   "flip": [
+    53,
+    53
+   ],
+   "add": [
+    154,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_68BJYXWFMS",
+   "panels": 10,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    24
+   ],
+   "swap": [
+    268,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    252,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NMFQ4H1N0P",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_T8QZWF0YML",
+   "panels": 8,
+   "stitches": 20,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    20
+   ],
+   "swap": [
+    184,
+    190
+   ],
+   "flip": [
+    20,
+    20
+   ],
+   "add": [
+    170,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_0GB8PUBD0H",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    29,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_J2NXN3J2NZ",
+   "panels": 14,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    40
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    94,
+    105
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_VG6IH2V8NI",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_305NUK0EVL",
+   "panels": 8,
+   "stitches": 20,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    20
+   ],
+   "swap": [
+    184,
+    190
+   ],
+   "flip": [
+    20,
+    20
+   ],
+   "add": [
+    152,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DYXSF1X4ZY",
+   "panels": 11,
+   "stitches": 21,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    21
+   ],
+   "swap": [
+    199,
+    210
+   ],
+   "flip": [
+    21,
+    21
+   ],
+   "add": [
+    46,
+    55
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_VCMI8E279N",
+   "panels": 12,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    22
+   ],
+   "swap": [
+    217,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    137,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1SR34YTITJ",
+   "panels": 12,
+   "stitches": 23,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    11,
+    23
+   ],
+   "swap": [
+    237,
+    253
+   ],
+   "flip": [
+    23,
+    23
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_XJI565WY3Y",
+   "panels": 12,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    42
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    108,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_BMMOAPAUEN",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_5EUREMVS4V",
+   "panels": 12,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    32
+   ],
+   "swap": [
+    480,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    172,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9UW8INWFG0",
+   "panels": 16,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    40
+   ],
+   "swap": [
+    575,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_WE957BQUIP",
+   "panels": 4,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    14
+   ],
+   "swap": [
+    89,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_K85JHWIV6Z",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    29,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ERB6O9AEQF",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    16
+   ],
+   "swap": [
+    115,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PO1GEEXKSR",
+   "panels": 8,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    8,
+    16
+   ],
+   "swap": [
+    111,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_BZWERVKB0S",
+   "panels": 8,
+   "stitches": 13,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    5,
+    13
+   ],
+   "swap": [
+    72,
+    78
+   ],
+   "flip": [
+    13,
+    13
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SJGJP2EGEH",
+   "panels": 30,
+   "stitches": 72,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    72
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    72,
+    72
+   ],
+   "add": [
+    468,
+    496
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_F3FLO44FAO",
+   "panels": 16,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    32
+   ],
+   "swap": [
+    467,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ORT8NAN5IB",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    56,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_QRCFCEH8AY",
+   "panels": 16,
+   "stitches": 45,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    31,
+    45
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    45,
+    45
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_Q7WUHP7FLU",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_59GP8HRFAY",
+   "panels": 8,
+   "stitches": 27,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    19,
+    27
+   ],
+   "swap": [
+    337,
+    351
+   ],
+   "flip": [
+    27,
+    27
+   ],
+   "add": [
+    154,
+    171
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_UC4TPX03NN",
+   "panels": 16,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    44
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZMBKB5WTDB",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    22,
+    28
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_GCLS5PYUQZ",
+   "panels": 6,
+   "stitches": 27,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    21,
+    27
+   ],
+   "swap": [
+    337,
+    351
+   ],
+   "flip": [
+    27,
+    27
+   ],
+   "add": [
+    31,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_VRCT0KNMLE",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HHXGZ2RETZ",
+   "panels": 16,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    34
+   ],
+   "swap": [
+    532,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_RJ2TSFV4HS",
+   "panels": 8,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    30
+   ],
+   "swap": [
+    416,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_33SS1J68DG",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_04IMMO8WDD",
+   "panels": 10,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    24
+   ],
+   "swap": [
+    268,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    252,
+    276
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_OZGAJZ2SRB",
+   "panels": 20,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    40
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_7W3LZED1C2",
+   "panels": 16,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    40
+   ],
+   "swap": [
+    585,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    352,
+    378
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TMBCDOCSYR",
+   "panels": 14,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    576,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DWB0R71UDY",
+   "panels": 20,
+   "stitches": 55,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    37,
+    55
+   ],
+   "swap": [
+    587,
+    600
+   ],
+   "flip": [
+    55,
+    55
+   ],
+   "add": [
+    137,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_6DKNGPSX1B",
+   "panels": 6,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    16
+   ],
+   "swap": [
+    114,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_9T0KBU38O6",
+   "panels": 14,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    30
+   ],
+   "swap": [
+    411,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_92VAONKM53",
+   "panels": 6,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    22
+   ],
+   "swap": [
+    224,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    172,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_R0G4YR67UM",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    35,
+    45
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_IQG7GB8MCL",
+   "panels": 16,
+   "stitches": 47,
+   "euler": "extrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    35,
+    47
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    47,
+    47
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_G1F4MUBHRE",
+   "panels": 8,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    32
+   ],
+   "swap": [
+    478,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    24,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZBIGVLPRC4",
+   "panels": 8,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    32
+   ],
+   "swap": [
+    477,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    106,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SJWELLXSHB",
+   "panels": 14,
+   "stitches": 38,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    16,
+    38
+   ],
+   "swap": [
+    568,
+    600
+   ],
+   "flip": [
+    38,
+    38
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NVLZRG0MT8",
+   "panels": 8,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    477,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_WR2637ALGV",
+   "panels": 14,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    574,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1C45W2KBUZ",
+   "panels": 10,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    34
+   ],
+   "swap": [
+    541,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_GYVDQ9Q3WN",
+   "panels": 4,
+   "stitches": 6,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    6
+   ],
+   "swap": [
+    10,
+    15
+   ],
+   "flip": [
+    6,
+    6
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    12,
+    12
+   ]
+  },
+  {
+   "id": "rand_TPSN0WB217",
+   "panels": 18,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    48
+   ],
+   "swap": [
+    580,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    110,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZBFDITMDQ3",
+   "panels": 14,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    32,
+    36
+   ],
+   "swap": [
+    570,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HNYTM7V9W1",
+   "panels": 10,
+   "stitches": 21,
+   "euler": "intrinsic_xyz",
+   "repaired": 1,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    13,
+    21
+   ],
+   "swap": [
+    195,
+    210
+   ],
+   "flip": [
+    21,
+    21
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_S0CEA79YG6",
+   "panels": 14,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    36,
+    42
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TYFGAHJMTS",
+   "panels": 26,
+   "stitches": 63,
+   "euler": "extrinsic_xyz",
+   "repaired": 4,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "1.0"
+   ],
+   "manifold": true,
+   "delete": [
+    53,
+    63
+   ],
+   "swap": [
+    581,
+    600
+   ],
+   "flip": [
+    63,
+    63
+   ],
+   "add": [
+    45,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1UUYHHN5U4",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_6OFCDCD1N4",
+   "panels": 6,
+   "stitches": 32,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    26,
+    32
+   ],
+   "swap": [
+    476,
+    496
+   ],
+   "flip": [
+    32,
+    32
+   ],
+   "add": [
+    77,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ILH60TSI2P",
+   "panels": 10,
+   "stitches": 22,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    22
+   ],
+   "swap": [
+    217,
+    231
+   ],
+   "flip": [
+    22,
+    22
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_2GPE6KEZUG",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ALN8X0G6XN",
+   "panels": 16,
+   "stitches": 44,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    44
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    44,
+    44
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_TP5U84CWHY",
+   "panels": 14,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    20,
+    30
+   ],
+   "swap": [
+    411,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_6BUD2SSB87",
+   "panels": 6,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    15,
+    15
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_IMCIL33SJE",
+   "panels": 6,
+   "stitches": 12,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    12
+   ],
+   "swap": [
+    60,
+    66
+   ],
+   "flip": [
+    12,
+    12
+   ],
+   "add": [
+    79,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_M7Y15IKVMU",
+   "panels": 8,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    10,
+    16
+   ],
+   "swap": [
+    109,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    170,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KIPTKV2CLQ",
+   "panels": 8,
+   "stitches": 20,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    20
+   ],
+   "swap": [
+    184,
+    190
+   ],
+   "flip": [
+    20,
+    20
+   ],
+   "add": [
+    170,
+    190
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_NN3AYBODYT",
+   "panels": 8,
+   "stitches": 34,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    24,
+    34
+   ],
+   "swap": [
+    542,
+    561
+   ],
+   "flip": [
+    34,
+    34
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_PGY6QUUHWA",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    264,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    56,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_W3LDKFPMU0",
+   "panels": 12,
+   "stitches": 28,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    28
+   ],
+   "swap": [
+    368,
+    378
+   ],
+   "flip": [
+    28,
+    28
+   ],
+   "add": [
+    350,
+    378
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_00YONAPXZE",
+   "panels": 18,
+   "stitches": 54,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    44,
+    54
+   ],
+   "swap": [
+    584,
+    600
+   ],
+   "flip": [
+    54,
+    54
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1IUGN6FAZ3",
+   "panels": 12,
+   "stitches": 50,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    50
+   ],
+   "swap": [
+    586,
+    600
+   ],
+   "flip": [
+    50,
+    50
+   ],
+   "add": [
+    69,
+    78
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_KV2GQFY8K5",
+   "panels": 12,
+   "stitches": 30,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    18,
+    30
+   ],
+   "swap": [
+    413,
+    435
+   ],
+   "flip": [
+    30,
+    30
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_DHYRGZ5XQB",
+   "panels": 8,
+   "stitches": 24,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    3
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    24
+   ],
+   "swap": [
+    266,
+    276
+   ],
+   "flip": [
+    24,
+    24
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_CY67E40N5L",
+   "panels": 6,
+   "stitches": 10,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    10
+   ],
+   "swap": [
+    35,
+    45
+   ],
+   "flip": [
+    10,
+    10
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_JLAJEHZC1L",
+   "panels": 28,
+   "stitches": 58,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    48,
+    58
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    58,
+    58
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_1YOLRT1MYV",
+   "panels": 18,
+   "stitches": 40,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    40
+   ],
+   "swap": [
+    579,
+    600
+   ],
+   "flip": [
+    40,
+    40
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HK65OS80J3",
+   "panels": 2,
+   "stitches": 8,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    0,
+    8
+   ],
+   "swap": [
+    28,
+    28
+   ],
+   "flip": [
+    8,
+    8
+   ],
+   "add": [
+    44,
+    55
+   ],
+   "reuse": [
+    16,
+    16
+   ]
+  },
+  {
+   "id": "rand_7QI5T2VU4S",
+   "panels": 2,
+   "stitches": 2,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    2
+   ],
+   "swap": [
+    0,
+    1
+   ],
+   "flip": [
+    2,
+    2
+   ],
+   "add": [
+    16,
+    21
+   ],
+   "reuse": [
+    4,
+    4
+   ]
+  },
+  {
+   "id": "rand_N2MGLES1SP",
+   "panels": 8,
+   "stitches": 18,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    8,
+    18
+   ],
+   "swap": [
+    142,
+    153
+   ],
+   "flip": [
+    18,
+    18
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_QRA1LZZOYP",
+   "panels": 8,
+   "stitches": 13,
+   "euler": "extrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    5,
+    13
+   ],
+   "swap": [
+    72,
+    78
+   ],
+   "flip": [
+    13,
+    13
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_37I2VB79C3",
+   "panels": 4,
+   "stitches": 16,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    12,
+    16
+   ],
+   "swap": [
+    112,
+    120
+   ],
+   "flip": [
+    16,
+    16
+   ],
+   "add": [
+    29,
+    36
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_USBB4JPPH2",
+   "panels": 10,
+   "stitches": 19,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    7,
+    19
+   ],
+   "swap": [
+    160,
+    171
+   ],
+   "flip": [
+    19,
+    19
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_53VIR9DPAS",
+   "panels": 8,
+   "stitches": 14,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    6,
+    14
+   ],
+   "swap": [
+    83,
+    91
+   ],
+   "flip": [
+    14,
+    14
+   ],
+   "add": [
+    58,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_0MB6TJ5KYI",
+   "panels": 18,
+   "stitches": 56,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    46,
+    56
+   ],
+   "swap": [
+    583,
+    600
+   ],
+   "flip": [
+    56,
+    56
+   ],
+   "add": [
+    28,
+    28
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_GXVI25VPP5",
+   "panels": 14,
+   "stitches": 52,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    42,
+    52
+   ],
+   "swap": [
+    588,
+    600
+   ],
+   "flip": [
+    52,
+    52
+   ],
+   "add": [
+    108,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_SQQNFVBK3L",
+   "panels": 16,
+   "stitches": 35,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    23,
+    35
+   ],
+   "swap": [
+    571,
+    595
+   ],
+   "flip": [
+    35,
+    35
+   ],
+   "add": [
+    81,
+    91
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_HM54VGNHWN",
+   "panels": 14,
+   "stitches": 45,
+   "euler": "extrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    33,
+    45
+   ],
+   "swap": [
+    578,
+    600
+   ],
+   "flip": [
+    45,
+    45
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_ZJ2ON0T9A4",
+   "panels": 10,
+   "stitches": 36,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    30,
+    36
+   ],
+   "swap": [
+    576,
+    600
+   ],
+   "flip": [
+    36,
+    36
+   ],
+   "add": [
+    106,
+    120
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_07EKIQJMNA",
+   "panels": 16,
+   "stitches": 46,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    34,
+    46
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    46,
+    46
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_8OBB8DISVB",
+   "panels": 2,
+   "stitches": 2,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    2
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    2,
+    2
+   ],
+   "swap": [
+    0,
+    1
+   ],
+   "flip": [
+    2,
+    2
+   ],
+   "add": [
+    6,
+    6
+   ],
+   "reuse": [
+    4,
+    4
+   ]
+  },
+  {
+   "id": "rand_0LPITGY2ZB",
+   "panels": 12,
+   "stitches": 48,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    5
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    40,
+    48
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    48,
+    48
+   ],
+   "add": [
+    62,
+    66
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_UFT20FQSC0",
+   "panels": 18,
+   "stitches": 39,
+   "euler": "intrinsic_xyz",
+   "repaired": 2,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    27,
+    39
+   ],
+   "swap": [
+    577,
+    600
+   ],
+   "flip": [
+    39,
+    39
+   ],
+   "add": [
+    41,
+    45
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  },
+  {
+   "id": "rand_W1VIG7SRXM",
+   "panels": 10,
+   "stitches": 42,
+   "euler": "intrinsic_xyz",
+   "repaired": 0,
+   "comp": 1,
+   "loops": [
+    4
+   ],
+   "orientable": true,
+   "genus": [
+    "0.0"
+   ],
+   "manifold": true,
+   "delete": [
+    28,
+    42
+   ],
+   "swap": [
+    582,
+    600
+   ],
+   "flip": [
+    42,
+    42
+   ],
+   "add": [
+    139,
+    153
+   ],
+   "reuse": [
+    20,
+    20
+   ]
+  }
+ ]
+}

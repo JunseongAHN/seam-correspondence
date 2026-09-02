@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>noise-inject — 패널 표면 (vtk.js)</title>
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink2:#52514e; --ink3:#898781;
+  --hair:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#eb6834;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark; --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+  --ink3:#898781; --hair:rgba(255,255,255,.10); --s1:#3987e5; --s2:#d95926;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:1.55}
+.mono{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1400px;margin:0 auto;padding:32px 22px 60px;display:flex;flex-direction:column;gap:18px}
+.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:0 0 7px}
+h1{margin:0;font-size:clamp(21px,3vw,28px);font-weight:600;letter-spacing:-.02em}
+.lede{margin:10px 0 0;color:var(--ink2);max-width:78ch}
+.prov{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--hair);
+  display:flex;flex-wrap:wrap;gap:5px 20px;font-size:12px;color:var(--ink3)}
+.prov b{color:var(--ink2);font-weight:500}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:18px}
+h2{font-size:13px;font-weight:600;letter-spacing:.04em;margin:0 0 4px}
+.bar{display:flex;flex-wrap:wrap;gap:13px 22px;align-items:center;margin-bottom:15px}
+.grp{display:flex;align-items:center;gap:9px}
+label{font-size:11px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink3)}
+input[type=range]{accent-color:var(--s1);width:160px}
+.val{font-family:"IBM Plex Mono",Consolas,monospace;font-size:17px;font-weight:600;min-width:84px}
+.tog{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);cursor:pointer}
+.tog input{accent-color:var(--s1);width:15px;height:15px}
+button{font:inherit;font-size:12.5px;padding:6px 12px;border:1px solid var(--hair);
+  border-radius:6px;background:var(--surface);color:var(--ink2);cursor:pointer}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.trio{grid-template-columns:1fr}}
+.cell{display:flex;flex-direction:column;gap:8px}
+.cell .hd{display:flex;align-items:baseline;gap:8px}
+.cell .no{font-family:"IBM Plex Mono",Consolas,monospace;font-size:11px;color:#fff;
+  background:var(--ink3);border-radius:4px;padding:1px 6px;flex:none}
+.cell .ti{font-size:12.5px;font-weight:600}
+.cell .de{font-size:11.5px;color:var(--ink3);min-height:3em;margin:0}
+.stage{position:relative;width:100%;aspect-ratio:3/4;background:#16161a;border-radius:8px;
+  overflow:hidden;cursor:grab;touch-action:none}
+.stage canvas{display:block;outline:none}
+.readout{margin-top:13px;font-family:"IBM Plex Mono",Consolas,monospace;font-size:12.5px;
+  color:var(--ink2);font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:16px;height:3px;border-radius:2px;flex:none}
+.hint{font-size:11.5px;color:var(--ink3);margin-top:10px}
+.notes{font-size:12.5px;color:var(--ink2);display:flex;flex-direction:column;gap:8px;max-width:84ch}
+.tag{display:inline-block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;border:1px solid var(--hair);color:var(--ink3)}
+#err{display:none;background:#fdecec;border:1px solid #f0b4b4;color:#8a1f1f;
+  border-radius:8px;padding:14px 16px;font-size:13px;white-space:pre-wrap}
+#busy{font-size:12px;color:var(--ink3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">GT · 백색 오차 · 평활 — 같은 RMS</p>
+  <h1>패널 표면에 주입한 오차 — 크기는 같고 모양만 다르다</h1>
+  <p class="lede">패널 <b>표면 메시</b>에 점별 독립 <span class="mono">N(0, σ²I)</span>를 준다.
+    ②는 그대로, ③은 <b>같은 난수</b>를 그 패널의 메시 그래프 위에서 이웃 평균으로 거른 뒤
+    점별 변위 크기의 평균을 백색과 같게 되돌린 것이다.
+    평활은 좌표가 아니라 <b>변위에만</b> 걸리므로 σ=0이면 아무리 평활해도 GT와 정확히 같다.</p>
+  <div class="prov" id="prov"><span id="busy">데이터 읽는 중…</span></div>
+</header>
+
+<div id="err"></div>
+
+<section class="panel">
+  <div class="bar">
+    <div class="grp"><label for="sig">σ</label>
+      <input id="sig" type="range" min="0" max="30" step="0.5" value="10">
+      <span class="val" id="sigv">10.0 mm</span></div>
+    <div class="grp"><label for="it">평활 반복</label>
+      <input id="it" type="range" min="0" max="60" step="1" value="12">
+      <span class="val" id="itv" style="font-size:14px">12</span></div>
+    <label class="tog"><input type="checkbox" id="back"> 뒤 패널</label>
+    <label class="tog"><input type="checkbox" id="gt" checked> GT 윤곽 겹쳐 보기</label>
+    <label class="tog"><input type="checkbox" id="wire"> 와이어프레임</label>
+    <button id="reset">시점 초기화</button>
+  </div>
+  <div class="trio">
+    <div class="cell"><div class="hd"><span class="no">1</span><span class="ti">GT</span></div>
+      <p class="de">측정된 드레이프 그대로.</p>
+      <div class="stage" id="v0"></div></div>
+    <div class="cell"><div class="hd"><span class="no">2</span><span class="ti">백색 오차</span></div>
+      <p class="de">점마다 독립 <span class="mono">N(0, σ²I)</span>. 최악의 형태.</p>
+      <div class="stage" id="v1"></div></div>
+    <div class="cell"><div class="hd"><span class="no">3</span><span class="ti">평활 · 같은 RMS</span></div>
+      <p class="de">같은 난수를 메시 그래프 위에서 거르고 크기를 되돌렸다.</p>
+      <div class="stage" id="v2"></div></div>
+  </div>
+  <div class="readout" id="ro"></div>
+  <div class="legend">
+    <span><i class="swatch" style="background:#8d8b82"></i>GT 윤곽</span>
+    <span><i class="swatch" style="background:#3987e5"></i>앞 패널 (z &gt; 0)</span>
+    <span><i class="swatch" style="background:#d95926"></i>뒤 패널 (z &lt; 0)</span>
+  </div>
+  <p class="hint">아무 칸이나 드래그하면 세 칸이 같이 돈다 (카메라 하나를 공유한다) · 휠 = 확대 · 우클릭 드래그 = 이동 · 키 b g w r</p>
+</section>
+
+<section class="panel">
+  <h2>방법</h2>
+  <div class="notes">
+    <p><span class="tag">평활</span> 그 패널의 메시 그래프 위 이웃 평균 반복이다(윤곽 EMA의 곡면판). 가중치 w=0.5 고정, 반복 수만 슬라이더로 바꾼다.</p>
+    <p><span class="tag">크기 보정</span> 평활 뒤 점별 변위 크기의 평균을 백색 draw와 같게 되돌린다. 그래서 ②와 ③은 <b>크기가 같고 모양만 다르다</b> — 위 벌어짐 수치 두 개가 같은 것이 그 확인이다.</p>
+    <p><span class="tag">해상도</span> 간략화 없음. <span class="mono" id="res"></span></p>
+    <p><span class="tag">난수</span> 브라우저의 seeded PRNG(mulberry32 + Box–Muller)라 <span class="mono">view_vtk.py</span>의 numpy draw와 <b>수치가 일치하지는 않는다</b>. 통계만 같다.</p>
+    <p><span class="tag">재생성</span> <span class="mono">python export_vtkjs.py --garment rand_XXXX</span> 후 새로고침.</p>
+  </div>
+</section>
+</div>
+
+<script src="vendor/vtk.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const fail = m => { const e = $('err'); e.style.display = 'block'; e.textContent = m; };
+
+const COL_FRONT = [0.22, 0.53, 0.90];
+const COL_BACK  = [0.85, 0.35, 0.15];
+const COL_GT    = [0.55, 0.54, 0.51];
+const BG        = [0.086, 0.086, 0.102];
+const SEED = 20260831, W_SMOOTH = 0.5;
+
+const V = window.vtk;
+const { vtkPolyData } = V.Common.DataModel;
+const { vtkDataArray } = V.Common.Core;
+const { vtkActor, vtkMapper } = V.Rendering.Core;
+const { vtkGenericRenderWindow } = V.Rendering.Misc;
+
+/* ---------- noise ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+/* ---------- per-panel helpers ---------- */
+function csr(faces, nv){
+  const ptr = new Uint32Array(nv + 1);
+  for (let i = 0; i < faces.length; i++) ptr[faces[i] + 1] += 2;
+  for (let i = 0; i < nv; i++) ptr[i + 1] += ptr[i];
+  const idx = new Uint32Array(ptr[nv]);
+  const cur = ptr.slice(0, nv);
+  for (let i = 0; i < faces.length; i += 3) {
+    const a = faces[i], b = faces[i + 1], c = faces[i + 2];
+    idx[cur[a]++] = b; idx[cur[a]++] = c;
+    idx[cur[b]++] = c; idx[cur[b]++] = a;
+    idx[cur[c]++] = a; idx[cur[c]++] = b;
+  }
+  return { ptr, idx };
+}
+
+function meanMag(d, n){
+  let m = 0;
+  for (let i = 0; i < n; i++) { const k = 3 * i; m += Math.hypot(d[k], d[k+1], d[k+2]); }
+  return m / n;
+}
+
+/* d <- (1-w) d + w * mean(neighbours), repeated; then restore the magnitude. */
+function smoothDisp(P, d, w, iters){
+  if (iters <= 0 || w <= 0) return d;
+  const n = P.nv, ptr = P.csr.ptr, idx = P.csr.idx, m0 = meanMag(d, n);
+  let x = Float32Array.from(d), y = new Float32Array(d.length);
+  for (let it = 0; it < iters; it++) {
+    for (let i = 0; i < n; i++) {
+      const s = ptr[i], e = ptr[i + 1], c = Math.max(e - s, 1);
+      let ax = 0, ay = 0, az = 0;
+      for (let j = s; j < e; j++) { const k = 3 * idx[j]; ax += x[k]; ay += x[k+1]; az += x[k+2]; }
+      const k = 3 * i;
+      y[k]   = (1 - w) * x[k]   + w * ax / c;
+      y[k+1] = (1 - w) * x[k+1] + w * ay / c;
+      y[k+2] = (1 - w) * x[k+2] + w * az / c;
+    }
+    const t = x; x = y; y = t;
+  }
+  const m1 = meanMag(x, n);
+  if (m1 > 1e-12) { const g = m0 / m1; for (let i = 0; i < x.length; i++) x[i] *= g; }
+  return x;
+}
+
+function computeNormals(pos, faces, out){
+  out.fill(0);
+  for (let i = 0; i < faces.length; i += 3) {
+    const a = 3 * faces[i], b = 3 * faces[i+1], c = 3 * faces[i+2];
+    const ux = pos[b] - pos[a], uy = pos[b+1] - pos[a+1], uz = pos[b+2] - pos[a+2];
+    const vx = pos[c] - pos[a], vy = pos[c+1] - pos[a+1], vz = pos[c+2] - pos[a+2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    out[a]+=nx; out[a+1]+=ny; out[a+2]+=nz;
+    out[b]+=nx; out[b+1]+=ny; out[b+2]+=nz;
+    out[c]+=nx; out[c+1]+=ny; out[c+2]+=nz;
+  }
+  for (let i = 0; i < out.length; i += 3) {
+    const l = Math.hypot(out[i], out[i+1], out[i+2]) || 1;
+    out[i] /= l; out[i+1] /= l; out[i+2] /= l;
+  }
+}
+
+/* ---------- vtk.js scene ---------- */
+function surfacePolyData(pos, faces, nrm){
+  const pd = vtkPolyData.newInstance();
+  pd.getPoints().setData(pos, 3);
+  const cells = new Uint32Array(faces.length / 3 * 4);
+  for (let f = 0, o = 0; f < faces.length; f += 3, o += 4) {
+    cells[o] = 3; cells[o+1] = faces[f]; cells[o+2] = faces[f+1]; cells[o+3] = faces[f+2];
+  }
+  pd.getPolys().setData(cells);
+  pd.getPointData().setNormals(vtkDataArray.newInstance(
+    { name: 'Normals', numberOfComponents: 3, values: nrm }));
+  return pd;
+}
+
+function loopPolyData(pos, loops){
+  const pd = vtkPolyData.newInstance();
+  pd.getPoints().setData(pos, 3);
+  let total = 0;
+  for (const L of loops) total += L.length + 2;
+  const cells = new Uint32Array(total);
+  let o = 0;
+  for (const L of loops) {
+    cells[o++] = L.length + 1;
+    for (let i = 0; i < L.length; i++) cells[o++] = L[i];
+    cells[o++] = L[0];
+  }
+  pd.getLines().setData(cells);
+  return pd;
+}
+
+function addActor(ren, pd, color, opts){
+  opts = opts || {};
+  const m = vtkMapper.newInstance();
+  m.setInputData(pd);
+  if (opts.offset) m.setResolveCoincidentTopologyToPolygonOffset();
+  const a = vtkActor.newInstance();
+  a.setMapper(m);
+  const p = a.getProperty();
+  p.setColor(color[0], color[1], color[2]);
+  if (opts.line) { p.setLineWidth(opts.line); p.setLighting(false); }
+  else {
+    p.setOpacity(0.92); p.setInterpolation(1);
+    p.setAmbient(0.30); p.setDiffuse(0.75); p.setSpecular(0.10);
+    p.setBackfaceCulling(false);
+  }
+  ren.addActor(a);
+  return a;
+}
+
+/* ---------- main ---------- */
+const state = { sigma: 10, iters: 12, back: false, gt: true, wire: false };
+let panels = [], views = [], sceneReady = false;
+
+async function boot(){
+  let man, buf;
+  try {
+    const r1 = await fetch('data/panels.json');
+    const r2 = await fetch('data/panels.bin');
+    if (!r1.ok || !r2.ok) throw new Error('data/panels.json 또는 data/panels.bin 이 없다');
+    man = await r1.json();
+    buf = await r2.arrayBuffer();
+  } catch (e) {
+    fail('데이터를 못 읽었다 — ' + e.message +
+         '\n먼저  python export_vtkjs.py  를 돌리고, 파일을 직접 열지 말고 python serve.py 로 열어라.');
+    return;
+  }
+
+  panels = man.panels.map(p => {
+    const faces = new Uint32Array(buf, p.faces, p.nf * 3);
+    return {
+      name: p.name, front: p.front, nv: p.nv, faces,
+      base: new Float32Array(buf, p.pos, p.nv * 3),
+      loops: p.loops.map(l => new Uint32Array(buf, l.off, l.n)),
+      csr: csr(faces, p.nv),
+      disp: new Float32Array(p.nv * 3),
+    };
+  });
+
+  const nv = panels.reduce((s, p) => s + p.nv, 0);
+  const nf = panels.reduce((s, p) => s + p.faces.length / 3, 0);
+  $('prov').innerHTML =
+    '<span><b>garment</b> ' + man.garment + '</span>' +
+    '<span><b>패널</b> ' + panels.length + '</span>' +
+    '<span><b>정점</b> ' + nv.toLocaleString() + '</span>' +
+    '<span><b>면</b> ' + nf.toLocaleString() + '</span>' +
+    '<span><b>렌더</b> vtk.js · WebGL</span>';
+  $('res').textContent =
+    '패널 ' + panels.length + ' · 정점 ' + nv.toLocaleString() + ' · 면 ' + nf.toLocaleString();
+
+  // three views sharing one camera
+  let cam = null;
+  views = [0, 1, 2].map(k => {
+    const grw = vtkGenericRenderWindow.newInstance({ background: BG });
+    grw.setContainer($('v' + k));
+    const ren = grw.getRenderer(), rw = grw.getRenderWindow();
+    if (cam === null) cam = ren.getActiveCamera(); else ren.setActiveCamera(cam);
+
+    const items = panels.map(P => {
+      const pos = Float32Array.from(P.base);
+      const nrm = new Float32Array(P.nv * 3);
+      computeNormals(pos, P.faces, nrm);
+      const surf = surfacePolyData(pos, P.faces, nrm);
+      const line = loopPolyData(pos, P.loops);
+      const gtln = loopPolyData(Float32Array.from(P.base), P.loops);
+      return {
+        P: P, pos: pos, nrm: nrm, surf: surf, line: line,
+        sa: addActor(ren, surf, P.front ? COL_FRONT : COL_BACK, { offset: true }),
+        la: addActor(ren, line, [1, 1, 1], { line: 2.0 }),
+        ga: addActor(ren, gtln, COL_GT, { line: 1.6 }),
+      };
+    });
+    return { k: k, grw: grw, ren: ren, rw: rw, items: items };
+  });
+
+  const obs = new ResizeObserver(() => views.forEach(v => v.grw.resize()));
+  views.forEach(v => obs.observe(v.grw.getContainer()));
+
+  // one shared camera -> any interaction must redraw the other two
+  let pending = false;
+  cam.onModified(() => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(() => { pending = false; views.forEach(v => v.rw.render()); });
+  });
+
+  sceneReady = true;
+  views.forEach(v => v.grw.resize());   // frame against the settled canvas size
+  resetView();
+  regen();
+  apply();
+}
+
+function resetView(){
+  const ren = views[0].ren, cam = ren.getActiveCamera();
+  ren.resetCamera();
+  cam.azimuth(28); cam.elevation(8); cam.zoom(1.25);
+  views.forEach(v => v.ren.resetCameraClippingRange());
+}
+
+function regen(){
+  const rand = mulberry32(SEED), s = state.sigma / 10;
+  for (const P of panels) {
+    const d = P.disp;
+    if (s > 0) for (let i = 0; i < d.length; i++) d[i] = gauss(rand) * s;
+    else d.fill(0);
+  }
+}
+
+function apply(){
+  if (!sceneReady) return;
+  let rawTot = 0, smTot = 0, cnt = 0;
+
+  for (const v of views) {
+    for (const g of v.items) {
+      const P = g.P, show = state.back || P.front;
+      g.sa.setVisibility(show);
+      g.la.setVisibility(show);
+      g.ga.setVisibility(show && state.gt && v.k > 0);
+      g.sa.getProperty().setRepresentation(state.wire ? 1 : 2);
+      if (!show || v.k === 0) continue;
+
+      const e = v.k === 1 ? P.disp : smoothDisp(P, P.disp, W_SMOOTH, state.iters);
+      for (let i = 0; i < g.pos.length; i++) g.pos[i] = P.base[i] + e[i];
+      computeNormals(g.pos, P.faces, g.nrm);
+
+      g.surf.getPoints().setData(g.pos, 3);
+      g.surf.getPointData().getNormals().setData(g.nrm, 3);
+      g.surf.modified();
+      g.line.getPoints().setData(g.pos, 3);
+      g.line.modified();
+
+      if (v.k === 1) { rawTot += meanMag(e, P.nv) * P.nv; cnt += P.nv; }
+      else           { smTot  += meanMag(e, P.nv) * P.nv; }
+    }
+  }
+
+  const sepW = cnt ? (rawTot / cnt) * Math.SQRT2 * 10 : 0;
+  const sepS = cnt ? (smTot  / cnt) * Math.SQRT2 * 10 : 0;
+  $('ro').textContent =
+    'σ ' + state.sigma.toFixed(1) + ' mm   평활 ' + state.iters + ' it   ' +
+    '벌어짐  백색 ' + sepW.toFixed(1) + ' mm | 평활 ' + sepS.toFixed(1) + ' mm   ' +
+    '[' + (state.back ? '앞+뒤' : '앞만') + ']';
+  views.forEach(v => v.rw.render());
+}
+
+/* ---------- controls ---------- */
+$('sig').oninput = e => {
+  state.sigma = +e.target.value;
+  $('sigv').textContent = state.sigma.toFixed(1) + ' mm';
+  regen(); apply();
+};
+$('it').oninput = e => {
+  state.iters = +e.target.value;
+  $('itv').textContent = state.iters;
+  apply();
+};
+$('back').onchange = e => { state.back = e.target.checked; apply(); };
+$('gt').onchange   = e => { state.gt   = e.target.checked; apply(); };
+$('wire').onchange = e => { state.wire = e.target.checked; apply(); };
+$('reset').onclick = () => { resetView(); apply(); };
+addEventListener('keydown', ev => {
+  if (ev.target.tagName === 'INPUT') return;
+  const k = ev.key.toLowerCase();
+  const box = { b: 'back', g: 'gt', w: 'wire', e: 'wire' }[k];
+  if (box) { const el = $(box); el.checked = !el.checked; el.onchange({ target: el }); }
+  else if (k === 'r') { resetView(); apply(); }
+});
+
+boot();
+</script>
+</body>
+</html>
