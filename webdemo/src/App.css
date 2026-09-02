@@ -1,0 +1,36 @@
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.app { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px;
+  font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+.sub { margin: 0 0 18px; color: #666; max-width: 70ch; }
+.sub code { background: #0000000d; padding: 1px 5px; border-radius: 4px; }
+.drop { border: 1.5px dashed #bbb; border-radius: 10px; padding: 30px; text-align: center;
+  color: #777; cursor: pointer; transition: .15s; }
+.drop:hover { border-color: #6a8cff; color: #4a6cff; background: #6a8cff0a; }
+.err { margin-top: 14px; padding: 10px 12px; border-radius: 8px;
+  background: #ff4d4f14; color: #c22; border: 1px solid #ff4d4f33; }
+.bar { display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0 10px; align-items: center; }
+.pill { padding: 3px 9px; border-radius: 999px; background: #0000000d; font-size: 12.5px; }
+.pill.name { font-weight: 600; background: #0000001a; }
+.pill.ok { background: #10893e1f; color: #0b6b30; }
+.pill.fp { background: #d9363e1f; color: #b3272e; }
+.pill.fn { background: #0000001f; }
+.pill.t  { background: #6a8cff1f; color: #3a5cd0; }
+.toggles { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; color: #555; font-size: 13px; }
+.toggles label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.canvas { width: 100%; height: auto; max-height: 78vh; background: #fff;
+  border: 1px solid #0000001a; border-radius: 10px; }
+.plabel { font-size: 2.4px; fill: #999; text-anchor: middle; }
+.ok { stroke: #16a34a; stroke-width: 0.8; }
+.fp { stroke: #dc2626; stroke-width: 1.1; }
+.fn { stroke: #111; stroke-width: 0.8; stroke-dasharray: 2 1.6; }
+.gtline { stroke: #6a8cff; stroke-width: 0.5; opacity: .5; }
+@media (prefers-color-scheme: dark) {
+  body { background: #131316; color: #e8e8ea; }
+  .sub, .toggles { color: #9a9aa2; }
+  .canvas { background: #fff; }
+  .pill { background: #ffffff14; }
+  .pill.name { background: #ffffff24; }
+}
