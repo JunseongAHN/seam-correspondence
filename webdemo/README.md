@@ -42,8 +42,10 @@ If `gcd_parser.py` or `features.py` change, re-check before trusting this demo.
 
 ## The model
 
-`public/model/autosew.onnx` (7.1 MB, opset 17) is exported from
-`autosew/runs/full/best.pt`. It takes `x (B,M,24)`, `nbr (B,M,2)`, `mask (B,M)`
+`public/model/autosew.onnx` (7.1 MB, opset 17) is exported from the best
+checkpoint of the 24k-garment run (`runs/r1`, epoch 5). On the official GCD
+test split it scores TF1 0.917 and gets 1143 of 2072 garments exactly right;
+the earlier 2.8k-garment model scored TF1 0.879. It takes `x (B,M,24)`, `nbr (B,M,2)`, `mask (B,M)`
 and returns `logP (B,M+1,M+1)`; `B` and `M` are dynamic. No custom operators.
 
 Two things had to be avoided at export time for onnxruntime to run it: `torch.eye`
