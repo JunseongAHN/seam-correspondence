@@ -50,6 +50,10 @@ def run_epoch(model, ds, cfg, device, opt=None, epoch=0):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--data_dir", type=str, default=None)
+    ap.add_argument("--val_dir", type=str, default=None,
+                    help="explicit validation dir (e.g. the official split); "
+                         "if given, --val_frac/--test_frac are not used")
+    ap.add_argument("--test_dir", type=str, default=None, help="explicit test dir")
     ap.add_argument("--synthetic", type=int, default=0)
     ap.add_argument("--limit", type=int, default=None, help="max spec files to load")
     ap.add_argument("--cache", type=str, default=None, help="preprocessed tensor cache (.pt)")
@@ -113,7 +117,13 @@ def main(argv=None):
         ap.error("need --data_dir or --synthetic")
 
     print("[stats]", json.dumps(ds.stats()), flush=True)
-    tr, va, te = split_dataset(ds, args.val_frac, args.test_frac, seed=cfg.seed)
+    if args.val_dir or args.test_dir:
+        # explicit split dirs (e.g. the official GCD split): ds is the train set as given
+        tr = ds
+        va = PatternDataset.from_dir(args.val_dir, cfg) if args.val_dir else PatternDataset([])
+        te = PatternDataset.from_dir(args.test_dir, cfg) if args.test_dir else PatternDataset([])
+    else:
+        tr, va, te = split_dataset(ds, args.val_frac, args.test_frac, seed=cfg.seed)
     print(f"[split] train {len(tr)} / val {len(va)} / test {len(te)}", flush=True)
 
     model = AutoSewGNN(cfg).to(device)
