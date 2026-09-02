@@ -214,6 +214,13 @@ def parse_specification(path_or_dict, name=None) -> Pattern:
                     if kt == KT_CUBIC and len(kabs) == 4:
                         kabs = kabs[2:4] + kabs[0:2]
                         krel = list(kabs)
+                if kt == KT_CIRCLE and len(kabs) > 2:
+                    # circle params are [radius, large_arc, right]; traversing the arc
+                    # backwards flips its sweep direction, while the radius and the
+                    # large-arc flag are orientation-independent
+                    kabs = list(kabs)
+                    kabs[2] = 1.0 - float(kabs[2])
+                    krel = list(kabs)
             edges.append(Edge(panel=pname, idx_in_panel=j, start=start, end=end,
                               kt=kt, kparams=kabs, kparams_rel=krel))
 

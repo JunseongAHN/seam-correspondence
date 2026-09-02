@@ -34,3 +34,43 @@ h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
   .pill { background: #ffffff14; }
   .pill.name { background: #ffffff24; }
 }
+
+.seg { display: inline-flex; border: 1px solid #0000001f; border-radius: 7px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 4px 11px; cursor: pointer;
+  font: inherit; font-size: 12.5px; color: inherit; }
+.seg button.on { background: #6a8cff; color: #fff; }
+.vtk { width: 100%; height: 70vh; border: 1px solid #0000001a; border-radius: 10px;
+  background: #fff; overflow: hidden; }
+
+/* DXF input: no ground truth exists, so predictions are shown neutrally
+   rather than as false positives. */
+.predline { stroke: #6a3cff; stroke-width: 0.45; opacity: .45; }
+.examples { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.examples button { border: 1px solid #bbb; border-radius: 8px; background: #fff;
+  padding: 7px 12px; font: inherit; cursor: pointer; }
+.examples button:hover:not(:disabled) { border-color: #6a8cff; color: #4a6cff; }
+.examples button:disabled { opacity: .5; cursor: default; }
+.examples .note { color: #666; font-size: 12px; }
+.energies { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #444;
+  background: #00000008; border-radius: 8px; padding: 8px 10px; margin: 10px 0;
+  white-space: pre-wrap; }
+
+/* the two examples, small under the import button */
+.tryit { margin-top: 10px; font-size: 12.5px; color: #666; }
+.tryit .sep { margin: 0 8px; color: #bbb; }
+.tryit button.link { border: 0; background: none; padding: 0; font: inherit;
+  color: #4a6cff; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.tryit button.link:hover:not(:disabled) { color: #2b4be0; }
+.tryit button.link.on { font-weight: 600; text-decoration: none; }
+.tryit button.link:disabled { opacity: .5; cursor: default; }
+
+/* prediction on the left, the 3D pane on the right */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+  align-items: start; }
+.split section { min-width: 0; }
+.split h2 { margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: #555;
+  letter-spacing: .02em; }
+.split .vtk { height: 62vh; }
+@media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+
+.note.wide { margin: 10px 0; color: #666; font-size: 12px; line-height: 1.55; }

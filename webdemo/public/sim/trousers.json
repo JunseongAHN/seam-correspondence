@@ -1,0 +1,12 @@
+{
+ "garment": "rand_1328ERLDIC",
+ "n": 10186,
+ "n_faces": 19232,
+ "n_hinges": 28757,
+ "n_pairs": 480,
+ "n_cyl": 7,
+ "n_sph": 1,
+ "mu_rel": 0.02,
+ "recenter": 0,
+ "diag_scale": 3.597101573344999
+}

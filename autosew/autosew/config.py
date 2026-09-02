@@ -15,6 +15,13 @@ class AutoSewConfig:
                                       #       "rel": GarmentCode edge-relative coords as stored in JSON
     curvature_type_norm: bool = False # [GAP] False: k_t raw in {0..5} (paper-literal "22 raw features");
                                       #       True: k_t/5
+    curvature_encoding: str = "tagged"  # [PAPER-vs-INDUSTRIAL] "tagged": dims 7..17 = k_t plus the ten
+                                      # type-dependent parameter slots, exactly as the paper specifies.
+                                      # "sagitta": dims 7.. = a signed sagitta profile (see curves.py).
+                                      # The tagged union needs an exact k_t, which a DXF polyline cannot
+                                      # supply -- k_t has to be refitted and flips, and eleven dimensions
+                                      # change meaning at once. "sagitta" is the industrial-input track.
+    sagitta_samples: int = 11         # [GAP] K for curvature_encoding="sagitta". 11 keeps in_dim at 24.
     panel_id_mode: str = "index_norm" # [GAP] encoding of panel ID u. "index_norm": panel position in file /
                                       #       max_panels_norm; "index_raw": raw int; "random_norm": per-sample
                                       #       shuffled ids (augmentation; breaks GCD generation-order semantics)

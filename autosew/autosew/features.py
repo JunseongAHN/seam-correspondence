@@ -11,6 +11,11 @@ Feature layout (indices, see supp Table 1 + preprocessing §3.1):
   20: sin(alpha_r)  21: cos(alpha_r)   interior angle at end vertex
   22: per-panel edge count N_e, min-max -> [0,1]
   23: panel ID u (see cfg.panel_id_mode)
+
+With cfg.curvature_encoding == "sagitta" (the DXF/FBX industrial track) dims 7..17 are
+replaced by K = cfg.sagitta_samples signed sagitta values (see curves.py) and the six
+trailing features shift to follow them; K = 11 leaves the layout 24-dim and the trailing
+six at 18..23, so the two encodings differ in dims 7..17 and nowhere else.
 """
 from __future__ import annotations
 import math
@@ -19,9 +24,17 @@ import random
 import numpy as np
 
 from .config import AutoSewConfig, KT_QUADRATIC, KT_CUBIC
+from .curves import edge_polyline, sagitta_profile
 from .gcd_parser import Pattern
 
 F_DIM = 24
+N_CURV = 11   # dims 7..17: the curvature block, whatever encodes it
+
+
+def feature_dim(cfg: AutoSewConfig) -> int:
+    """Node feature width for this config; set cfg.in_dim to match."""
+    k = cfg.sagitta_samples if cfg.curvature_encoding == "sagitta" else N_CURV
+    return F_DIM - N_CURV + k
 
 
 def _interior_angles(panel):
@@ -52,7 +65,9 @@ def pattern_to_tensors(p: Pattern, cfg: AutoSewConfig, rng: random.Random | None
     """
     keys = p.edge_key_list()
     M = len(keys)
-    x = np.zeros((M, F_DIM), dtype=np.float32)
+    nk = cfg.sagitta_samples if cfg.curvature_encoding == "sagitta" else N_CURV
+    tail = 7 + nk                     # first index after the curvature block
+    x = np.zeros((M, F_DIM - N_CURV + nk), dtype=np.float32)
     nbr = np.zeros((M, 2), dtype=np.int64)
 
     n_panels = len(p.panels)
@@ -81,30 +96,33 @@ def pattern_to_tensors(p: Pattern, cfg: AutoSewConfig, rng: random.Random | None
             x[node, 4] = L / cfg.scale_div
             x[node, 5] = ox
             x[node, 6] = oy
-            x[node, 7] = e.kt / 5.0 if cfg.curvature_type_norm else float(e.kt)
-            kp = e.kparams if cfg.curvature_frame == "abs" else e.kparams_rel
-            for q, val in enumerate(kp[:10]):
-                if cfg.curvature_frame == "abs":
-                    # circle params = [radius, flag, flag]: scale the radius only
-                    from .config import KT_CIRCLE
-                    if e.kt == KT_CIRCLE:
-                        v = val / cfg.scale_div if q == 0 else val
+            if cfg.curvature_encoding == "sagitta":
+                x[node, 7:tail] = sagitta_profile(edge_polyline(e), nk)
+            else:
+                x[node, 7] = e.kt / 5.0 if cfg.curvature_type_norm else float(e.kt)
+                kp = e.kparams if cfg.curvature_frame == "abs" else e.kparams_rel
+                for q, val in enumerate(kp[:10]):
+                    if cfg.curvature_frame == "abs":
+                        # circle params = [radius, flag, flag]: scale the radius only
+                        from .config import KT_CIRCLE
+                        if e.kt == KT_CIRCLE:
+                            v = val / cfg.scale_div if q == 0 else val
+                        else:
+                            v = val / cfg.scale_div
                     else:
-                        v = val / cfg.scale_div
-                else:
-                    v = val
-                x[node, 8 + q] = v
+                        v = val
+                    x[node, 8 + q] = v
             al = angles[j]
             ar = angles[(j + 1) % n]
-            x[node, 18] = math.sin(al)
-            x[node, 19] = math.cos(al)
-            x[node, 20] = math.sin(ar)
-            x[node, 21] = math.cos(ar)
-            x[node, 22] = min(max((n - lo) / max(hi - lo, 1e-6), 0.0), 1.0)
+            x[node, tail + 0] = math.sin(al)
+            x[node, tail + 1] = math.cos(al)
+            x[node, tail + 2] = math.sin(ar)
+            x[node, tail + 3] = math.cos(ar)
+            x[node, tail + 4] = min(max((n - lo) / max(hi - lo, 1e-6), 0.0), 1.0)
             if cfg.panel_id_mode == "index_raw":
-                x[node, 23] = float(ids[pi])
+                x[node, tail + 5] = float(ids[pi])
             else:
-                x[node, 23] = ids[pi] / cfg.max_panels_norm
+                x[node, tail + 5] = ids[pi] / cfg.max_panels_norm
             # cycle neighbors (panel with 1 edge -> self)
             nbr[node, 0] = base + (j - 1) % n
             nbr[node, 1] = base + (j + 1) % n

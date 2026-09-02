@@ -1,13 +1,41 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { parseSpec, type Pattern } from "./lib/parseSpec";
+import { parseDxf } from "./lib/parseDxf";
 import { patternToTensors, gtPairs } from "./lib/features";
 import { predict } from "./lib/infer";
-import { placePanels, edgePolyline, edgeMid, stitchColor, type Placed } from "./lib/render";
+import { placePanels, type Placed } from "./lib/render";
+import PatternSvg from "./PatternSvg";
+import WeldGT from "./WeldGT";         // the CLO drape with its weld-derived seams
+import SimViewer from "./SimViewer";   // the wasm assembly solve, rendered
 import "./App.css";
+
+// BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.
+const B = import.meta.env.BASE_URL;
+const EXAMPLES = {
+  clo: {
+    label: "1. CLO tutorial example",
+    file: "panel_seperated.dxf",
+    url: `${B}example/panel_seperated.dxf`,
+    right: "drape" as const,
+    note: "10 pieces exported from CLO. A DXF carries no stitch list, so the prediction "
+        + "is shown on its own. The right pane is CLO's own drape, not a simulation of "
+        + "this prediction.",
+  },
+  gcd: {
+    label: "2. GarmentCode test data",
+    file: "rand_1328ERLDIC_specification.json",
+    url: `${B}example/rand_1328ERLDIC_specification.json`,
+    right: "sim" as const,
+    note: "A held-out GarmentCodeData garment, so the prediction can be scored. The "
+        + "right pane assembles this same garment with the wasm solver.",
+  },
+};
+type ExampleKey = keyof typeof EXAMPLES;
 
 type Result = {
   pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
   pred: Set<string>; gt: Set<string>; ms: number; M: number;
+  source: "spec" | "dxf";
 };
 
 export default function App() {
@@ -16,134 +44,150 @@ export default function App() {
   const [err, setErr] = useState<string | null>(null);
   const [show, setShow] = useState({ correct: true, fp: true, fn: true, gt: false });
   const [name, setName] = useState("");
+  const [example, setExample] = useState<ExampleKey | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const run = useCallback(async (file: File) => {
+  /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
+      A DXF carries no stitches, so there is nothing to score it against. */
+  const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null) => {
     setBusy(true); setErr(null);
     try {
-      const spec = JSON.parse(await file.text());
-      const pattern = parseSpec(spec, file.name.replace("_specification.json", ""));
+      const isDxf = /\.dxf$/i.test(fileName);
+      const pattern = isDxf
+        ? parseDxf(text, fileName.replace(/\.dxf$/i, ""))
+        : parseSpec(JSON.parse(text), fileName.replace("_specification.json", ""));
       const t = patternToTensors(pattern);
       const { pairs, ms } = await predict(t);
-      setRes({ pattern, placed: placePanels(pattern), keys: t.keys,
-               pred: pairs, gt: gtPairs(pattern, t.keys), ms, M: t.M });
-      setName(file.name);
-    } catch (e: any) { setErr(String(e?.message ?? e)); setRes(null); }
+      setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
+               gt: isDxf ? new Set<string>() : gtPairs(pattern, t.keys),
+               ms, M: t.M, source: isDxf ? "dxf" : "spec" });
+      setName(fileName);
+      setExample(ex);
+    } catch (e: any) { setErr(String(e?.message ?? e)); setRes(null); setExample(null); }
     finally { setBusy(false); }
   }, []);
 
-  const stats = useMemo(() => {
+  const runFile = useCallback(async (file: File) => {
+    await runText(await file.text(), file.name, null);
+  }, [runText]);
+
+  const runExample = useCallback(async (key: ExampleKey) => {
+    const e = EXAMPLES[key];
+    setBusy(true); setErr(null);
+    try {
+      const r = await fetch(e.url);
+      if (!r.ok) throw new Error(`${e.url}: HTTP ${r.status}`);
+      await runText(await r.text(), e.file, key);
+    } catch (ex: any) { setErr(String(ex?.message ?? ex)); setBusy(false); }
+  }, [runText]);
+
+  const scored = !!res && res.gt.size > 0;
+  const stats = (() => {
     if (!res) return null;
     const ok = [...res.pred].filter((k) => res.gt.has(k)).length;
-    const fp = res.pred.size - ok, fn = res.gt.size - ok;
     const P = res.pred.size ? ok / res.pred.size : 0;
     const R = res.gt.size ? ok / res.gt.size : 0;
-    return { ok, fp, fn, P, R, f1: P + R ? (2 * P * R) / (P + R) : 0 };
-  }, [res]);
+    return { ok, fp: res.pred.size - ok, fn: res.gt.size - ok,
+             f1: P + R ? (2 * P * R) / (P + R) : 0 };
+  })();
 
   return (
     <div className="app">
       <header>
         <h1>AutoSew — sewing pattern → stitch prediction</h1>
         <p className="sub">
-          Drop a GarmentCodeData <code>*_specification.json</code>. The panel geometry is turned into
-          24 features per edge and run through the exported ONNX model in your browser.
+          A 2D sewing pattern in, the stitching between panel edges out, predicted by an
+          ONNX model running in your browser.
         </p>
       </header>
 
       <div className="drop"
         onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) run(f); }}
+        onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) runFile(f); }}
         onClick={() => fileRef.current?.click()}>
-        <input ref={fileRef} type="file" accept=".json" hidden
-               onChange={(e) => { const f = e.target.files?.[0]; if (f) run(f); }} />
-        {busy ? "running…" : "drop a specification.json here, or click to choose"}
+        <input ref={fileRef} type="file" accept=".dxf,.json" hidden
+               onChange={(e) => { const f = e.target.files?.[0]; if (f) runFile(f); }} />
+        {busy ? "running…" : "import a DXF — drop it here, or click to choose"}
+      </div>
+
+      <div className="tryit">
+        or try{" "}
+        {(Object.keys(EXAMPLES) as ExampleKey[]).map((k, i) => (
+          <span key={k}>
+            {i > 0 && <span className="sep">·</span>}
+            <button className={`link ${example === k ? "on" : ""}`}
+                    disabled={busy} onClick={() => runExample(k)}>
+              {EXAMPLES[k].label}
+            </button>
+          </span>
+        ))}
       </div>
 
       {err && <div className="err">{err}</div>}
 
-      {res && stats && (
+      {res && (
         <>
           <div className="bar">
             <span className="pill name">{name}</span>
             <span className="pill">{res.pattern.panels.length} panels</span>
             <span className="pill">{res.M} edges</span>
-            <span className="pill ok">correct {stats.ok}</span>
-            <span className="pill fp">FP {stats.fp}</span>
-            <span className="pill fn">FN {stats.fn}</span>
-            <span className="pill">F1 {stats.f1.toFixed(3)}</span>
+            {scored && stats ? (
+              <>
+                <span className="pill ok">correct {stats.ok}</span>
+                <span className="pill fp">FP {stats.fp}</span>
+                <span className="pill fn">FN {stats.fn}</span>
+                <span className="pill">F1 {stats.f1.toFixed(3)}</span>
+              </>
+            ) : (
+              <>
+                <span className="pill ok">{res.pred.size} predicted stitches</span>
+                <span className="pill">no ground truth in a DXF</span>
+              </>
+            )}
             <span className="pill t">{res.ms.toFixed(0)} ms</span>
           </div>
-          <div className="toggles">
-            {(["correct", "fp", "fn", "gt"] as const).map((k) => (
-              <label key={k}>
-                <input type="checkbox" checked={show[k]}
-                       onChange={(e) => setShow({ ...show, [k]: e.target.checked })} />
-                {k === "gt" ? "ground-truth stitches" : k}
-              </label>
-            ))}
-          </div>
-          <Svg res={res} show={show} />
+
+          {example && <p className="note wide">{EXAMPLES[example].note}</p>}
+
+          {scored && (
+            <div className="toggles">
+              {(["correct", "fp", "fn", "gt"] as const).map((k) => (
+                <label key={k}>
+                  <input type="checkbox" checked={show[k]}
+                         onChange={(e) => setShow({ ...show, [k]: e.target.checked })} />
+                  {k === "gt" ? "ground-truth stitches" : k}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {example ? (
+            <div className="split">
+              <section>
+                <h2>predicted stitching · 2D</h2>
+                <PatternSvg {...res} show={show} height="62vh" />
+              </section>
+              <section>
+                <h2>{EXAMPLES[example].right === "sim"
+                      ? "assembled by the wasm solver · 3D"
+                      : "CLO's own drape · 3D"}</h2>
+                {EXAMPLES[example].right === "sim" ? <SimViewer /> : <WeldGT />}
+              </section>
+            </div>
+          ) : (
+            <>
+              {!scored && (
+                <p className="note wide">
+                  Edges of a predicted pair share a colour. Click an edge to focus its
+                  correspondence — it is drawn thick and every other pair drops to grey.
+                  Click again, or click the background, to clear.
+                </p>
+              )}
+              <PatternSvg {...res} show={show} />
+            </>
+          )}
         </>
       )}
     </div>
-  );
-}
-
-function Svg({ res, show }: { res: Result; show: Record<string, boolean> }) {
-  const { placed, keys, pred, gt, pattern } = res;
-  const byName = useMemo(() => new Map(placed.map((p) => [p.name, p])), [placed]);
-  const node2key = keys;
-
-  const pts = placed.flatMap((p) => p.verts);
-  const xs = pts.map((v) => v[0]), ys = pts.map((v) => v[1]);
-  const [x0, x1] = [Math.min(...xs), Math.max(...xs)];
-  const [y0, y1] = [Math.min(...ys), Math.max(...ys)];
-  const pad = 12;
-  const W = x1 - x0 + 2 * pad, H = y1 - y0 + 2 * pad;
-  const tx = (p: [number, number]) => `${p[0] - x0 + pad},${y1 - p[1] + pad}`;   // flip y
-
-  const line = (a: number, b: number, cls: string, key: string) => {
-    const ka = node2key[a], kb = node2key[b];
-    const pa = byName.get(ka[0]), pb = byName.get(kb[0]);
-    if (!pa || !pb) return null;
-    if (!pa.edges[ka[1]] || !pb.edges[kb[1]]) return null;
-    const m1 = edgeMid(pa, ka[1]), m2 = edgeMid(pb, kb[1]);
-    return <line key={key} className={cls} x1={m1[0] - x0 + pad} y1={y1 - m1[1] + pad}
-                 x2={m2[0] - x0 + pad} y2={y1 - m2[1] + pad} />;
-  };
-
-  const stitchOf = new Map<string, number>();
-  pattern.stitches.forEach((sides, si) => sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
-
-  return (
-    <svg className="canvas" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
-      {placed.map((p) => (
-        <g key={p.name}>
-          {p.edges.map((_: any, i: number) => {
-            const si = stitchOf.get(`${p.name}#${i}`);
-            const col = si === undefined ? "#c9c9c9" : stitchColor(si);
-            const d = edgePolyline(p, i).map(tx).join(" L ");
-            return <path key={i} d={`M ${d}`} stroke={col}
-                         strokeWidth={si === undefined ? 0.5 : 1.1} fill="none" strokeLinecap="round" />;
-          })}
-          <text x={p.verts.reduce((s, v) => s + v[0], 0) / p.verts.length - x0 + pad}
-                y={y1 - p.verts.reduce((s, v) => s + v[1], 0) / p.verts.length + pad}
-                className="plabel">{p.name}</text>
-        </g>
-      ))}
-      {show.gt && [...gt].map((k) => {
-        const [a, b] = k.split("-").map(Number); return line(a, b, "gtline", `g${k}`);
-      })}
-      {show.correct && [...pred].filter((k) => gt.has(k)).map((k) => {
-        const [a, b] = k.split("-").map(Number); return line(a, b, "ok", `c${k}`);
-      })}
-      {show.fp && [...pred].filter((k) => !gt.has(k)).map((k) => {
-        const [a, b] = k.split("-").map(Number); return line(a, b, "fp", `p${k}`);
-      })}
-      {show.fn && [...gt].filter((k) => !pred.has(k)).map((k) => {
-        const [a, b] = k.split("-").map(Number); return line(a, b, "fn", `n${k}`);
-      })}
-    </svg>
   );
 }

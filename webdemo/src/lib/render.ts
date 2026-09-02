@@ -72,8 +72,17 @@ export function placePanels(p: Pattern, gap = 25): Placed[] {
   return placed;
 }
 
+/** Same sampling, but in the panel's own 2D frame (no layout transform) --
+    this is what the 3D placement needs, since it applies its own rotation. */
+export function edgePolylineLocal(panel: Panel, i: number): Pt[] {
+  const e = panel.rawEdges[i];
+  return sampleEdge(panel.rawVerts[e.endpoints[0]], panel.rawVerts[e.endpoints[1]],
+                    e.curvature ?? null);
+}
+
 export function edgePolyline(q: Placed, i: number): Pt[] {
   const e = q.edges[i];
+  if (e.poly) return e.poly;    // DXF input: the sampled boundary is what we have
   return sampleEdge(q.verts[e.endpoints[0]], q.verts[e.endpoints[1]], e.curvature ?? null);
 }
 

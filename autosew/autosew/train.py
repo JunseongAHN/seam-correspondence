@@ -13,6 +13,7 @@ import torch
 
 from .config import AutoSewConfig
 from .dataset import PatternDataset, split_dataset, collate, loader
+from .features import feature_dim
 from .metrics import MetricAccumulator, evaluate_batch
 from .model import AutoSewGNN
 from .sinkhorn import log_assignment, build_supervision, nll_loss
@@ -80,6 +81,7 @@ def main(argv=None):
         elif isinstance(cur, float):
             v = float(v)
         setattr(cfg, k, v)
+    cfg.in_dim = feature_dim(cfg)   # curvature_encoding/sagitta_samples change the width
 
     device = ("cuda" if torch.cuda.is_available() else "cpu") if args.device == "auto" else args.device
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -87,6 +89,7 @@ def main(argv=None):
 
     # feature-affecting config: a cache built under one of these is INVALID under another
     FEAT_KEYS = ["scale_div", "curvature_frame", "curvature_type_norm",
+                 "curvature_encoding", "sagitta_samples",
                  "panel_id_mode", "max_panels_norm", "edge_count_minmax"]
     feat_cfg = {k: (list(v) if isinstance(v, tuple) else v)
                 for k, v in cfg.to_dict().items() if k in FEAT_KEYS}
