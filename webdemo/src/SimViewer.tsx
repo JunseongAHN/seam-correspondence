@@ -129,7 +129,14 @@ function seamActor(d: Dump, pts: Float32Array) {
   return actor;
 }
 
-export default function SimViewer() {
+/** The dump's stitch constraints are vertex pairs, built from the GROUND TRUTH before
+    export; nothing in it says which vertices belong to which panel edge, so a predicted
+    correspondence cannot be turned into constraints without a mapping the file does not
+    carry.  The honest thing is therefore to solve only when the prediction is identical
+    to the ground truth -- then the assembly is the prediction's, unambiguously -- and to
+    refuse otherwise rather than show a solve of the wrong stitching. */
+export default function SimViewer({ exact = true, fp = 0, fn = 0 }:
+                                  { exact?: boolean; fp?: number; fn?: number }) {
   const host = useRef<HTMLDivElement>(null);
   const [dump, setDump] = useState<Dump | null>(null);
   const [result, setResult] = useState<SimResult | null>(null);
@@ -180,12 +187,22 @@ export default function SimViewer() {
   return (
     <>
       <div className="examples">
-        <button onClick={run} disabled={busy}>
-          {busy ? "solving… (the page freezes for ~10 s)" : "run the wasm assembly solve and show it"}
+        <button onClick={run} disabled={busy || !exact}>
+          {busy ? "solving… (the page freezes for ~10 s)"
+                : exact ? "assemble it — the prediction, solved"
+                        : "cannot assemble this prediction"}
         </button>
         <span className="note">
-          the prepared GCD garment the dump was built from. The body is not a mesh: the
-          solver models it as 7 capsules and a sphere, and that is what is drawn.
+          {exact
+            ? "the prediction for this garment is identical to its ground truth — 24 of 24 "
+              + "stitches, no false positives — so the solve below assembles exactly what "
+              + "the model predicted. The body is not a mesh: the solver models it as 7 "
+              + "capsules and a sphere, and that is what is drawn."
+            : `the prediction has ${fp} false positive${fp === 1 ? "" : "s"} and `
+              + `${fn} missed stitch${fn === 1 ? "" : "es"}. The dump's constraints are `
+              + "vertex pairs built from the ground truth, and it carries no mapping from "
+              + "a panel edge to its vertices, so a wrong stitching cannot be assembled — "
+              + "and would tear the mesh if it could."}
         </span>
       </div>
       {err && <div className="err">{err}</div>}

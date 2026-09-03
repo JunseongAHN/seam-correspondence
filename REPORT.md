@@ -196,6 +196,23 @@ by edge, the same way GCD is:
 
 (CLO scored one-to-one; see below. No model reconstructs the garment: GSP is 0 for all.)
 
+An averaged TF1 hides the shape of the result, so here is the per-garment distribution on
+1,500 held-out GarmentCodeData garments, scored with the model the demo ships:
+
+![test distribution](report/06-test-distribution.png)
+
+| | |
+|---|---|
+| mean / median | 0.850 / 0.904 |
+| exactly 1.000 | **35.6%** |
+| above 0.9 | 50.7% |
+| below 0.5 | **5.0%** |
+| exactly 0.000 | 0.9% |
+
+It is mostly-perfect with a real tail, not uniformly mediocre. The demo offers five of
+these as examples, at the 0th, 24th, 57th and 64th percentiles — a spread, not a
+highlight reel.
+
 Three things this says, none of them comfortable:
 
 1. **Every model roughly halves on real data.** 0.33–0.49 against 0.75–0.95 on GCD. The

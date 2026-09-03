@@ -311,7 +311,10 @@ export default function App() {
                 <h2>{EXAMPLES[example].right === "sim"
                       ? "assembled by the wasm solver · 3D"
                       : "CLO's own drape · 3D"}</h2>
-                {EXAMPLES[example].right === "sim" ? <SimViewer /> : <WeldGT />}
+                {EXAMPLES[example].right === "sim"
+                  ? <SimViewer exact={!!stats && stats.fp === 0 && stats.fn === 0}
+                               fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} />
+                  : <WeldGT />}
               </section>
             </div>
           ) : (
