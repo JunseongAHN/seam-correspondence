@@ -13,7 +13,7 @@
    Annotation, when `annotate` is on: click one edge then another to sew them together by
    hand.  A DXF has no stitch list, so this is how ground truth gets made for a real
    garment -- and once it exists the prediction can actually be scored against it. */
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { edgePolyline, edgeMid, stitchColor, type Placed } from "./lib/render";
 import type { Pattern } from "./lib/parseSpec";
 
@@ -40,6 +40,12 @@ export default function PatternSvg({
 }: SvgProps) {
   const [focus, setFocus] = useState<number | null>(null);
   const scored = gt.size > 0 && !annotate;
+
+  /* Focus is a node INDEX, and the same index means a different edge in the next
+     garment.  Loading one while a focus is held would otherwise open it with most of
+     the pattern greyed out and the first click merely clearing that -- which reads
+     exactly like clicking an edge does nothing. */
+  useEffect(() => { setFocus(null); }, [keys]);
 
   /** node -> correspondence group, so both sides of a pair share a colour */
   const group = useMemo(() => {
@@ -147,7 +153,36 @@ export default function PatternSvg({
     return m;
   }, [geom, node, placed]);
 
-  const focusGroup = focus === null ? null : group.get(focus) ?? null;
+  /* Which nodes a click keeps lit.  In the scored view `group` is deliberately empty --
+     colour comes from the ground-truth stitch index there, not from the prediction -- so
+     focus has to be read off the pairings this view actually draws, or clicking an edge in
+     a scored pattern dims nothing at all. */
+  const partners = useMemo(() => {
+    const m = new Map<number, Set<number>>();
+    const src = annotate ? [...(userPairs ?? [])] : scored ? [...pred, ...gt] : [...pred];
+    for (const k of src) {
+      const [a, b] = k.split("-").map(Number);
+      if (!m.has(a)) m.set(a, new Set());
+      if (!m.has(b)) m.set(b, new Set());
+      m.get(a)!.add(b); m.get(b)!.add(a);
+    }
+    return m;
+  }, [pred, gt, userPairs, annotate, scored]);
+
+  const focusSet = useMemo(() => {
+    if (focus === null) return null;
+    const g = group.get(focus);
+    if (g !== undefined) {
+      const s = new Set<number>();
+      for (const [n, gg] of group) if (gg === g) s.add(n);
+      return s;
+    }
+    return new Set<number>([focus, ...(partners.get(focus) ?? [])]);
+  }, [focus, group, partners]);
+
+  /** a stitch line survives the focus if either of its ends is lit */
+  const lit = (a: number, b: number) =>
+    focusSet === null || focusSet.has(a) || focusSet.has(b);
 
   const stitchOf = new Map<string, number>();
   if (!annotate)
@@ -194,8 +229,8 @@ export default function PatternSvg({
             const ni = node.get(key);
             const si = stitchOf.get(key) ?? (ni === undefined ? undefined : group.get(ni));
             const isSel = annotate && ni !== undefined && ni === selected;
-            const inFocus = focusGroup !== null && ni !== undefined && group.get(ni) === focusGroup;
-            const dim = focusGroup !== null && !inFocus;
+            const inFocus = focusSet !== null && ni !== undefined && focusSet.has(ni);
+            const dim = focusSet !== null && !inFocus;
             const col = isSel ? "#f97316"
                       : si === undefined || dim ? "#c9c9c9"
                       : stitchColor(si);
@@ -215,13 +250,15 @@ export default function PatternSvg({
                 {/* a fat invisible copy, so a thin edge is still easy to hit */}
                 <path d={e.d} stroke="transparent" strokeWidth={2.2 * S} fill="none"
                       strokeLinecap="round"
-                      style={{ cursor: annotate || si !== undefined ? "pointer" : "default" }}
+                      style={{ cursor: annotate || si !== undefined
+                                       || (ni !== undefined && partners.get(ni)?.size)
+                                       ? "pointer" : "default" }}
                       onClick={(ev) => {
                         ev.stopPropagation();
                         if (ni === undefined || drag.current?.moved) return;   // that was a pan
                         if (annotate) { onEdgeClick?.(ni); return; }
-                        if (si === undefined) return;
-                        setFocus((f) => (f !== null && group.get(f) === group.get(ni) ? null : ni));
+                        if (si === undefined && !partners.get(ni)?.size) return;
+                        setFocus((f) => (f !== null && focusSet?.has(ni) ? null : ni));
                       }} />
               </g>
             );
@@ -243,27 +280,25 @@ export default function PatternSvg({
 
       {!annotate && !scored && [...pred].map((k) => {
         const [a, b] = k.split("-").map(Number);
-        const inFocus = focusGroup !== null && group.get(a) === focusGroup;
-        if (focusGroup !== null && !inFocus) return null;
-        return line(a, b, "predline", `x${k}`, inFocus ? 1.4 : 0.45);
+        if (!lit(a, b)) return null;
+        return line(a, b, "predline", `x${k}`, focusSet !== null ? 1.4 : 0.45);
       })}
 
-      {scored && show && (
-        <>
-          {show.gt && [...gt].map((k) => {
-            const [a, b] = k.split("-").map(Number); return line(a, b, "gtline", `g${k}`);
-          })}
-          {show.correct && [...pred].filter((k) => gt.has(k)).map((k) => {
-            const [a, b] = k.split("-").map(Number); return line(a, b, "ok", `c${k}`);
-          })}
-          {show.fp && [...pred].filter((k) => !gt.has(k)).map((k) => {
-            const [a, b] = k.split("-").map(Number); return line(a, b, "fp", `p${k}`);
-          })}
-          {show.fn && [...gt].filter((k) => !pred.has(k)).map((k) => {
-            const [a, b] = k.split("-").map(Number); return line(a, b, "fn", `n${k}`);
-          })}
-        </>
-      )}
+      {scored && show && (() => {
+        const w = focusSet === null ? undefined : 1.4;
+        const draw = (k: string, cls: string, pfx: string) => {
+          const [a, b] = k.split("-").map(Number);
+          return lit(a, b) ? line(a, b, cls, `${pfx}${k}`, w) : null;
+        };
+        return (
+          <>
+            {show.gt && [...gt].map((k) => draw(k, "gtline", "g"))}
+            {show.correct && [...pred].filter((k) => gt.has(k)).map((k) => draw(k, "ok", "c"))}
+            {show.fp && [...pred].filter((k) => !gt.has(k)).map((k) => draw(k, "fp", "p"))}
+            {show.fn && [...gt].filter((k) => !pred.has(k)).map((k) => draw(k, "fn", "n"))}
+          </>
+        );
+      })()}
     </svg>
   );
 }

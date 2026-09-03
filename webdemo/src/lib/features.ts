@@ -3,17 +3,24 @@
    Two curvature encodings, matching the Python.  "tagged" is the paper's: dim 7 is the
    curve type and dims 8..17 are ten slots whose meaning that type selects.  "sagitta"
    replaces dims 7..17 with K signed sagitta values (see curves.ts) and is what the
-   DXF/FBX industrial track uses, because a DXF has no exact curve type to give. */
+   DXF/FBX industrial track uses, because a DXF has no exact curve type to give.
+
+   With ARC_FEATURES two dims are appended: the edge's ARC length and arc/chord.  Dim 4
+   is the chord, but what a seam matches is the arc -- the length of fabric you sew
+   along -- and the two differ by up to a third on a real collar. */
 import { edgePolyline, sagittaProfile } from "./curves";
 import { KT, type Pattern, type Pt } from "./parseSpec";
 
 export const F_DIM = 24;
 export const N_CURV = 11;          // dims 7..17: the curvature block, whatever encodes it
+export const N_ARC = 2;            // appended when ARC_FEATURES: arc/100, arc/chord
 
 export type CurvatureEncoding = "tagged" | "sagitta";
 /** Must match the checkpoint the ONNX model was exported from. */
 export const ENCODING: CurvatureEncoding = "sagitta";
 export const SAGITTA_SAMPLES = 11;
+/** Must match the checkpoint too: the shipped model is trained with them. */
+export const ARC_FEATURES = true;
 const SCALE = 100.0;          // cfg.scale_div
 const MAX_PANELS = 37.0;      // cfg.max_panels_norm
 const EDGE_MIN = 2.0, EDGE_MAX = 40.0;   // cfg.edge_count_minmax
@@ -34,7 +41,7 @@ function interiorAngles(edges: { start: Pt; end: Pt }[]): number[] {
 
 /** Width of the curvature block, and of a whole feature row, for the active encoding. */
 export const NK = ENCODING === "sagitta" ? SAGITTA_SAMPLES : N_CURV;
-export const featureDim = F_DIM - N_CURV + NK;
+export const featureDim = F_DIM - N_CURV + NK + (ARC_FEATURES ? N_ARC : 0);
 
 export interface Tensors {
   x: Float32Array;            // (M, featureDim) row-major
@@ -65,8 +72,9 @@ export function patternToTensors(p: Pattern): Tensors {
       x[o + 2] = e.end[0] / SCALE;   x[o + 3] = e.end[1] / SCALE;
       x[o + 4] = L / SCALE;
       x[o + 5] = ox; x[o + 6] = oy;
+      const poly = ENCODING === "sagitta" || ARC_FEATURES ? edgePolyline(e) : null;
       if (ENCODING === "sagitta") {
-        sagittaProfile(edgePolyline(e), SAGITTA_SAMPLES, x, o + 7);
+        sagittaProfile(poly!, SAGITTA_SAMPLES, x, o + 7);
       } else {
         x[o + 7] = e.kt;                                   // raw 0..5
         for (let q = 0; q < Math.min(10, e.kparams.length); q++) {
@@ -82,6 +90,13 @@ export function patternToTensors(p: Pattern): Tensors {
       x[t + 2] = Math.sin(aR); x[t + 3] = Math.cos(aR);
       x[t + 4] = Math.min(Math.max((n - EDGE_MIN) / Math.max(EDGE_MAX - EDGE_MIN, 1e-6), 0), 1);
       x[t + 5] = panel.orderIdx / MAX_PANELS;
+      if (ARC_FEATURES) {
+        let arc = 0;
+        for (let q = 1; q < poly!.length; q++)
+          arc += Math.hypot(poly![q][0] - poly![q - 1][0], poly![q][1] - poly![q - 1][1]);
+        x[t + 6] = arc / SCALE;
+        x[t + 7] = L > 1e-9 ? arc / L : 1.0;
+      }
       nbr[node * 2 + 0] = BigInt(base + ((j - 1 + n) % n));
       nbr[node * 2 + 1] = BigInt(base + ((j + 1) % n));
       node++;

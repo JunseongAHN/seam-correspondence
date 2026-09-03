@@ -82,3 +82,18 @@ h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
 .plabel.scalenote { fill: #b45309; opacity: .85; }
 .elabel { fill: #444; text-anchor: middle; paint-order: stroke; stroke: #fff;
   stroke-width: .6px; stroke-linejoin: round; pointer-events: none; }
+
+/* The ground-truth drape pane.  Red throughout, and loud about it: it is the one thing
+   on the page that is not a prediction, and a 3D shape is convincing enough that a
+   viewer will assume it is the model's output unless told otherwise. */
+.gt { color: #b3272e; }
+.split h2.gt { color: #b3272e; }
+.pill.name.gt { background: #d9363e24; color: #b3272e; }
+.note.gtnote { margin: 0 0 6px; color: #7a3236; font-size: 12px; line-height: 1.55;
+               border-left: 3px solid #d9363e; padding: 4px 0 4px 9px; }
+.note.gtnote strong { color: #b3272e; }
+@media (prefers-color-scheme: dark) {
+  .gt, .split h2.gt, .note.gtnote strong { color: #ff8b8b; }
+  .note.gtnote { color: #e2a9ab; border-left-color: #ff6b6b; }
+  .pill.name.gt { background: #ff6b6b26; color: #ff8b8b; }
+}

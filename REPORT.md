@@ -172,10 +172,10 @@ cross-panel pair is **10.98 mm**, nothing in between.
 | run | garments | encoding | panel ids | test TF1 | GSP |
 |---|---|---|---|---|---|
 | paper | 102,660 | tagged | index | 0.9706 | 0.806 |
-| r1 (shipped) | 24,024 | tagged | index | 0.9490 | 0.7203 |
+| r1 | 24,024 | tagged | index | 0.9490 | 0.7203 |
 | rand_sagitta | 2,000 | sagitta | random | 0.7501 | 0.105 |
-| **r2** | **87,697** | sagitta | random | **0.8030** | 0.387 |
-| r3 (+ arc) | 87,697 | sagitta | random | *training* | |
+| r2 | 87,697 | sagitta | random | 0.8030 | 0.387 |
+| **r3 (+ arc) — shipped** | **99,666** | sagitta | random | **0.8040** | 0.374 |
 
 **r2's 0.8030 is not comparable to r1's 0.9490.** r1 quotes a number that includes the
 panel-order signal and drops to **0.61** without it; r2 does not use that signal at all.
@@ -192,7 +192,7 @@ by edge, the same way GCD is:
 | s12_sagitta — index ids, 2k | 0.8191 | 0.471 | 0.571 | 0.400 |
 | **rand_sagitta — random ids, 2k** | 0.7501 | **0.485** | 0.615 | 0.400 |
 | **r2 — random ids, 87.7k** | **0.8030** | **0.333** | 0.375 | 0.300 |
-| r3 — + arc features, 99.7k | *training* | **0.485** | 0.615 | 0.400 |
+| **r3 — + arc, 99.7k (shipped)** | **0.8040** | 0.471 | 0.571 | 0.400 |
 
 (CLO scored one-to-one; see below. No model reconstructs the garment: GSP is 0 for all.)
 
@@ -203,28 +203,31 @@ An averaged TF1 hides the shape of the result, so here is the per-garment distri
 
 | | |
 |---|---|
-| mean / median | 0.850 / 0.904 |
-| exactly 1.000 | **35.6%** |
-| above 0.9 | 50.7% |
-| below 0.5 | **5.0%** |
+| mean / median | 0.846 / 0.904 |
+| exactly 1.000 | **34.1%** |
+| above 0.9 | 50.3% |
+| below 0.5 | **5.4%** |
 | exactly 0.000 | 0.9% |
 
 It is mostly-perfect with a real tail, not uniformly mediocre. The demo offers five of
-these as examples, at the 0th, 24th, 57th and 64th percentiles — a spread, not a
+these as examples, at the 0th, 19th, 59th and 66th percentiles — a spread, not a
 highlight reel.
 
 Three things this says, none of them comfortable:
 
 1. **Every model roughly halves on real data.** 0.33–0.49 against 0.75–0.95 on GCD. The
    best finds 8 of the garment's 20 stitches.
-2. **GCD score and real-world score are inversely ordered.** The best model on the
-   benchmark (r2, 0.8030) is the worst on the garment (0.333); one of the worst on the
-   benchmark (rand_sagitta, 0.7501) is the best on it (0.485). **The benchmark does not
-   predict the thing it is a proxy for.**
-3. **More GarmentCodeData made it worse.** 2,000 garments beat 87,697 by 1.5×. That is
-   domain overfitting, not sample overfitting: more exposure sharpens the fit to
-   regularities a real pattern does not share. Panel ordering was one such regularity and
-   is fixed; this says others remain unidentified.
+2. **The two scores are not ordered together.** GCD spans 0.75–0.80 across these
+   models while CLO spans 0.33–0.49, and the rank does not carry: the best model on the
+   benchmark (r2, 0.8030) is the worst on the garment (0.333), and the model trained on
+   2,000 garments (rand_sagitta, 0.7501) is still the best on it (0.485). **The
+   benchmark does not predict the thing it is a proxy for.**
+3. **More GarmentCodeData did not help, and once actively hurt.** r2 saw 44× the data
+   of rand_sagitta and fell to 0.333. Arc features recovered that (r3, 0.471) without
+   moving GCD at all — 0.8030 → 0.8040 — but 2,000 garments still edge out 99,666. That
+   is domain overfitting, not sample overfitting: more exposure sharpens the fit to
+   regularities a real pattern does not share. Panel ordering was one such regularity
+   and is fixed; this says others remain unidentified.
 
 ### One-to-one is worth enforcing
 

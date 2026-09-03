@@ -30,7 +30,7 @@ EXAMPLES = {"rand_JYO1DHSFGH", "rand_I88DFY2AKV", "rand_E3IN9RH60H",
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--ckpt", default="autosew/runs/r2/best_ep13_tf1_8030.pt")
+    ap.add_argument("--ckpt", default="autosew/runs/r3/frozen_ep5_tf1_8040.pt")
     ap.add_argument("--dir", default=r"C:\Users\POMCHECKER\gcd_data\test")
     ap.add_argument("--limit", type=int, default=1500)
     ap.add_argument("--rule", default="mutual", choices=["mutual", "union"])

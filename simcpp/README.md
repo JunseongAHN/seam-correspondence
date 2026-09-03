@@ -170,6 +170,33 @@ Mod._sim_solve(pP0, nLadder, pLadder, w0, w1, factor,
 with `Mod.simBuild` / `Mod.simSolve` as embind mirrors.  All pointers are wasm
 heap offsets; `test_wasm.js` is a complete worked example.
 
+### Ground-truth drapes for the web demo
+
+The demo shows a held-out garment's assembled shape beside its predicted stitching, as
+a red reference.  That solve is never run in the browser -- ten seconds of frozen page
+per garment would be absurd for something the viewer only looks at -- so it is done
+here once and only the result is shipped:
+
+```sh
+"$PY" dump_garment.py --garment <gcd_data dir> --out <id>.bin --body --mu 0.02 --amp 0 --sym
+./build-native/simcpp.exe --in <id>.bin --out <id> --per-lambda 30
+"$PY" pack_gt_drape.py --dump <id>.bin --npy <id>.npy       --out ../webdemo/public/sim/<id>_drape.bin
+```
+
+`pack_gt_drape.py` keeps the solved positions (as float32 -- 1e-5 cm on a garment this
+size), the faces and the body primitives, and drops everything the solver needed only in
+order to run.  A 33k-vertex garment lands at 1.1 MB.
+
+The five currently shipped, all four gates passing:
+
+| garment | verts | solve | max &#124;s-1&#124; | seam gap | mono viol |
+|---|---|---|---|---|---|
+| `rand_JYO1DHSFGH` |  3 508 |   0.75 s | 8.33e-03 | 2.86e-07 cm | 0 |
+| `rand_I88DFY2AKV` |  4 346 |   2.07 s | 1.84e-01 | 1.53e-05 cm | 0 |
+| `rand_3C7X2I6WQ7` | 13 250 |  16.39 s | 6.32e-01 | 3.76e-05 cm | 0 |
+| `rand_E3IN9RH60H` | 26 519 |  87.93 s | 4.82e-01 | 2.35e-05 cm | 0 |
+| `rand_GE9NBC1HFY` | 32 977 | 103.80 s | 5.07e-01 | 2.91e-05 cm | 0 |
+
 ## Validation
 
 Reference (both garment directories read-only):

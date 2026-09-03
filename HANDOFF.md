@@ -113,14 +113,14 @@ answer.*
 ## A4. What can be shown live
 
 The demo runs entirely in the browser — `npm run dev` in `webdemo/`, or the deployed copy
-at https://junseongahn.github.io/seam-correspondence/ (that build is older; redeploy with
-`npm run deploy`).
+at https://junseongahn.github.io/seam-correspondence/, which ships this same r3 model.
 
 | what | where |
 |---|---|
 | import a CLO DXF, get predicted stitching | the drop zone, or "1. CLO tutorial example" |
 | the same on a held-out GCD garment, **scored** | "2. GarmentCode test data" |
 | five more held-out garments, **F1 0.00 to 1.00** | the second row of links |
+| each of those beside its **ground-truth assembly, in red** | the right pane there |
 | draw ground truth by hand, click edge to edge | "draw the ground truth by hand" |
 | the wasm assembly solver, input → solved | right pane of example 2 |
 | CLO's own drape with weld-derived seams | right pane of example 1 |
@@ -130,6 +130,14 @@ Two details worth mentioning unprompted, because they show judgement:
 - The example garments were picked by **scoring 250 held-out garments with the model the
   page actually runs and taking a spread** — 0th, 24th, 57th, 64th percentile — not by
   choosing what looks good.
+- The red pane is the **ground truth's** shape, solved on the host from the correct
+  stitching, and is labelled as such in the pane itself. It is the only thing on the
+  page that is not the model's output, and a 3D shape is persuasive enough to be taken
+  for one, so it is red and says so. Where the prediction is exact it is equally the
+  prediction's shape; where it is not, the note says a wrong stitching would tear the
+  mesh. Seam direction is not guessed anywhere: the vertex pairing comes from welding
+  the simulated mesh, and the solve starts from the specification's per-panel 3D
+  placement, so panels begin on their own side of the body and seams close untwisted.
 - The assembly solve is **disabled unless the prediction exactly equals the ground
   truth**. The dump's constraints are vertex pairs built from the GT and it carries no
   edge→vertex mapping, so a wrong stitching cannot honestly be assembled — and would tear
@@ -143,10 +151,10 @@ Two details worth mentioning unprompted, because they show judgement:
 | r1 (reproduction) | 24,024 | tagged | index | **0.9490** | 0.467 |
 | rand_sagitta | 2,000 | sagitta | random | 0.7501 | **0.485** |
 | r2 | 87,697 | sagitta | random | 0.8030 | 0.333 |
-| r3 (+ arc features) | 99,666 | sagitta | random | *in progress* | 0.485 |
+| **r3 (+ arc features) — shipped** | 99,666 | sagitta | random | **0.8040** | **0.471** |
 
-Per-garment distribution on 1,500 held-out garments (the shipped model): mean **0.850**,
-median **0.904**, **35.6% exactly 1.000**, **5.0% below 0.5**. Mostly-perfect with a real
+Per-garment distribution on 1,500 held-out garments (the shipped model): mean **0.846**,
+median **0.904**, **34.1% exactly 1.000**, **5.4% below 0.5**. Mostly-perfect with a real
 tail — not uniformly mediocre.
 
 **r2's 0.8030 is not comparable to r1's 0.9490.** r1's number includes the panel-order
@@ -159,7 +167,8 @@ Verification, if pressed on rigour:
 | WASM solver correct in-browser | headless Chrome + CDP; max abs diff **9.95e-11 cm** vs Python, `monoViolations 0` |
 | SIMD actually on | sha256 match, reproducible rebuild, Eigen probe (`packet<double>=2`), 1826 `f64x2` opcodes vs 0 |
 | browser sees training's features | TS vs Python dump: **0.000e+00** on both a spec and the CLO DXF, all dims |
-| ONNX export faithful | **40/40** real garments predict identical stitch sets |
+| ONNX export faithful | 39/40 identical; the one difference is a tie-break, the two
+  runtimes agreeing on that pair's score to **1.15e-07** |
 | the seam ground truth is real | reproduces CLO's own merge count of **241** exactly; the exporter refuses otherwise |
 
 ## A6. Things to be honest about
@@ -173,7 +182,8 @@ Verification, if pressed on rigour:
 - **One garment is not a benchmark.** Every CLO number rests on a single hand-annotated
   example.
 - **r3 vs r2 is confounded**: r3 has both the arc features and 14% more data, because the
-  download was still running. The arc-feature effect alone is not isolated.
+  download was still running. The arc-feature effect alone is not isolated. What is clear
+  is that it bought nothing on GCD (0.8030 → 0.8040) and did not touch the 0-of-32.
 - **Two mistakes were made and caught**, both worth telling if the conversation turns to
   method (they read as rigour, not as failure):
   1. The diagnostic scripts read edges straight from the DXF while the pipeline

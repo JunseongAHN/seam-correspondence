@@ -7,6 +7,7 @@ import { placePanels, type Placed } from "./lib/render";
 import PatternSvg from "./PatternSvg";
 import WeldGT from "./WeldGT";         // the CLO drape with its weld-derived seams
 import SimViewer from "./SimViewer";   // the wasm assembly solve, rendered
+import GtDrape from "./GtDrape";       // the ground-truth drape, solved on the host
 import "./App.css";
 
 // BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.
@@ -87,6 +88,7 @@ export default function App() {
   const [show, setShow] = useState({ correct: true, fp: true, fn: true, gt: false });
   const [name, setName] = useState("");
   const [example, setExample] = useState<ExampleKey | null>(null);
+  const [more, setMore] = useState<string | null>(null);   // which held-out garment
   const [annotate, setAnnotate] = useState(false);
   const [labels, setLabels] = useState(true);
   const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
@@ -122,7 +124,8 @@ export default function App() {
 
   /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
       A DXF carries no stitches, so there is nothing to score it against. */
-  const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null) => {
+  const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null,
+                                     moreId: string | null = null) => {
     setBusy(true); setErr(null);
     try {
       const isDxf = /\.dxf$/i.test(fileName);
@@ -136,7 +139,10 @@ export default function App() {
                ms, M: t.M, source: isDxf ? "dxf" : "spec" });
       setName(fileName);
       setExample(ex);
-    } catch (e: any) { setErr(String(e?.message ?? e)); setRes(null); setExample(null); }
+      setMore(moreId);
+    } catch (e: any) {
+      setErr(String(e?.message ?? e)); setRes(null); setExample(null); setMore(null);
+    }
     finally { setBusy(false); }
   }, []);
 
@@ -166,6 +172,22 @@ export default function App() {
              f1: P + R ? (2 * P * R) / (P + R) : 0, P, R,
              mine: userPairs.size > 0 };
   })();
+  const exact = !!stats && stats.fp === 0 && stats.fn === 0;
+
+  /* What sits beside the pattern.  A held-out garment gets its ground-truth drape --
+     red, and labelled as ground truth, because it is the only pane on the page that is
+     not the model's output and a 3D shape is persuasive enough to be mistaken for one. */
+  const right = example
+    ? (EXAMPLES[example].right === "sim"
+        ? { title: "assembled by the wasm solver · 3D", gt: false,
+            node: <SimViewer exact={exact} fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> }
+        : { title: "CLO's own drape · 3D", gt: false, node: <WeldGT /> })
+    : more
+    ? { title: exact ? "ground-truth drape · 3D — the prediction is identical"
+                     : "ground-truth drape · 3D", gt: true,
+        node: <GtDrape id={more} exact={exact}
+                       fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> }
+    : null;
 
   return (
     <div className="app">
@@ -212,7 +234,7 @@ export default function App() {
                         const u = `${B}example/${g.id}_specification.json`;
                         const r = await fetch(u);
                         if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
-                        await runText(await r.text(), `${g.id}_specification.json`, null);
+                        await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
                       } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
                     }}>
               F1 {g.f1}
@@ -221,7 +243,8 @@ export default function App() {
         ))}
         <span className="note" style={{ marginLeft: 10 }}>
           picked by scoring a sample of the test split with the model this page runs, then
-          taking a spread — not a highlight reel
+          taking a spread — not a highlight reel. Each opens beside{" "}
+          <strong className="gt">its ground-truth drape, in red</strong>.
         </span>
       </div>
 
@@ -299,7 +322,7 @@ export default function App() {
             </div>
           )}
 
-          {example ? (
+          {right ? (
             <div className="split">
               <section>
                 <h2>predicted stitching · 2D</h2>
@@ -308,13 +331,8 @@ export default function App() {
                               selected={selected} onEdgeClick={onEdgeClick} />
               </section>
               <section>
-                <h2>{EXAMPLES[example].right === "sim"
-                      ? "assembled by the wasm solver · 3D"
-                      : "CLO's own drape · 3D"}</h2>
-                {EXAMPLES[example].right === "sim"
-                  ? <SimViewer exact={!!stats && stats.fp === 0 && stats.fn === 0}
-                               fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} />
-                  : <WeldGT />}
+                <h2 className={right.gt ? "gt" : undefined}>{right.title}</h2>
+                {right.node}
               </section>
             </div>
           ) : (

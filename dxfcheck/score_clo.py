@@ -30,7 +30,7 @@ CKPTS = [
     ("s12_sagitta  index ids   2k", "autosew/runs/s12_sagitta/best.pt"),
     ("rand_sagitta random ids  2k", "autosew/runs/rand_sagitta/best.pt"),
     ("r2  sagitta / random  87.7k", "autosew/runs/r2/best_ep13_tf1_8030.pt"),
-    ("r3  + arc features    87.7k", "autosew/runs/r3/best.pt"),
+    ("r3  + arc features    99.7k", "autosew/runs/r3/frozen_ep5_tf1_8040.pt"),
 ]
 
 
@@ -52,10 +52,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dxf", default=str(R / "clo_example" / "panel_seperated.dxf"))
     ap.add_argument("--gt", default=str(R / "clo_example" / "panel_seperated_gt.json"))
+    ap.add_argument("--rule", default="ckpt", choices=["ckpt", "mutual", "union"],
+                    help="assignment rule; 'ckpt' takes it from the checkpoint, "
+                         "'mutual' is the one-to-one rule the demo runs")
     a = ap.parse_args()
 
     doc = json.loads(Path(a.gt).read_text())
     print(f"ground truth: {len(doc['stitches'])} stitches, drawn on a {doc['edges']}-edge parse")
+    print(f"assignment rule: {a.rule}")
 
     print(f"\n{'model':<30}{'M':>4}{'pred':>6}{'ok':>5}{'FP':>5}{'FN':>5}"
           f"{'TP':>8}{'TR':>8}{'TF1':>8}{'GSP':>6}")
@@ -88,6 +92,7 @@ def main():
         if bad:
             print(f"  ! {bad} ground-truth stitch(es) name edges this parse does not have")
 
+        rule = cfg.hard_mode if a.rule == "ckpt" else a.rule
         nbr = cycle_neighbours(keys)
         b = collate([{"x": x.astype(np.float32), "nbr": nbr,
                       "gt_pairs": np.zeros((0, 2), np.int64),
@@ -98,7 +103,7 @@ def main():
         M = int(b["mask"][0].sum())
         pred = {(min(i, j), max(i, j))
                 for i, j in hard_assign_single(_slice_logP(lp[0], M), M,
-                                               cfg.tau_multi, cfg.hard_mode)}
+                                               cfg.tau_multi, rule)}
         ok = len(pred & gt)
         tp = ok / max(len(pred), 1)
         tr = ok / max(len(gt), 1)

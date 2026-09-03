@@ -1,7 +1,7 @@
 /* onnxruntime-web session + the hard assignment that stays outside the graph
    (autosew/metrics.py hard_assign_single: P' = (P + P^T)/2, row argmax + tau). */
 import * as ort from "onnxruntime-web";
-import type { Tensors } from "./features";
+import { featureDim, type Tensors } from "./features";
 
 const TAU = 0.4;             // cfg.tau_multi
 /** Keep only stitches both edges agree on, so no edge lands in two of them.
@@ -18,7 +18,9 @@ export async function predict(t: Tensors): Promise<{ pairs: Set<string>; ms: num
   const s = await loadModel();
   const M = t.M;
   const feeds: Record<string, ort.Tensor> = {
-    x: new ort.Tensor("float32", t.x, [1, M, 24]),
+    // featureDim, never a literal: the shipped model has been 24 dims and is now 26,
+    // and a stale width here is not a wrong answer, it is a thrown tensor-size error.
+    x: new ort.Tensor("float32", t.x, [1, M, featureDim]),
     nbr: new ort.Tensor("int64", t.nbr, [1, M, 2]),
     mask: new ort.Tensor("bool", new Uint8Array(M).fill(1), [1, M]),
   };
