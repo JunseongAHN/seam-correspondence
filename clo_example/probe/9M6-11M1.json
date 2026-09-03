@@ -1,0 +1,9 @@
+{
+  "source": "panel_seperated.dxf",
+  "panels": 10,
+  "edges": 48,
+  "note": "just the one stitch in question: 9_M edge 6 (35.76 cm) to 11_M edge 1 (10.46 cm), a 3.42x length ratio",
+  "stitches": [
+    [["9_M", 6], ["11_M", 1]]
+  ]
+}

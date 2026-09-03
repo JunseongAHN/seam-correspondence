@@ -16,6 +16,11 @@ With cfg.curvature_encoding == "sagitta" (the DXF/FBX industrial track) dims 7..
 replaced by K = cfg.sagitta_samples signed sagitta values (see curves.py) and the six
 trailing features shift to follow them; K = 11 leaves the layout 24-dim and the trailing
 six at 18..23, so the two encodings differ in dims 7..17 and nowhere else.
+
+With cfg.arc_features two more are appended (24, 25 in that layout): the ARC length /100
+and arc/chord.  Dim 4 is the chord, but what a seam matches is the arc -- the length of
+fabric you sew along -- and on GCD the arc agrees between the two sides of a stitch far
+more often than the chord, on exactly the seam types the model is worst at.
 """
 from __future__ import annotations
 import math
@@ -29,12 +34,13 @@ from .gcd_parser import Pattern
 
 F_DIM = 24
 N_CURV = 11   # dims 7..17: the curvature block, whatever encodes it
+N_ARC = 2     # appended when cfg.arc_features: arclength/100, arclength/chord
 
 
 def feature_dim(cfg: AutoSewConfig) -> int:
     """Node feature width for this config; set cfg.in_dim to match."""
     k = cfg.sagitta_samples if cfg.curvature_encoding == "sagitta" else N_CURV
-    return F_DIM - N_CURV + k
+    return F_DIM - N_CURV + k + (N_ARC if cfg.arc_features else 0)
 
 
 def _interior_angles(panel):
@@ -67,7 +73,8 @@ def pattern_to_tensors(p: Pattern, cfg: AutoSewConfig, rng: random.Random | None
     M = len(keys)
     nk = cfg.sagitta_samples if cfg.curvature_encoding == "sagitta" else N_CURV
     tail = 7 + nk                     # first index after the curvature block
-    x = np.zeros((M, F_DIM - N_CURV + nk), dtype=np.float32)
+    arc0 = tail + 6                   # first index after panel_u, where the arc pair goes
+    x = np.zeros((M, feature_dim(cfg)), dtype=np.float32)
     nbr = np.zeros((M, 2), dtype=np.int64)
 
     n_panels = len(p.panels)
@@ -96,8 +103,10 @@ def pattern_to_tensors(p: Pattern, cfg: AutoSewConfig, rng: random.Random | None
             x[node, 4] = L / cfg.scale_div
             x[node, 5] = ox
             x[node, 6] = oy
+            poly = edge_polyline(e) if (cfg.curvature_encoding == "sagitta"
+                                        or cfg.arc_features) else None
             if cfg.curvature_encoding == "sagitta":
-                x[node, 7:tail] = sagitta_profile(edge_polyline(e), nk)
+                x[node, 7:tail] = sagitta_profile(poly, nk)
             else:
                 x[node, 7] = e.kt / 5.0 if cfg.curvature_type_norm else float(e.kt)
                 kp = e.kparams if cfg.curvature_frame == "abs" else e.kparams_rel
@@ -123,6 +132,12 @@ def pattern_to_tensors(p: Pattern, cfg: AutoSewConfig, rng: random.Random | None
                 x[node, tail + 5] = float(ids[pi])
             else:
                 x[node, tail + 5] = ids[pi] / cfg.max_panels_norm
+            if cfg.arc_features:
+                # what a seam matches is the arc, not the chord: the length of fabric you
+                # sew along.  The ratio is >= 1 and says how much the edge bows out.
+                arc = float(np.linalg.norm(np.diff(poly, axis=0), axis=1).sum())
+                x[node, arc0 + 0] = arc / cfg.scale_div
+                x[node, arc0 + 1] = arc / L if L > 1e-9 else 1.0
             # cycle neighbors (panel with 1 edge -> self)
             nbr[node, 0] = base + (j - 1) % n
             nbr[node, 1] = base + (j + 1) % n

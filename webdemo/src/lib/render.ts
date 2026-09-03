@@ -3,7 +3,41 @@
    share a colour, and the prediction is overlaid green / red / black-dashed. */
 import { type Panel, type Pattern, type Pt } from "./parseSpec";
 
-export interface Placed { name: string; verts: Pt[]; edges: any[]; back: boolean }
+export interface Placed {
+  name: string; verts: Pt[]; edges: any[]; back: boolean;
+  /** display-only magnification, when the piece is too thin to see or click */
+  blowUp?: number;
+}
+
+/** A 1.6 cm waistband strip next to a 58 cm bodice is a hairline on screen, and its two
+    long edges land closer together than any usable click target.
+
+    Only the THIN axis is stretched, and only for display -- features come from the
+    panel-local geometry, not from this.  Stretching both axes would grow the piece's
+    footprint and make neighbouring strips overlap; stretching just the short one fattens
+    it in place, leaves its length honest, and keeps it where it was. */
+function blowUpThinPanels(placed: Placed[], minFrac = 0.045, maxK = 8) {
+  const all = placed.flatMap((q) => q.verts);
+  if (!all.length) return;
+  const span = Math.max(Math.max(...all.map((v) => v[0])) - Math.min(...all.map((v) => v[0])),
+                        Math.max(...all.map((v) => v[1])) - Math.min(...all.map((v) => v[1])));
+  const target = span * minFrac;
+  for (const q of placed) {
+    const xs = q.verts.map((v) => v[0]), ys = q.verts.map((v) => v[1]);
+    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+    const thin = Math.min(w, h);
+    if (thin <= 0 || thin >= target) continue;
+    const k = Math.min(maxK, target / thin);
+    const vertical = h < w;                       // which axis is the thin one
+    const cx = (Math.max(...xs) + Math.min(...xs)) / 2;
+    const cy = (Math.max(...ys) + Math.min(...ys)) / 2;
+    const f = (p: Pt): Pt => (vertical ? [p[0], cy + (p[1] - cy) * k]
+                                       : [cx + (p[0] - cx) * k, p[1]]);
+    q.verts = q.verts.map(f);
+    q.edges = q.edges.map((e: any) => (e.poly ? { ...e, poly: e.poly.map(f) } : e));
+    q.blowUp = k;
+  }
+}
 
 function sampleEdge(p0: Pt, p1: Pt, curv: any, n = 32): Pt[] {
   const rel2abs = (c: number[]): Pt => {
@@ -69,6 +103,7 @@ export function placePanels(p: Pattern, gap = 25): Placed[] {
     const dx = fmax + gap - bmin;
     for (const q of back) q.verts = q.verts.map(([x, y]) => [x + dx, y] as Pt);
   }
+  blowUpThinPanels(placed);
   return placed;
 }
 

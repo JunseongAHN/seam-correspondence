@@ -89,7 +89,7 @@ def main(argv=None):
 
     # feature-affecting config: a cache built under one of these is INVALID under another
     FEAT_KEYS = ["scale_div", "curvature_frame", "curvature_type_norm",
-                 "curvature_encoding", "sagitta_samples",
+                 "curvature_encoding", "sagitta_samples", "arc_features",
                  "panel_id_mode", "max_panels_norm", "edge_count_minmax"]
     feat_cfg = {k: (list(v) if isinstance(v, tuple) else v)
                 for k, v in cfg.to_dict().items() if k in FEAT_KEYS}

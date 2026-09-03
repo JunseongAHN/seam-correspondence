@@ -12,6 +12,7 @@
    `stitches` and the UI has nothing to score against. */
 import DxfParser from "dxf-parser";
 import { KT, type Edge, type Panel, type Pattern, type Pt } from "./parseSpec";
+import { ENCODING } from "./features";
 
 const MM = 10.0;               // CLO exports mm; the model works in cm
 const BOUNDARY_LAYERS = ["8", "1"];   // preferred first
@@ -42,6 +43,47 @@ function readBlocks(dxf: any): Raw[] {
   return out;
 }
 
+const SMOOTH_DEG = 150.0;   // a turn point straighter than this is not a real corner
+const TANGENT_CM = 1.0;     // arclength each side used to estimate the tangent there
+
+/** Turn points where the boundary runs straight through are not edge boundaries.
+
+    A piece CLO built by mirroring a half keeps a vertex on the mirror axis, and that
+    vertex is exported as a turn point even though the outline is smooth across it.  It
+    splits one real seam into two edges, and the model matches whole edges, so the
+    correspondence it is then asked for is one-to-many and cannot be expressed.  On the
+    CLO example the two populations are separated by 40 degrees: the artifacts are
+    straighter than 161, the sharpest real corner turns to 120.  Mirrors _drop_smooth_turns in
+    dxfcheck/dxf_to_features.py -- keep the two in step. */
+function dropSmoothTurns(pts: Pt[], idx: number[]): number[] {
+  if (idx.length <= 3) return idx;
+  const n = pts.length;
+  const seg = new Float64Array(n);
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    seg[i] = Math.hypot(pts[j][0] - pts[i][0], pts[j][1] - pts[i][1]);
+  }
+  const tangent = (i: number, step: 1 | -1): Pt => {
+    let acc = 0, j = i;
+    for (let c = 0; c < n; c++) {
+      const k = (j + step + n) % n;
+      acc += seg[step > 0 ? j : k];
+      j = k;
+      if (acc >= TANGENT_CM) break;
+    }
+    const vx = pts[j][0] - pts[i][0], vy = pts[j][1] - pts[i][1];
+    const L = Math.hypot(vx, vy);
+    return L > 1e-12 ? [vx / L, vy / L] : [0, 0];
+  };
+  const keep = idx.filter((i) => {
+    const b = tangent(i, 1), a0 = tangent(i, -1);
+    const a: Pt = [-a0[0], -a0[1]];
+    const c = Math.min(1, Math.max(-1, a[0] * b[0] + a[1] * b[1]));
+    return 180 - (Math.acos(c) * 180) / Math.PI <= SMOOTH_DEG;
+  });
+  return keep.length >= 3 ? keep : idx;
+}
+
 /** Turn points -> indices into the boundary polyline, deduplicated and ordered. */
 function edgeStarts(pts: Pt[], turns: Pt[]): number[] {
   const idx = new Set<number>();
@@ -53,7 +95,7 @@ function edgeStarts(pts: Pt[], turns: Pt[]): number[] {
     }
     idx.add(best);
   }
-  return [...idx].sort((a, b) => a - b);
+  return dropSmoothTurns(pts, [...idx].sort((a, b) => a - b));
 }
 
 /** One edge's sampled points -> (k_t, absolute params).  Port of fit_edge(). */
@@ -178,14 +220,23 @@ export function parseDxf(text: string, name: string): Pattern {
     }
     if (area < 0) segs = segs.map((s) => [...s].reverse()).reverse();
 
-    // panel-local frame: bbox lower-left to the origin (features use this)
-    const all = segs.flat();
-    const mx = Math.min(...all.map((q) => q[0])), my = Math.min(...all.map((q) => q[1]));
+    // panel-local frame: bbox lower-left to the origin (features use this).
+    // The bbox is over the CORNERS, not every polyline sample -- that is what
+    // dxf_to_features.py does and what the spec path does, and a bulging curve between
+    // two corners must not move the origin.
+    const corners = segs.map((s) => s[0]);
+    const mx = Math.min(...corners.map((q) => q[0]));
+    const my = Math.min(...corners.map((q) => q[1]));
     const local = segs.map((s) => s.map(([x, y]) => [x - mx, y - my] as Pt));
 
+    // With the sagitta encoding no curve type is ever decided -- the descriptor comes
+    // straight off the polyline, which is all a DXF actually gives us.  Refitting is
+    // only needed for the tagged encoding, and on real CLO boundaries it fails on every
+    // curved edge (a run between turn points is free-form, not a single arc or Bezier).
     const edges: Edge[] = local.map((s, j) => {
-      const [kt, kp] = fitEdge(s);
-      return { panel: raw.name, idxInPanel: j, start: s[0], end: s[s.length - 1], kt, kparams: kp };
+      const [kt, kp] = ENCODING === "sagitta" ? [KT.STRAIGHT, [] as number[]] : fitEdge(s);
+      return { panel: raw.name, idxInPanel: j, start: s[0], end: s[s.length - 1],
+               kt, kparams: kp, poly: s };
     });
 
     panels.push({

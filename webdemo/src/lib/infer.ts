@@ -4,6 +4,9 @@ import * as ort from "onnxruntime-web";
 import type { Tensors } from "./features";
 
 const TAU = 0.4;             // cfg.tau_multi
+/** Keep only stitches both edges agree on, so no edge lands in two of them.
+    Matches cfg.hard_mode = "mutual"; set false for the paper's "union" rule. */
+const ONE_TO_ONE = true;
 let session: ort.InferenceSession | null = null;
 
 export async function loadModel(url = `${import.meta.env.BASE_URL}model/autosew.onnx`) {
@@ -31,19 +34,42 @@ export async function predict(t: Tensors): Promise<{ pairs: Set<string>; ms: num
     for (let j = 0; j < N; j++)
       Ps[i * N + j] = 0.5 * (Math.exp(logP[i * N + j]) + Math.exp(logP[j * N + i]));
 
-  const pairs = new Set<string>();
+  // each edge's best partner, or the dustbin (index M) if it is sewn to nothing
+  const best = new Int32Array(M);
   for (let i = 0; i < M; i++) {
-    let best = -1, bestV = -Infinity;
+    let b = -1, bv = -Infinity;
     for (let j = 0; j < N; j++) {
       if (j === i) continue;
       const v = Ps[i * N + j];
-      if (v > bestV) { bestV = v; best = j; }
+      if (v > bv) { bv = v; b = j; }
     }
-    if (best === M) continue;                       // dustbin wins -> edge is unstitched
-    const add = (j: number) => pairs.add(`${Math.min(i, j)}-${Math.max(i, j)}`);
-    add(best);
-    for (let j = 0; j < M; j++)
-      if (j !== i && j !== best && Ps[i * N + j] >= TAU) add(j);
+    best[i] = b;
+  }
+
+  const pairs = new Set<string>();
+  if (ONE_TO_ONE) {
+    /* Keep a pair only when both edges name each other.  Each row has exactly one
+       argmax, so this is a matching: no edge can end up in two stitches.
+
+       The alternative -- the paper's rule, and what this used to do -- also emits every
+       partner scoring above tau, which is how a multi-edge stitch gets expressed.  But
+       the training data contains no multi-edge stitches at all, so the model never
+       learned when to use it; on a real garment the extra pairs are the model hedging,
+       and every one of them is a false positive.  Measured on the CLO example, switching
+       to mutual never lowered F1 and raised it for two of the five checkpoints. */
+    for (let i = 0; i < M; i++) {
+      const j = best[i];
+      if (j < 0 || j >= M) continue;                // dustbin: this edge is unstitched
+      if (best[j] === i) pairs.add(`${Math.min(i, j)}-${Math.max(i, j)}`);
+    }
+  } else {
+    for (let i = 0; i < M; i++) {
+      if (best[i] === M) continue;
+      const add = (j: number) => pairs.add(`${Math.min(i, j)}-${Math.max(i, j)}`);
+      add(best[i]);
+      for (let j = 0; j < M; j++)
+        if (j !== i && j !== best[i] && Ps[i * N + j] >= TAU) add(j);
+    }
   }
   return { pairs, ms };
 }

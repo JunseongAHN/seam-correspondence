@@ -1,7 +1,19 @@
-/* Port of autosew/features.py.  24 dims per edge, cycle graph within each panel. */
+/* Port of autosew/features.py.  24 dims per edge, cycle graph within each panel.
+
+   Two curvature encodings, matching the Python.  "tagged" is the paper's: dim 7 is the
+   curve type and dims 8..17 are ten slots whose meaning that type selects.  "sagitta"
+   replaces dims 7..17 with K signed sagitta values (see curves.ts) and is what the
+   DXF/FBX industrial track uses, because a DXF has no exact curve type to give. */
+import { edgePolyline, sagittaProfile } from "./curves";
 import { KT, type Pattern, type Pt } from "./parseSpec";
 
 export const F_DIM = 24;
+export const N_CURV = 11;          // dims 7..17: the curvature block, whatever encodes it
+
+export type CurvatureEncoding = "tagged" | "sagitta";
+/** Must match the checkpoint the ONNX model was exported from. */
+export const ENCODING: CurvatureEncoding = "sagitta";
+export const SAGITTA_SAMPLES = 11;
 const SCALE = 100.0;          // cfg.scale_div
 const MAX_PANELS = 37.0;      // cfg.max_panels_norm
 const EDGE_MIN = 2.0, EDGE_MAX = 40.0;   // cfg.edge_count_minmax
@@ -20,8 +32,12 @@ function interiorAngles(edges: { start: Pt; end: Pt }[]): number[] {
   });
 }
 
+/** Width of the curvature block, and of a whole feature row, for the active encoding. */
+export const NK = ENCODING === "sagitta" ? SAGITTA_SAMPLES : N_CURV;
+export const featureDim = F_DIM - N_CURV + NK;
+
 export interface Tensors {
-  x: Float32Array;            // (M, 24) row-major
+  x: Float32Array;            // (M, featureDim) row-major
   nbr: BigInt64Array;         // (M, 2)
   M: number;
   keys: Array<[string, number]>;   // node -> (panel, original edge idx)
@@ -31,7 +47,7 @@ export function patternToTensors(p: Pattern): Tensors {
   const keys: Array<[string, number]> = [];
   for (const panel of p.panels) for (const e of panel.edges) keys.push([panel.name, e.idxInPanel]);
   const M = keys.length;
-  const x = new Float32Array(M * F_DIM);
+  const x = new Float32Array(M * featureDim);
   const nbr = new BigInt64Array(M * 2);
 
   let node = 0;
@@ -41,7 +57,7 @@ export function patternToTensors(p: Pattern): Tensors {
     const ang = interiorAngles(panel.edges);
     for (let j = 0; j < n; j++) {
       const e = panel.edges[j];
-      const o = node * F_DIM;
+      const o = node * featureDim;
       const dx = e.end[0] - e.start[0], dy = e.end[1] - e.start[1];
       const L = Math.hypot(dx, dy);
       const [ox, oy] = L > 0 ? [dx / L, dy / L] : [0, 0];
@@ -49,18 +65,23 @@ export function patternToTensors(p: Pattern): Tensors {
       x[o + 2] = e.end[0] / SCALE;   x[o + 3] = e.end[1] / SCALE;
       x[o + 4] = L / SCALE;
       x[o + 5] = ox; x[o + 6] = oy;
-      x[o + 7] = e.kt;                                   // raw 0..5
-      for (let q = 0; q < Math.min(10, e.kparams.length); q++) {
-        // circle params are [radius, flag, flag]: only the radius is a length
-        const v = e.kt === KT.CIRCLE ? (q === 0 ? e.kparams[q] / SCALE : e.kparams[q])
-                                     : e.kparams[q] / SCALE;
-        x[o + 8 + q] = v;
+      if (ENCODING === "sagitta") {
+        sagittaProfile(edgePolyline(e), SAGITTA_SAMPLES, x, o + 7);
+      } else {
+        x[o + 7] = e.kt;                                   // raw 0..5
+        for (let q = 0; q < Math.min(10, e.kparams.length); q++) {
+          // circle params are [radius, flag, flag]: only the radius is a length
+          const v = e.kt === KT.CIRCLE ? (q === 0 ? e.kparams[q] / SCALE : e.kparams[q])
+                                       : e.kparams[q] / SCALE;
+          x[o + 8 + q] = v;
+        }
       }
+      const t = o + 7 + NK;                                // first index after curvature
       const aL = ang[j], aR = ang[(j + 1) % n];
-      x[o + 18] = Math.sin(aL); x[o + 19] = Math.cos(aL);
-      x[o + 20] = Math.sin(aR); x[o + 21] = Math.cos(aR);
-      x[o + 22] = Math.min(Math.max((n - EDGE_MIN) / Math.max(EDGE_MAX - EDGE_MIN, 1e-6), 0), 1);
-      x[o + 23] = panel.orderIdx / MAX_PANELS;
+      x[t + 0] = Math.sin(aL); x[t + 1] = Math.cos(aL);
+      x[t + 2] = Math.sin(aR); x[t + 3] = Math.cos(aR);
+      x[t + 4] = Math.min(Math.max((n - EDGE_MIN) / Math.max(EDGE_MAX - EDGE_MIN, 1e-6), 0), 1);
+      x[t + 5] = panel.orderIdx / MAX_PANELS;
       nbr[node * 2 + 0] = BigInt(base + ((j - 1 + n) % n));
       nbr[node * 2 + 1] = BigInt(base + ((j + 1) % n));
       node++;

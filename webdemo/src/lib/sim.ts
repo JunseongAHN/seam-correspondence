@@ -126,6 +126,20 @@ export function runSim(Mod: SimModule, d: Dump): SimResult {
   return res;
 }
 
+/** Fetch and parse a dump WITHOUT solving it.  Parsing is milliseconds; solving blocks
+    the thread for ~10 s, so a viewer can show the input geometry straight away and only
+    pay for the solve when it is asked for. */
+export async function loadDump(name = "trousers.bin"): Promise<Dump> {
+  const r = await fetch(`${base()}${name}`);
+  if (!r.ok) throw new Error(`${r.status} fetching ${name}`);
+  return parseDump(await r.arrayBuffer());
+}
+
+/** Solve a dump that is already parsed. */
+export async function solveParsed(d: Dump): Promise<SimResult> {
+  return runSim(await loadSim(), d);
+}
+
 /** Fetch a dump from public/sim/ and solve it. */
 export async function solveDump(name = "trousers.bin"): Promise<SimResult> {
   return (await solveDumpFull(name)).result;

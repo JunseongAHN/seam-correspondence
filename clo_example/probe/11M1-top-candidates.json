@@ -1,0 +1,15 @@
+{
+  "source": "panel_seperated.dxf",
+  "panels": 10,
+  "edges": 48,
+  "note": "11_M#1 (10.46 cm) drawn against its 7 best length matches, all ratio 1.000-1.005. Each pair gets its own colour. The current ground truth sends it to 9_M#6 instead, at ratio 3.419 (rank 34 of 44).",
+  "stitches": [
+    [["11_M", 1], ["8_M", 1]],
+    [["11_M", 1], ["10_M", 1]],
+    [["11_M", 1], ["6_M", 1]],
+    [["11_M", 1], ["9_M", 2]],
+    [["11_M", 1], ["9_M", 4]],
+    [["11_M", 1], ["3_M", 0]],
+    [["11_M", 1], ["3_M", 6]]
+  ]
+}

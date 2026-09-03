@@ -20,7 +20,7 @@ import vtkMapper from "@kitware/vtk.js/Rendering/Core/Mapper";
 import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
-import { solveDumpFull, simdSupported, type Dump, type SimResult } from "./lib/sim";
+import { loadDump, solveParsed, simdSupported, type Dump, type SimResult } from "./lib/sim";
 
 type Stage = "flat" | "placed" | "solved";
 
@@ -31,14 +31,14 @@ const PANEL_COLORS: [number, number, number][] = [
 ];
 
 /** Vertex positions for a stage, always as (n,3). */
-function stagePoints(d: Dump, r: SimResult, stage: Stage): Float32Array {
+function stagePoints(d: Dump, r: SimResult | null, stage: Stage): Float32Array {
   const out = new Float32Array(d.n * 3);
   if (stage === "flat") {
     for (let i = 0; i < d.n; i++) {
       out[i * 3] = d.rest[i * 2]; out[i * 3 + 1] = d.rest[i * 2 + 1]; out[i * 3 + 2] = 0;
     }
   } else {
-    const src = stage === "placed" ? d.P0 : r.positions;
+    const src = stage === "placed" || !r ? d.P0 : r.positions;
     for (let i = 0; i < d.n * 3; i++) out[i] = src[i];
   }
   return out;
@@ -131,26 +131,35 @@ function seamActor(d: Dump, pts: Float32Array) {
 
 export default function SimViewer() {
   const host = useRef<HTMLDivElement>(null);
-  const [data, setData] = useState<{ dump: Dump; result: SimResult } | null>(null);
+  const [dump, setDump] = useState<Dump | null>(null);
+  const [result, setResult] = useState<SimResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [stage, setStage] = useState<Stage>("solved");
+  // open on the input, not the answer: the panels as the solver receives them, sitting
+  // around the body it actually models
+  const [stage, setStage] = useState<Stage>("placed");
   const [showBody, setShowBody] = useState(true);
   const [showSeams, setShowSeams] = useState(false);
   const [wire, setWire] = useState(false);
 
-  const run = useCallback(async () => {
-    setBusy(true); setErr(null);
-    // let the button repaint before the ~10 s synchronous solve blocks the thread
-    await new Promise((r) => setTimeout(r, 30));
-    try { setData(await solveDumpFull("trousers.bin")); }
-    catch (e: any) { setErr(String(e?.stack ?? e?.message ?? e)); setData(null); }
-    finally { setBusy(false); }
+  /* Parsing the dump is milliseconds, so the input geometry is on screen immediately;
+     only the solve costs ~10 s and it is not needed to show what goes IN. */
+  useEffect(() => {
+    loadDump("trousers.bin").then(setDump)
+      .catch((e) => setErr(String(e?.message ?? e)));
   }, []);
 
+  const run = useCallback(async () => {
+    if (!dump) return;
+    setBusy(true); setErr(null);
+    await new Promise((r) => setTimeout(r, 30));   // let the button repaint first
+    try { setResult(await solveParsed(dump)); setStage("solved"); }
+    catch (e: any) { setErr(String(e?.stack ?? e?.message ?? e)); }
+    finally { setBusy(false); }
+  }, [dump]);
+
   useEffect(() => {
-    if (!data || !host.current) return;
-    const { dump, result } = data;
+    if (!dump || !host.current) return;
     const grw = vtkGenericRenderWindow.newInstance({ background: [1, 1, 1] });
     grw.setContainer(host.current);
     const renderer = grw.getRenderer();
@@ -166,7 +175,7 @@ export default function SimViewer() {
     const onResize = () => { grw.resize(); grw.getRenderWindow().render(); };
     window.addEventListener("resize", onResize);
     return () => { window.removeEventListener("resize", onResize); grw.delete(); };
-  }, [data, stage, showBody, showSeams, wire]);
+  }, [dump, result, stage, showBody, showSeams, wire]);
 
   return (
     <>
@@ -175,29 +184,38 @@ export default function SimViewer() {
           {busy ? "solving… (the page freezes for ~10 s)" : "run the wasm assembly solve and show it"}
         </button>
         <span className="note">
-          the prepared GCD garment the dump was built from — the CLO example has no
-          simulation input yet
+          the prepared GCD garment the dump was built from. The body is not a mesh: the
+          solver models it as 7 capsules and a sphere, and that is what is drawn.
         </span>
       </div>
       {err && <div className="err">{err}</div>}
-      {data && (
+      {!dump && !err && <div className="drop">loading the garment…</div>}
+      {dump && (
         <>
           <div className="bar">
             <span className="pill name">trousers.bin</span>
-            <span className="pill">{data.dump.n} verts</span>
-            <span className="pill">{data.dump.M} faces</span>
-            <span className="pill">{data.dump.K} stitch pairs</span>
-            <span className="pill">{data.dump.NC} cylinders · {data.dump.NS} spheres</span>
-            <span className={`pill ${data.result.monoViolations === 0 ? "ok" : "fp"}`}>
-              mono violations {data.result.monoViolations}
-            </span>
-            <span className="pill t">{(data.result.wallMs / 1000).toFixed(2)} s</span>
+            <span className="pill">{dump.n} verts</span>
+            <span className="pill">{dump.M} faces</span>
+            <span className="pill">{dump.K} stitch pairs</span>
+            <span className="pill">{dump.NC} cylinders · {dump.NS} spheres</span>
+            {result ? (
+              <>
+                <span className={`pill ${result.monoViolations === 0 ? "ok" : "fp"}`}>
+                  mono violations {result.monoViolations}
+                </span>
+                <span className="pill t">{(result.wallMs / 1000).toFixed(2)} s</span>
+              </>
+            ) : (
+              <span className="pill">not solved yet</span>
+            )}
             <span className="pill">simd {String(simdSupported())}</span>
           </div>
           <div className="toggles">
             <span className="seg">
               {(["flat", "placed", "solved"] as const).map((s) => (
-                <button key={s} className={stage === s ? "on" : ""} onClick={() => setStage(s)}>
+                <button key={s} className={stage === s ? "on" : ""}
+                        disabled={s === "solved" && !result}
+                        onClick={() => setStage(s)}>
                   {s === "flat" ? "2D panels in" : s === "placed" ? "initial placement" : "solved output"}
                 </button>
               ))}
@@ -209,12 +227,14 @@ export default function SimViewer() {
             <label><input type="checkbox" checked={wire}
                           onChange={(e) => setWire(e.target.checked)} /> mesh edges</label>
           </div>
-          <pre className="energies">
-{`E_arap   = ${data.result.energies[0]}
-E_bend   = ${data.result.energies[1]}
-E_stitch = ${data.result.energies[2]}
-E_obst   = ${data.result.energies[3]}`}
-          </pre>
+          {result && (
+            <pre className="energies">
+{`E_arap   = ${result.energies[0]}
+E_bend   = ${result.energies[1]}
+E_stitch = ${result.energies[2]}
+E_obst   = ${result.energies[3]}`}
+            </pre>
+          )}
           <div className="vtk" ref={host} />
         </>
       )}

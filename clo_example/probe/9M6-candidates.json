@@ -1,0 +1,11 @@
+{
+  "source": "panel_seperated.dxf",
+  "panels": 10,
+  "edges": 48,
+  "note": "9_M#6 against its three best length matches, to compare with 11_M#1",
+  "stitches": [
+    [["9_M", 6], ["11_M", 1]],
+    [["9_M", 6], ["3_M", 2]],
+    [["9_M", 6], ["3_M", 4]]
+  ]
+}

@@ -1,14 +1,19 @@
 /* The 2D pattern with its stitching drawn on it.
 
-   Correspondence is shown by colour: the two edges of a predicted pair share a colour,
-   and a thin line joins their midpoints so a pair is still readable when two colours sit
-   far apart.  Clicking an edge focuses its correspondence -- that one is drawn thick and
-   every other pair drops back to grey -- which is the only way to read a crowded pattern.
-   Clicking empty space, or the same edge again, clears the focus.
+   Three things share this view.
 
-   When the input carries ground truth (a specification.json does, a DXF does not) the
-   overlay switches to the scored view: correct / false positive / false negative. */
-import { useMemo, useState } from "react";
+   Prediction, coloured: the two edges of a predicted pair share a colour, and a thin line
+   joins their midpoints so a pair stays readable when the two colours sit far apart.
+   Clicking an edge focuses its correspondence -- that one is drawn thick and every other
+   pair drops to grey -- which is the only way to read a crowded pattern.
+
+   Scoring, when the input carries ground truth (a specification.json does, a DXF does
+   not): correct / false positive / false negative.
+
+   Annotation, when `annotate` is on: click one edge then another to sew them together by
+   hand.  A DXF has no stitch list, so this is how ground truth gets made for a real
+   garment -- and once it exists the prediction can actually be scored against it. */
+import { useMemo, useRef, useState } from "react";
 import { edgePolyline, edgeMid, stitchColor, type Placed } from "./lib/render";
 import type { Pattern } from "./lib/parseSpec";
 
@@ -20,36 +25,51 @@ export type SvgProps = {
   gt: Set<string>;
   show?: { correct: boolean; fp: boolean; fn: boolean; gt: boolean };
   height?: string;
+  /** hand-annotation mode */
+  annotate?: boolean;
+  /** show "index · arc length" on every edge */
+  labels?: boolean;
+  userPairs?: Set<string>;          // "a-b" with a < b, node indices
+  selected?: number | null;
+  onEdgeClick?: (node: number) => void;
 };
 
-export default function PatternSvg({ pattern, placed, keys, pred, gt, show, height }: SvgProps) {
-  const [focus, setFocus] = useState<number | null>(null);   // a node index
-  const scored = gt.size > 0;
-  const byName = useMemo(() => new Map(placed.map((p) => [p.name, p])), [placed]);
+export default function PatternSvg({
+  pattern, placed, keys, pred, gt, show, height,
+  annotate = false, labels = true, userPairs, selected = null, onEdgeClick,
+}: SvgProps) {
+  const [focus, setFocus] = useState<number | null>(null);
+  const scored = gt.size > 0 && !annotate;
 
-  /* node -> correspondence group, so both sides of a pair share a colour */
+  /** node -> correspondence group, so both sides of a pair share a colour */
   const group = useMemo(() => {
+    const src = annotate ? (userPairs ?? new Set<string>()) : pred;
     const m = new Map<number, number>();
-    if (scored || pred.size === 0) return m;
+    if ((!annotate && scored) || src.size === 0) return m;
     const parent = new Map<number, number>();
     const find = (a: number): number => {
       while (parent.get(a) !== a) { parent.set(a, parent.get(parent.get(a)!)!); a = parent.get(a)!; }
       return a;
     };
-    for (const k of pred) for (const t of k.split("-").map(Number)) if (!parent.has(t)) parent.set(t, t);
-    for (const k of pred) {
+    for (const k of src) for (const t of k.split("-").map(Number)) if (!parent.has(t)) parent.set(t, t);
+    for (const k of src) {
       const [a, b] = k.split("-").map(Number);
       const ra = find(a), rb = find(b);
       if (ra !== rb) parent.set(ra, rb);
     }
+    /* Number the groups in the order the pairs were MADE, not by node index: otherwise
+       adding one pair renumbers the rest and every colour on screen shifts, which makes
+       hand-annotation impossible to follow. */
     const gi = new Map<number, number>();
-    for (const node of [...parent.keys()].sort((a, b) => a - b)) {
-      const r = find(node);
-      if (!gi.has(r)) gi.set(r, gi.size);
-      m.set(node, gi.get(r)!);
+    for (const k of src) {
+      for (const t of k.split("-").map(Number)) {
+        const r = find(t);
+        if (!gi.has(r)) gi.set(r, gi.size);
+      }
     }
+    for (const t of parent.keys()) m.set(t, gi.get(find(t))!);
     return m;
-  }, [pred, scored]);
+  }, [pred, userPairs, annotate, scored]);
 
   const node = useMemo(() => {
     const m = new Map<string, number>();
@@ -64,57 +84,164 @@ export default function PatternSvg({ pattern, placed, keys, pred, gt, show, heig
   const pad = 12;
   const W = x1 - x0 + 2 * pad, H = y1 - y0 + 2 * pad;
   const tx = (p: [number, number]) => `${p[0] - x0 + pad},${y1 - p[1] + pad}`;
-  const S = Math.max(W, H) / 220;                 // keep strokes even across pattern sizes
+
+  /* Zoom and pan.  Some pieces are 1.6 cm strips whose two long edges sit closer together
+     than a comfortable click target, so without zoom they cannot be picked apart. */
+  const [view, setView] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const v = view ?? { x: 0, y: 0, w: W, h: H };
+  const svgRef = useRef<SVGSVGElement>(null);
+  /* Panning stores the pointer position in CLIENT pixels and the scale as it was when the
+     drag began.  Converting through the live viewBox instead would feed each update back
+     into the next frame's conversion, which reads as stutter. */
+  const drag = useRef<{ cx: number; cy: number; vx: number; vy: number;
+                        s: number; moved: boolean } | null>(null);
+  const S = Math.max(v.w, v.h) / 220;             // strokes stay even as you zoom in
+
+  /** user units per client pixel, under preserveAspectRatio="xMidYMid meet" */
+  const pxScale = () => {
+    const r = svgRef.current!.getBoundingClientRect();
+    return Math.max(v.w / r.width, v.h / r.height);
+  };
+
+  const toUser = (e: { clientX: number; clientY: number }) => {
+    const r = svgRef.current!.getBoundingClientRect();
+    const s = pxScale();
+    return { x: v.x + (e.clientX - r.left - (r.width - v.w / s) / 2) * s,
+             y: v.y + (e.clientY - r.top - (r.height - v.h / s) / 2) * s };
+  };
+
+  const onWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    const p = toUser(e);
+    const k = Math.exp(e.deltaY * 0.0015);
+    const w = Math.min(Math.max(v.w * k, W / 60), W * 1.4);
+    const h = w * (v.h / v.w);
+    setView({ x: p.x - ((p.x - v.x) * w) / v.w, y: p.y - ((p.y - v.y) * h) / v.h, w, h });
+  };
+
+  /* Path strings, midpoints and arc lengths depend on the pattern, not on the viewBox, so
+     they are built once.  Recomputing 48 polylines on every pan frame is what made
+     dragging stutter even after the coordinate feedback was fixed. */
+  const geom = useMemo(() => placed.map((p) => {
+    const cx = p.verts.reduce((s, q) => s + q[0], 0) / p.verts.length - x0 + pad;
+    const cy = y1 - p.verts.reduce((s, q) => s + q[1], 0) / p.verts.length + pad;
+    const edges = p.edges.map((_: unknown, i: number) => {
+      const poly = edgePolyline(p, i);
+      let arc = 0;
+      for (let q = 1; q < poly.length; q++)
+        arc += Math.hypot(poly[q][0] - poly[q - 1][0], poly[q][1] - poly[q - 1][1]);
+      if (p.blowUp) arc /= p.blowUp;      // undo the display stretch on a thin piece
+      const m = edgeMid(p, i);
+      return { d: `M ${poly.map(tx).join(" L ")}`, arc,
+               mx: m[0] - x0 + pad, my: y1 - m[1] + pad };
+    });
+    return { name: p.name, blowUp: p.blowUp, cx, cy, edges };
+  }), [placed, x0, y1]);
+
+  const mid = useMemo(() => {
+    const m = new Map<number, [number, number]>();
+    geom.forEach((g, pi) => g.edges.forEach((e, i) => {
+      const n = node.get(`${placed[pi].name}#${i}`);
+      if (n !== undefined) m.set(n, [e.mx, e.my]);
+    }));
+    return m;
+  }, [geom, node, placed]);
 
   const focusGroup = focus === null ? null : group.get(focus) ?? null;
 
   const stitchOf = new Map<string, number>();
-  pattern.stitches.forEach((sides, si) =>
-    sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
+  if (!annotate)
+    pattern.stitches.forEach((sides, si) =>
+      sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
 
   const line = (a: number, b: number, cls: string, key: string, w?: number) => {
-    const ka = keys[a], kb = keys[b];
-    const pa = byName.get(ka?.[0]), pb = byName.get(kb?.[0]);
-    if (!pa || !pb || !pa.edges[ka[1]] || !pb.edges[kb[1]]) return null;
-    const m1 = edgeMid(pa, ka[1]), m2 = edgeMid(pb, kb[1]);
-    return <line key={key} className={cls} x1={m1[0] - x0 + pad} y1={y1 - m1[1] + pad}
-                 x2={m2[0] - x0 + pad} y2={y1 - m2[1] + pad}
+    const m1 = mid.get(a), m2 = mid.get(b);
+    if (!m1 || !m2) return null;
+    return <line key={key} className={cls} x1={m1[0]} y1={m1[1]} x2={m2[0]} y2={m2[1]}
                  strokeWidth={w === undefined ? undefined : w * S} />;
   };
 
   return (
-    <svg className="canvas" style={height ? { height } : undefined}
-         viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
-         onClick={() => setFocus(null)}>
-      {placed.map((p) => (
-        <g key={p.name}>
-          {p.edges.map((_: unknown, i: number) => {
-            const key = `${p.name}#${i}`;
+    <svg ref={svgRef} className={`canvas${annotate ? " annotating" : ""}`}
+         style={height ? { height } : undefined}
+         viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} preserveAspectRatio="xMidYMid meet"
+         onWheel={onWheel}
+         onPointerDown={(e) => {
+           if (e.button !== 0) return;
+           (e.target as Element).setPointerCapture?.(e.pointerId);
+           drag.current = { cx: e.clientX, cy: e.clientY, vx: v.x, vy: v.y,
+                            s: pxScale(), moved: false };
+         }}
+         onPointerMove={(e) => {
+           const d = drag.current;
+           if (!d) return;
+           const dx = (e.clientX - d.cx) * d.s, dy = (e.clientY - d.cy) * d.s;
+           if (!d.moved && Math.hypot(e.clientX - d.cx, e.clientY - d.cy) < 4) return;
+           d.moved = true;
+           setView({ x: d.vx - dx, y: d.vy - dy, w: v.w, h: v.h });
+         }}
+         onPointerUp={(e) => {
+           (e.target as Element).releasePointerCapture?.(e.pointerId);
+           setTimeout(() => { drag.current = null; }, 0);
+         }}
+         onPointerCancel={() => { drag.current = null; }}
+         onDoubleClick={() => setView(null)}
+         onClick={() => { if (!annotate && !drag.current?.moved) setFocus(null); }}>
+      {geom.map((g) => (
+        <g key={g.name}>
+          {g.edges.map((e, i) => {
+            const key = `${g.name}#${i}`;
             const ni = node.get(key);
             const si = stitchOf.get(key) ?? (ni === undefined ? undefined : group.get(ni));
+            const isSel = annotate && ni !== undefined && ni === selected;
             const inFocus = focusGroup !== null && ni !== undefined && group.get(ni) === focusGroup;
             const dim = focusGroup !== null && !inFocus;
-            const col = si === undefined || dim ? "#c9c9c9" : stitchColor(si);
-            const w = si === undefined ? 0.5 : inFocus ? 2.6 : scored ? 1.1 : 0.9;
-            const d = edgePolyline(p, i).map(tx).join(" L ");
+            const col = isSel ? "#f97316"
+                      : si === undefined || dim ? "#c9c9c9"
+                      : stitchColor(si);
+            const w = isSel ? 3.2
+                    : si === undefined ? (annotate ? 0.9 : 0.5)
+                    : inFocus ? 2.6 : scored ? 1.1 : 1.4;
             return (
-              <path key={i} d={`M ${d}`} stroke={col} strokeWidth={w * S} fill="none"
-                    strokeLinecap="round"
-                    style={{ cursor: si === undefined ? "default" : "pointer" }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (ni === undefined || si === undefined) return;
-                      setFocus((f) => (f !== null && group.get(f) === group.get(ni) ? null : ni));
-                    }} />
+              <g key={i}>
+                <path d={e.d} stroke={col} strokeWidth={w * S} fill="none"
+                      strokeLinecap="round" />
+                {labels && (
+                  <text x={e.mx} y={e.my + 1.6 * S} className="elabel"
+                        style={{ fontSize: 4.6 * S }}>
+                    {i} · {e.arc.toFixed(1)}
+                  </text>
+                )}
+                {/* a fat invisible copy, so a thin edge is still easy to hit */}
+                <path d={e.d} stroke="transparent" strokeWidth={2.2 * S} fill="none"
+                      strokeLinecap="round"
+                      style={{ cursor: annotate || si !== undefined ? "pointer" : "default" }}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        if (ni === undefined || drag.current?.moved) return;   // that was a pan
+                        if (annotate) { onEdgeClick?.(ni); return; }
+                        if (si === undefined) return;
+                        setFocus((f) => (f !== null && group.get(f) === group.get(ni) ? null : ni));
+                      }} />
+              </g>
             );
           })}
-          <text x={p.verts.reduce((s, v) => s + v[0], 0) / p.verts.length - x0 + pad}
-                y={y1 - p.verts.reduce((s, v) => s + v[1], 0) / p.verts.length + pad}
-                className="plabel" style={{ fontSize: 4 * S }}>{p.name}</text>
+          <text x={g.cx} y={g.cy} className="plabel" style={{ fontSize: 4 * S }}>{g.name}</text>
+          {g.blowUp && (
+            <text x={g.cx} y={g.cy + 4.6 * S} className="plabel scalenote"
+                  style={{ fontSize: 3.1 * S }}>
+              width ×{g.blowUp.toFixed(1)}, not to scale
+            </text>
+          )}
         </g>
       ))}
 
-      {!scored && [...pred].map((k) => {
+      {annotate && [...(userPairs ?? [])].map((k) => {
+        const [a, b] = k.split("-").map(Number);
+        return line(a, b, "userline", `u${k}`, 1.2);
+      })}
+
+      {!annotate && !scored && [...pred].map((k) => {
         const [a, b] = k.split("-").map(Number);
         const inFocus = focusGroup !== null && group.get(a) === focusGroup;
         if (focusGroup !== null && !inFocus) return null;

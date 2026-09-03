@@ -324,14 +324,19 @@ Official split at
 `C:\Users\POMCHECKER\gcd_data\GarmentCodeData_v2_official_train_valid_test_data_split.json`
 (102,660 train / 6,270 valid / 6,265 test).
 
-Downloaded into `C:\Users\POMCHECKER\gcd_data\{train,valid,test}\part<N>\<garment>\`, **31
-parts, 13.9 GB, as of 2026-09-03**:
+Downloaded into `C:\Users\POMCHECKER\gcd_data\{train,valid,test}\part<N>\<garment>\`. The
+download pipeline **finished on 2026-09-03**; all tarballs are deleted (0 left on disk):
 
 | split | garments | official | progress |
 |---|---|---|---|
-| train | **87,697** | 102,660 | 85.4% |
-| valid | 5,403 | 6,270 | 86.2% |
-| test | 5,380 | 6,265 | 85.9% |
+| train | **99,666** | 102,660 | 97.1% |
+| valid | 6,096 | 6,270 | 97.2% |
+| test | 6,078 | 6,265 | 97.0% |
+
+**`part20` is missing.** 35 part dirs are present — `part0`–`part19` and `part21`–`part35`. The
+~2,990 missing train garments are exactly one part's worth, so the shortfall is entirely part20,
+not a partial extraction elsewhere. Re-fetch it if you want the complete official split;
+otherwise the set is usable as-is at 97%.
 
 **train/valid keep the spec JSON only; test keeps every asset including `.ply`** (user's
 decision, so 3D checking stays possible).
@@ -373,6 +378,10 @@ when a part is already fully organised.
   `& $PY`). Use the Write/Edit tools for files, not heredocs.
 - **Background `bash script.sh &` dies when the tool call ends.** Launch it as the foreground
   command of a `run_in_background` call.
+- **The dev server is fine; a bare `vite` is not.** A background launch once failed with exit
+  127, which looks like a broken toolchain but is not. `vite` exists only as
+  `webdemo/node_modules/.bin/vite`, never on `PATH`. Always `cd webdemo` and run
+  `npm run dev` (verified 2026-09-03: ready in 801 ms, HTTP 200 on `--port 5199 --strictPort`).
 - **numpy 2.x removed `ndarray.ptp()`** — use `np.ptp(a)`.
 - **`evaluate_batch(logP, batch, cfg, acc)`** — accumulator is the *last* argument.
 - Use `$PY` and explicit `encoding="utf-8"` for every file rewrite (cp949 otherwise).
@@ -385,7 +394,7 @@ when a part is already fully organised.
 ## 10. Suggested order of work
 
 1. **r2 on the industrial track**: `--set curvature_encoding=sagitta panel_id_mode=random_norm`
-   over the 87,697 downloaded train garments, 18 epochs. r1 reached 0.9086 from 24k with the
+   over the 99,666 downloaded train garments, 18 epochs. r1 reached 0.9086 from 24k with the
    ordering crutch; this should land well above 0.7501 and — unlike r1 — **that number holds on
    DXF input.** Then export to ONNX and swap it into the demo, fixing `parseSpec.ts`'s sweep
    bug in the same change (§5).

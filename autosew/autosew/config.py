@@ -22,6 +22,14 @@ class AutoSewConfig:
                                       # supply -- k_t has to be refitted and flips, and eleven dimensions
                                       # change meaning at once. "sagitta" is the industrial-input track.
     sagitta_samples: int = 11         # [GAP] K for curvature_encoding="sagitta". 11 keeps in_dim at 24.
+    arc_features: bool = False        # [INDUSTRIAL] append arclength/100 and arclength/chord.
+                                      # The paper's dim 4 is the CHORD, but what a seam actually
+                                      # matches is the arc -- the fabric edge you sew along.  On
+                                      # GCD the arc agrees between the two sides of a stitch far
+                                      # more often than the chord does, and only on the seam types
+                                      # the model is worst at: collar/torso 66.7% -> 100% within
+                                      # 10%, sleeve/torso 36.9% -> 48.2%, skirt/torso 52.7% ->
+                                      # 61.0%, while same-part seams are unchanged at 85.7%.
     panel_id_mode: str = "index_norm" # [GAP] encoding of panel ID u. "index_norm": panel position in file /
                                       #       max_panels_norm; "index_raw": raw int; "random_norm": per-sample
                                       #       shuffled ids (augmentation; breaks GCD generation-order semantics)

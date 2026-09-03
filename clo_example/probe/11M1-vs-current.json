@@ -1,0 +1,10 @@
+{
+  "source": "panel_seperated.dxf",
+  "panels": 10,
+  "edges": 48,
+  "note": "the current ground-truth choice for 11_M#1 next to the single best length match, so the two can be compared side by side",
+  "stitches": [
+    [["11_M", 1], ["9_M", 6]],
+    [["11_M", 1], ["6_M", 1]]
+  ]
+}

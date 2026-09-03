@@ -20,6 +20,48 @@ from autosew.features import N_CURV, feature_dim
 MM = 10.0
 
 
+SMOOTH_DEG = 150.0     # a turn point straighter than this is not a real corner
+TANGENT_CM = 1.0       # arclength each side used to estimate the tangent there
+
+
+def _drop_smooth_turns(pts, idx):
+    """Turn points where the boundary runs straight through are not edge boundaries.
+
+    A piece CLO built by mirroring a half keeps a vertex on the mirror axis, and that
+    vertex is exported as a turn point even though the outline is smooth across it.  It
+    splits one real seam into two edges, and the model matches whole edges, so the
+    correspondence it is then asked for is one-to-many and cannot be expressed.  Measured
+    on the CLO example the two populations are separated by 40 degrees: the artifacts are
+    straighter than 161, the sharpest real corner turns to 120.
+    """
+    if len(idx) <= 3:
+        return idx
+    n = len(pts)
+    seg = np.linalg.norm(np.diff(np.vstack([pts, pts[:1]]), axis=0), axis=1)
+
+    def tangent(i, step):
+        """Direction of the boundary leaving i, over ~TANGENT_CM of arclength."""
+        acc, j = 0.0, i
+        for _ in range(n):
+            k = (j + step) % n
+            acc += seg[j if step > 0 else k]
+            j = k
+            if acc >= TANGENT_CM:
+                break
+        v = pts[j] - pts[i]
+        L = np.linalg.norm(v)
+        return v / L if L > 1e-12 else np.zeros(2)
+
+    keep = []
+    for i in idx:
+        a, b = -tangent(i, -1), tangent(i, +1)
+        c = float(np.clip(np.dot(a, b), -1.0, 1.0))
+        straightness = 180.0 - np.degrees(np.arccos(c))
+        if straightness <= SMOOTH_DEG:
+            keep.append(i)
+    return keep if len(keep) >= 3 else idx
+
+
 def read_panels(path):
     """-> [(name, boundary points in cm, edge start indices)] in block order."""
     doc = ezdxf.readfile(path)
@@ -37,7 +79,32 @@ def read_panels(path):
                          if p.dxftype() == "POINT" and p.dxf.layer == "2"]).reshape(-1, 2) / MM
         turn = np.unique(np.round(turn, 6), axis=0)
         idx = sorted({int(np.argmin(np.linalg.norm(pts - t, axis=1))) for t in turn})
-        out.append((b.name, pts, idx))
+        out.append((b.name, pts, _drop_smooth_turns(pts, idx)))
+    return out
+
+
+def panel_edges(path):
+    """-> {(panel, edge index): polyline}, in the SAME order build() emits.
+
+    read_panels returns turn points in file order; build() then canonicalises each panel
+    to anticlockwise, which reverses roughly half of them.  Anything that reports on an
+    edge by index -- a drawing, a length table, a hand-drawn ground truth -- has to apply
+    that same reversal, or it will name a different edge than the model was given.
+    """
+    out = {}
+    for name, pts, idx in read_panels(path):
+        n = len(idx)
+        segs = []
+        for k in range(n):
+            a, b = idx[k], idx[(k + 1) % n]
+            segs.append(pts[a:b + 1] if b > a else np.vstack([pts[a:], pts[:b + 1]]))
+        starts = np.array([s[0] for s in segs])
+        area = np.sum(starts[:, 0] * np.roll(starts[:, 1], -1)
+                      - np.roll(starts[:, 0], -1) * starts[:, 1])
+        if area < 0:
+            segs = [segs[i][::-1] for i in list(range(n))[::-1]]
+        for k, s in enumerate(segs):
+            out[(name, k)] = s
     return out
 
 
@@ -132,6 +199,10 @@ def build(path, cfg):
             x[tail+2], x[tail+3] = np.sin(aR), np.cos(aR)
             x[tail+4] = min(max((n - lo) / max(hi - lo, 1e-6), 0.0), 1.0)
             x[tail+5] = pi / cfg.max_panels_norm
+            if cfg.arc_features:
+                arc = float(np.linalg.norm(np.diff(segs[j], axis=0), axis=1).sum())
+                x[tail+6] = arc / cfg.scale_div
+                x[tail+7] = arc / Ls[j] if Ls[j] > 1e-9 else 1.0
             rows.append(x); keys.append((name, j))
     return np.array(rows), keys
 

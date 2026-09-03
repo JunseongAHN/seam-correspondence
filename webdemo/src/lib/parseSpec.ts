@@ -8,6 +8,7 @@ export type Pt = [number, number];
 export interface Edge {
   panel: string; idxInPanel: number;      // ORIGINAL json index; stitches refer to this
   start: Pt; end: Pt; kt: number; kparams: number[];
+  poly?: Pt[];          // DXF input: the sampled boundary, used instead of refitting
 }
 export interface Panel {
   name: string; orderIdx: number; edges: Edge[]; nEdgesRaw: number; reversed: boolean;
@@ -114,6 +115,13 @@ export function parseSpec(spec: any, name = "pattern"): Pattern {
           }
         } else if (kt === KT.CUBIC && kabs.length === 4) {
           kabs = [kabs[2], kabs[3], kabs[0], kabs[1]];
+        }
+        if (kt === KT.CIRCLE && kabs.length > 2) {
+          // circle params are [radius, large_arc, right]; traversing the arc backwards
+          // flips its sweep, while radius and the large-arc flag are orientation-free.
+          // Matches the same fix in gcd_parser.py -- keep the two in step.
+          kabs = kabs.slice();
+          kabs[2] = 1 - Number(kabs[2]);
         }
       }
       return { panel: pname, idxInPanel: j, start, end, kt, kparams: kabs };

@@ -11,6 +11,37 @@ import "./App.css";
 
 // BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.
 const B = import.meta.env.BASE_URL;
+/** Hand-drawn ground truth, saved as panel/edge names so it survives a reparse. */
+function downloadGt(res: Result, pairs: Set<string>, name: string) {
+  const doc = {
+    source: name,
+    panels: res.pattern.panels.length,
+    edges: res.M,
+    stitches: [...pairs].map((k) => k.split("-").map(Number).map((n) => res.keys[n])),
+  };
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)],
+                                        { type: "application/json" }));
+  a.download = `${name.replace(/\.[^.]+$/, "")}_gt.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function loadGt(text: string, res: Result): Set<string> {
+  const doc = JSON.parse(text);
+  const idx = new Map(res.keys.map(([p, e], i) => [`${p}#${e}`, i]));
+  const out = new Set<string>();
+  let miss = 0;
+  for (const st of doc.stitches ?? []) {
+    const ns = (st as Array<[string, number]>).map(([p, e]) => idx.get(`${p}#${e}`));
+    if (ns.length !== 2 || ns.some((n) => n === undefined)) { miss++; continue; }
+    const [a, b] = ns as number[];
+    out.add(`${Math.min(a, b)}-${Math.max(a, b)}`);
+  }
+  if (miss) throw new Error(`${miss} stitch(es) in the file name edges this pattern does not have`);
+  return out;
+}
+
 const EXAMPLES = {
   clo: {
     label: "1. CLO tutorial example",
@@ -32,6 +63,17 @@ const EXAMPLES = {
 };
 type ExampleKey = keyof typeof EXAMPLES;
 
+/* More held-out garments, chosen by scoring a sample of the test split with the model
+   this demo ships and taking a spread rather than a highlight reel.  The first one it
+   gets completely wrong; two it gets exactly right. */
+const MORE: Array<{ id: string; f1: string; what: string }> = [
+  { id: "rand_JYO1DHSFGH", f1: "0.00", what: "4 panels, 4 stitches — none found" },
+  { id: "rand_I88DFY2AKV", f1: "0.76", what: "8 panels, 24 stitches" },
+  { id: "rand_E3IN9RH60H", f1: "0.94", what: "14 panels, 44 stitches" },
+  { id: "rand_3C7X2I6WQ7", f1: "1.00", what: "6 panels, 24 stitches — exact" },
+  { id: "rand_GE9NBC1HFY", f1: "1.00", what: "14 panels, 48 stitches — exact" },
+];
+
 type Result = {
   pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
   pred: Set<string>; gt: Set<string>; ms: number; M: number;
@@ -45,7 +87,38 @@ export default function App() {
   const [show, setShow] = useState({ correct: true, fp: true, fn: true, gt: false });
   const [name, setName] = useState("");
   const [example, setExample] = useState<ExampleKey | null>(null);
+  const [annotate, setAnnotate] = useState(false);
+  const [labels, setLabels] = useState(true);
+  const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const gtRef = useRef<HTMLInputElement>(null);
+
+  /** Click one edge then another to sew them together; click a paired edge to undo it.
+
+      Two things to keep right here.  StrictMode invokes a state updater twice to check it
+      is pure, so the updater must not have side effects -- setUserPairs cannot live
+      inside setSelected -- and it must be idempotent, which a has/delete/add toggle is
+      not: run twice it adds and then removes, and the pair silently vanishes.  So the
+      add-or-remove decision is made out here and the updater just applies it. */
+  const onEdgeClick = useCallback((n: number) => {
+    if (selected === n) { setSelected(null); return; }        // same edge: deselect
+    if (selected === null) {
+      // already sewn?  clicking it again undoes that stitch
+      const owner = [...userPairs].find((k) => k.split("-").map(Number).includes(n));
+      if (owner) { setUserPairs((p) => { const q = new Set(p); q.delete(owner); return q; }); return; }
+      setSelected(n);
+      return;
+    }
+    const k = `${Math.min(selected, n)}-${Math.max(selected, n)}`;
+    const remove = userPairs.has(k);
+    setUserPairs((p) => {
+      const q = new Set(p);
+      if (remove) q.delete(k); else q.add(k);
+      return q;
+    });
+    setSelected(null);
+  }, [selected, userPairs]);
 
   /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
       A DXF carries no stitches, so there is nothing to score it against. */
@@ -81,14 +154,17 @@ export default function App() {
     } catch (ex: any) { setErr(String(ex?.message ?? ex)); setBusy(false); }
   }, [runText]);
 
-  const scored = !!res && res.gt.size > 0;
+  // hand-drawn ground truth outranks the file's, so a DXF becomes scorable
+  const truth = userPairs.size ? userPairs : res?.gt ?? new Set<string>();
+  const scored = !!res && truth.size > 0;
   const stats = (() => {
     if (!res) return null;
-    const ok = [...res.pred].filter((k) => res.gt.has(k)).length;
+    const ok = [...res.pred].filter((k) => truth.has(k)).length;
     const P = res.pred.size ? ok / res.pred.size : 0;
-    const R = res.gt.size ? ok / res.gt.size : 0;
-    return { ok, fp: res.pred.size - ok, fn: res.gt.size - ok,
-             f1: P + R ? (2 * P * R) / (P + R) : 0 };
+    const R = truth.size ? ok / truth.size : 0;
+    return { ok, fp: res.pred.size - ok, fn: truth.size - ok,
+             f1: P + R ? (2 * P * R) / (P + R) : 0, P, R,
+             mine: userPairs.size > 0 };
   })();
 
   return (
@@ -123,7 +199,65 @@ export default function App() {
         ))}
       </div>
 
+      <div className="tryit">
+        more held-out garments, from worst to best —{" "}
+        {MORE.map((g, i) => (
+          <span key={g.id}>
+            {i > 0 && <span className="sep">·</span>}
+            <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
+                    disabled={busy} title={g.what}
+                    onClick={async () => {
+                      setBusy(true); setErr(null);
+                      try {
+                        const u = `${B}example/${g.id}_specification.json`;
+                        const r = await fetch(u);
+                        if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
+                        await runText(await r.text(), `${g.id}_specification.json`, null);
+                      } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
+                    }}>
+              F1 {g.f1}
+            </button>
+          </span>
+        ))}
+        <span className="note" style={{ marginLeft: 10 }}>
+          picked by scoring a sample of the test split with the model this page runs, then
+          taking a spread — not a highlight reel
+        </span>
+      </div>
+
       {err && <div className="err">{err}</div>}
+
+      {res && (
+        <div className="examples">
+          <button onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
+            {annotate ? "leave" : "draw"} the ground truth by hand
+          </button>
+          <label className="note" style={{ userSelect: "none" }}>
+            <input type="checkbox" checked={labels}
+                   onChange={(e) => setLabels(e.target.checked)} />{" "}
+            edge index and length
+          </label>
+          {annotate && (
+            <>
+              <button onClick={() => { setUserPairs(new Set()); setSelected(null); }}
+                      disabled={!userPairs.size}>clear ({userPairs.size})</button>
+              <button disabled={!userPairs.size}
+                      onClick={() => downloadGt(res, userPairs, name)}>save as JSON</button>
+              <button onClick={() => gtRef.current?.click()}>load JSON</button>
+              <input ref={gtRef} type="file" accept=".json" hidden
+                     onChange={async (e) => {
+                       const f = e.target.files?.[0];
+                       if (!f) return;
+                       try { setUserPairs(loadGt(await f.text(), res)); setErr(null); }
+                       catch (ex: any) { setErr(String(ex?.message ?? ex)); }
+                     }} />
+              <span className="note">
+                click one edge, then the edge it is sewn to. Click a pair again to undo it.
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
       {res && (
         <>
@@ -133,10 +267,14 @@ export default function App() {
             <span className="pill">{res.M} edges</span>
             {scored && stats ? (
               <>
+                {stats.mine && <span className="pill">{userPairs.size} hand-drawn stitches</span>}
                 <span className="pill ok">correct {stats.ok}</span>
                 <span className="pill fp">FP {stats.fp}</span>
                 <span className="pill fn">FN {stats.fn}</span>
+                <span className="pill">P {stats.P.toFixed(3)}</span>
+                <span className="pill">R {stats.R.toFixed(3)}</span>
                 <span className="pill">F1 {stats.f1.toFixed(3)}</span>
+                {stats.mine && <span className="pill">scored against your ground truth</span>}
               </>
             ) : (
               <>
@@ -165,7 +303,9 @@ export default function App() {
             <div className="split">
               <section>
                 <h2>predicted stitching · 2D</h2>
-                <PatternSvg {...res} show={show} height="62vh" />
+                <PatternSvg {...res} gt={truth} show={show} height="62vh"
+                              annotate={annotate} labels={labels} userPairs={userPairs}
+                              selected={selected} onEdgeClick={onEdgeClick} />
               </section>
               <section>
                 <h2>{EXAMPLES[example].right === "sim"
@@ -183,7 +323,9 @@ export default function App() {
                   Click again, or click the background, to clear.
                 </p>
               )}
-              <PatternSvg {...res} show={show} />
+              <PatternSvg {...res} gt={truth} show={show}
+                    annotate={annotate} labels={labels} userPairs={userPairs}
+                    selected={selected} onEdgeClick={onEdgeClick} />
             </>
           )}
         </>
