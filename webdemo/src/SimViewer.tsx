@@ -20,7 +20,7 @@ import vtkMapper from "@kitware/vtk.js/Rendering/Core/Mapper";
 import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
-import { loadDump, solveParsed, simdSupported, type Dump, type SimResult } from "./lib/sim";
+import { loadDumpRaw, solveInWorker, simdSupported, type Dump, type SimResult } from "./lib/sim";
 
 type Stage = "flat" | "placed" | "solved";
 
@@ -135,10 +135,14 @@ function seamActor(d: Dump, pts: Float32Array) {
     carry.  The honest thing is therefore to solve only when the prediction is identical
     to the ground truth -- then the assembly is the prediction's, unambiguously -- and to
     refuse otherwise rather than show a solve of the wrong stitching. */
-export default function SimViewer({ exact = true, fp = 0, fn = 0 }:
-                                  { exact?: boolean; fp?: number; fn?: number }) {
+export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
+                                    file = "trousers.bin", expectS = 10 }:
+                                  { exact?: boolean; fp?: number; fn?: number; ok?: number;
+                                    file?: string; expectS?: number }) {
   const host = useRef<HTMLDivElement>(null);
   const [dump, setDump] = useState<Dump | null>(null);
+  const raw = useRef<ArrayBuffer | null>(null);
+  const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState<SimResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -152,17 +156,24 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0 }:
   /* Parsing the dump is milliseconds, so the input geometry is on screen immediately;
      only the solve costs ~10 s and it is not needed to show what goes IN. */
   useEffect(() => {
-    loadDump("trousers.bin").then(setDump)
-      .catch((e) => setErr(String(e?.message ?? e)));
-  }, []);
+    setDump(null); setResult(null); setStage("placed"); setErr(null);
+    let live = true;
+    loadDumpRaw(file).then(({ dump: d, raw: b }) => {
+      if (!live) return;
+      raw.current = b;
+      setDump(d);
+    }).catch((e) => { if (live) setErr(String(e?.message ?? e)); });
+    return () => { live = false; };
+  }, [file]);
 
   const run = useCallback(async () => {
-    if (!dump) return;
-    setBusy(true); setErr(null);
-    await new Promise((r) => setTimeout(r, 30));   // let the button repaint first
-    try { setResult(await solveParsed(dump)); setStage("solved"); }
+    if (!dump || !raw.current) return;
+    setBusy(true); setErr(null); setElapsed(0);
+    const t0 = performance.now();
+    const tick = setInterval(() => setElapsed((performance.now() - t0) / 1000), 250);
+    try { setResult(await solveInWorker(dump, raw.current)); setStage("solved"); }
     catch (e: any) { setErr(String(e?.stack ?? e?.message ?? e)); }
-    finally { setBusy(false); }
+    finally { clearInterval(tick); setBusy(false); }
   }, [dump]);
 
   useEffect(() => {
@@ -188,16 +199,17 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0 }:
     <>
       <div className="examples">
         <button onClick={run} disabled={busy || !exact}>
-          {busy ? "solving… (the page freezes for ~10 s)"
-                : exact ? "assemble it — the prediction, solved"
+          {busy ? `solving… ${elapsed.toFixed(0)} s of about ${expectS}`
+                : exact ? `assemble it — the prediction, solved (about ${expectS} s)`
                         : "cannot assemble this prediction"}
         </button>
         <span className="note">
           {exact
-            ? "the prediction for this garment is identical to its ground truth — 24 of 24 "
-              + "stitches, no false positives — so the solve below assembles exactly what "
-              + "the model predicted. The body is not a mesh: the solver models it as 7 "
-              + "capsules and a sphere, and that is what is drawn."
+            ? `the prediction for this garment is identical to its ground truth — ${ok} of `
+              + `${ok} stitches, no false positives — so the solve below assembles exactly `
+              + "what the model predicted. It runs in a Web Worker, so the page stays alive "
+              + "while it does. The body is not a mesh: the solver models it as capsules and "
+              + "a sphere, and that is what is drawn."
             : `the prediction has ${fp} false positive${fp === 1 ? "" : "s"} and `
               + `${fn} missed stitch${fn === 1 ? "" : "es"}. The dump's constraints are `
               + "vertex pairs built from the ground truth, and it carries no mapping from "
@@ -210,7 +222,7 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0 }:
       {dump && (
         <>
           <div className="bar">
-            <span className="pill name">trousers.bin</span>
+            <span className="pill name">{file}</span>
             <span className="pill">{dump.n} verts</span>
             <span className="pill">{dump.M} faces</span>
             <span className="pill">{dump.K} stitch pairs</span>

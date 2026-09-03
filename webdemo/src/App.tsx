@@ -76,12 +76,20 @@ type ExampleKey = keyof typeof EXAMPLES;
 /* More held-out garments, chosen by scoring a sample of the test split with the model
    this demo ships and taking a spread rather than a highlight reel.  The first one it
    gets completely wrong; two it gets exactly right. */
-const MORE: Array<{ id: string; f1: string; what: string }> = [
+/* `sim` is the solver input, shipped only for the garments the model gets exactly
+   right: the dump's constraints are vertex pairs built from the ground truth and it
+   carries no edge->vertex mapping, so a wrong stitching cannot honestly be assembled.
+   expectS is measured in a real browser, not guessed: 25.8 s and 109.4 s, both with
+   mono violations 0 and energies matching the native solve to the printed digits. */
+const MORE: Array<{ id: string; f1: string; what: string;
+                    sim?: { file: string; expectS: number } }> = [
   { id: "rand_JYO1DHSFGH", f1: "0.00", what: "4 panels, 4 stitches — none found" },
   { id: "rand_I88DFY2AKV", f1: "0.76", what: "8 panels, 24 stitches" },
   { id: "rand_E3IN9RH60H", f1: "0.94", what: "14 panels, 44 stitches" },
-  { id: "rand_3C7X2I6WQ7", f1: "1.00", what: "6 panels, 24 stitches — exact" },
-  { id: "rand_GE9NBC1HFY", f1: "1.00", what: "14 panels, 48 stitches — exact" },
+  { id: "rand_3C7X2I6WQ7", f1: "1.00", what: "6 panels, 24 stitches — exact",
+    sim: { file: "rand_3C7X2I6WQ7.bin", expectS: 26 } },
+  { id: "rand_GE9NBC1HFY", f1: "1.00", what: "14 panels, 48 stitches — exact",
+    sim: { file: "rand_GE9NBC1HFY.bin", expectS: 110 } },
 ];
 
 type Result = {
@@ -199,10 +207,20 @@ export default function App() {
             node: <SimViewer exact={exact} fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> }
         : { title: "CLO's own drape · 3D", gt: false, node: <WeldGT /> })
     : more
-    ? { title: exact ? "ground-truth drape · 3D — the prediction is identical"
-                     : "ground-truth drape · 3D", gt: true,
-        node: <GtDrape id={more} exact={exact}
-                       fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> }
+    ? (() => {
+        /* Exact prediction: it can actually be assembled, so offer the solve rather
+           than a picture of the answer.  Anything else gets the ground truth's shape,
+           in red, because its own stitching would tear the mesh. */
+        const sim = MORE.find((g) => g.id === more)?.sim;
+        return sim && exact
+          ? { title: "assembled by the wasm solver · 3D — the prediction, solved",
+              gt: false,
+              node: <SimViewer exact fp={0} fn={0} ok={stats?.ok ?? 0}
+                               file={sim.file} expectS={sim.expectS} /> }
+          : { title: "ground-truth drape · 3D", gt: true,
+              node: <GtDrape id={more} exact={exact}
+                             fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> };
+      })()
     : null;
 
   return (

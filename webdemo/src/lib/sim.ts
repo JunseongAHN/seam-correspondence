@@ -169,3 +169,31 @@ export function simdSupported(): boolean {
     10, 22, 1, 20, 0, 253, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11,
   ]));
 }
+
+/** Solve a parsed dump in a Web Worker, so the page stays alive while it runs.
+
+    The dump's buffers are re-serialised rather than transferred: the caller is showing
+    the flat panels and the initial placement from that same object while the solve
+    runs, and a transferred ArrayBuffer would be detached out from under it. */
+export function solveInWorker(d: Dump, raw: ArrayBuffer): Promise<SimResult> {
+  return new Promise((resolve, reject) => {
+    const w = new Worker(new URL("./sim.worker.ts", import.meta.url), { type: "module" });
+    w.onmessage = (e) => {
+      w.terminate();
+      if (e.data.ok) resolve(e.data.result as SimResult);
+      else reject(new Error(e.data.error));
+    };
+    w.onerror = (e) => { w.terminate(); reject(new Error(e.message || "worker failed")); };
+    w.postMessage({ dir: base(), buf: raw.slice(0) }, [] );
+    void d;
+  });
+}
+
+/** Fetch a dump and keep the raw bytes: the worker needs them again to parse its own
+    copy, and the main thread needs the parsed form to draw the input straight away. */
+export async function loadDumpRaw(name: string): Promise<{ dump: Dump; raw: ArrayBuffer }> {
+  const r = await fetch(`${base()}${name}`);
+  if (!r.ok) throw new Error(`${r.status} fetching ${name}`);
+  const raw = await r.arrayBuffer();
+  return { dump: parseDump(raw), raw };
+}

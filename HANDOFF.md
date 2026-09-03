@@ -117,12 +117,14 @@ at https://junseongahn.github.io/seam-correspondence/, which ships this same r3 
 
 | what | where |
 |---|---|
-| import a CLO DXF, get predicted stitching | the drop zone, or "1. CLO tutorial example" |
+| import a CLO DXF, get predicted stitching **and scored** against hand-drawn truth |
+  the drop zone, or "1. CLO tutorial example" |
 | the same on a held-out GCD garment, **scored** | "2. GarmentCode test data" |
 | five more held-out garments, **F1 0.00 to 1.00** | the second row of links |
 | each of those beside its **ground-truth assembly, in red** | the right pane there |
 | draw ground truth by hand, click edge to edge | "draw the ground truth by hand" |
-| the wasm assembly solver, input → solved | right pane of example 2 |
+| the wasm assembly solver, input → solved | right pane of example 2, and of either
+  exactly-predicted garment in the second row |
 | CLO's own drape with weld-derived seams | right pane of example 1 |
 
 Two details worth mentioning unprompted, because they show judgement:
@@ -301,7 +303,6 @@ hand-drawn ground truth.
 3. **Break the mirror ambiguity** (B5) — sagitta sign is the lead.
 4. **A second annotated garment.** Every CLO number rests on one example.
 5. Fold the SIMD flags into `simcpp/build.sh`; gitignore the two extra build dirs.
-6. Move the browser solve to a Web Worker (it freezes the page for ~10 s).
 7. Redeploy the demo — the live copy predates the current model and UI.
 
 ## B8. Dataset
