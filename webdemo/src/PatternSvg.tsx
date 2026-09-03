@@ -184,10 +184,20 @@ export default function PatternSvg({
   const lit = (a: number, b: number) =>
     focusSet === null || focusSet.has(a) || focusSet.has(b);
 
+  /* Which ground-truth stitch each edge belongs to, so both sides share a colour.  A
+     specification carries that list; a DXF does not, and its ground truth arrives as node
+     pairs instead -- without this fallback a scored DXF would render entirely grey. */
   const stitchOf = new Map<string, number>();
-  if (!annotate)
-    pattern.stitches.forEach((sides, si) =>
-      sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
+  if (!annotate) {
+    if (pattern.stitches.length)
+      pattern.stitches.forEach((sides, si) =>
+        sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
+    else
+      [...gt].forEach((k, si) => k.split("-").map(Number).forEach((n) => {
+        const key = keys[n];
+        if (key) stitchOf.set(`${key[0]}#${key[1]}`, si);
+      }));
+  }
 
   const line = (a: number, b: number, cls: string, key: string, w?: number) => {
     const m1 = mid.get(a), m2 = mid.get(b);

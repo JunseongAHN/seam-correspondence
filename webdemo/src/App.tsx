@@ -28,9 +28,9 @@ function downloadGt(res: Result, pairs: Set<string>, name: string) {
   URL.revokeObjectURL(a.href);
 }
 
-function loadGt(text: string, res: Result): Set<string> {
-  const doc = JSON.parse(text);
-  const idx = new Map(res.keys.map(([p, e], i) => [`${p}#${e}`, i]));
+/** A saved ground truth names panel/edge, not node indices, so it survives a reparse. */
+function gtFromDoc(doc: any, keys: Array<[string, number]>): Set<string> {
+  const idx = new Map(keys.map(([p, e], i) => [`${p}#${e}`, i]));
   const out = new Set<string>();
   let miss = 0;
   for (const st of doc.stitches ?? []) {
@@ -43,15 +43,24 @@ function loadGt(text: string, res: Result): Set<string> {
   return out;
 }
 
+function loadGt(text: string, res: Result): Set<string> {
+  return gtFromDoc(JSON.parse(text), res.keys);
+}
+
 const EXAMPLES = {
   clo: {
     label: "1. CLO tutorial example",
     file: "panel_seperated.dxf",
     url: `${B}example/panel_seperated.dxf`,
     right: "drape" as const,
-    note: "10 pieces exported from CLO. A DXF carries no stitch list, so the prediction "
-        + "is shown on its own. The right pane is CLO's own drape, not a simulation of "
-        + "this prediction.",
+    // A DXF carries no stitch list.  This one is scorable only because the ground truth
+    // was drawn by hand in this very demo and exported -- 20 stitches over 40 of the 48
+    // edges -- which is why the CLO numbers in the report exist at all.
+    gtUrl: `${B}example/panel_seperated_gt.json`,
+    note: "10 pieces exported from CLO. A DXF carries no stitch list, so the ground truth "
+        + "here was drawn by hand in this demo — 20 stitches over 40 of the 48 edges — and "
+        + "the prediction is scored against it. The right pane is CLO's own drape, not a "
+        + "simulation of this prediction.",
   },
   gcd: {
     label: "2. GarmentCode test data",
@@ -125,7 +134,8 @@ export default function App() {
   /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
       A DXF carries no stitches, so there is nothing to score it against. */
   const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null,
-                                     moreId: string | null = null) => {
+                                     moreId: string | null = null,
+                                     gtUrl: string | null = null) => {
     setBusy(true); setErr(null);
     try {
       const isDxf = /\.dxf$/i.test(fileName);
@@ -134,9 +144,14 @@ export default function App() {
         : parseSpec(JSON.parse(text), fileName.replace("_specification.json", ""));
       const t = patternToTensors(pattern);
       const { pairs, ms } = await predict(t);
+      let gt = isDxf ? new Set<string>() : gtPairs(pattern, t.keys);
+      if (gtUrl) {
+        const g = await fetch(gtUrl);
+        if (!g.ok) throw new Error(`${gtUrl}: HTTP ${g.status}`);
+        gt = gtFromDoc(await g.json(), t.keys);
+      }
       setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
-               gt: isDxf ? new Set<string>() : gtPairs(pattern, t.keys),
-               ms, M: t.M, source: isDxf ? "dxf" : "spec" });
+               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec" });
       setName(fileName);
       setExample(ex);
       setMore(moreId);
@@ -156,7 +171,8 @@ export default function App() {
     try {
       const r = await fetch(e.url);
       if (!r.ok) throw new Error(`${e.url}: HTTP ${r.status}`);
-      await runText(await r.text(), e.file, key);
+      await runText(await r.text(), e.file, key, null,
+                    "gtUrl" in e ? (e as { gtUrl: string }).gtUrl : null);
     } catch (ex: any) { setErr(String(ex?.message ?? ex)); setBusy(false); }
   }, [runText]);
 
