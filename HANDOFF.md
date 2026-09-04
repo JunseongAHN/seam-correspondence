@@ -153,7 +153,14 @@ Two details worth mentioning unprompted, because they show judgement:
 | r1 (reproduction) | 24,024 | tagged | index | **0.9490** | 0.467 |
 | rand_sagitta | 2,000 | sagitta | random | 0.7501 | **0.485** |
 | r2 | 87,697 | sagitta | random | 0.8030 | 0.333 |
-| **r3 (+ arc features) — shipped** | 99,666 | sagitta | random | **0.8040** | **0.471** |
+| **r3 (+ arc features) — shipped, ep 5** | 99,666 | sagitta | random | **0.8040** | **0.471** |
+| r3 at its best GCD epoch (ep 11) | 99,666 | sagitta | random | 0.8058 | 0.457 |
+
+r3 ran 39 epochs and plateaued: every epoch from 5 on scored between 0.8011 and 0.8058,
+a spread of 0.005. **The shipped checkpoint is ep 5, not the best GCD epoch.** ep 11
+scores higher on the benchmark (0.8058 against 0.8040) and *lower* on the real garment
+(0.457 against 0.471) — one more false positive. Picking by CLO is the choice this
+project's whole argument implies, and it is worth saying out loud in an interview.
 
 Per-garment distribution on 1,500 held-out garments (the shipped model): mean **0.846**,
 median **0.904**, **34.1% exactly 1.000**, **5.4% below 0.5**. Mostly-perfect with a real
@@ -296,8 +303,8 @@ hand-drawn ground truth.
 
 ## B7. Suggested order of work
 
-1. **Finish r3** and score it on CLO. The question is whether arc features move the
-   **0 of 32** in §A3-5. So far they have not.
+1. ~~Finish r3~~ — done, 39 epochs, plateaued. Arc features did **not** move the
+   **0 of 32** in §A3-5, and bought 0.001 on GCD. That avenue is closed.
 2. **Attack the open finding.** Everything length- and curvature-shaped has been tried and
    measured; that avenue is closed. The next idea should be relational or structural.
 3. **Break the mirror ambiguity** (B5) — sagitta sign is the lead.
