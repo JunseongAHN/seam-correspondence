@@ -210,6 +210,9 @@ export default function App() {
              mine: userPairs.size > 0 };
   })();
   const exact = !!stats && stats.fp === 0 && stats.fn === 0;
+  /* The input brought its own stitch list -- a specification, or the example whose
+     hand-drawn truth is checked in. Nothing to draw. */
+  const hasOwnGt = !!res && res.gt.size > 0;
 
   /* What sits beside the pattern.  A held-out garment gets its ground-truth drape --
      red, and labelled as ground truth, because it is the only pane on the page that is
@@ -315,8 +318,14 @@ export default function App() {
 
       {res && (
         <div className="examples">
-          <button onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
-            {annotate ? "leave" : "draw"} the ground truth by hand
+          {/* Only an input with no stitch list needs one drawn. Offering it on an example
+              that already has one invites a second, conflicting truth for the same
+              garment -- so the button says why it is off rather than disappearing. */}
+          <button disabled={hasOwnGt}
+                  onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
+            {hasOwnGt
+              ? "ground truth — this example already has one"
+              : `${annotate ? "leave" : "draw"} the ground truth by hand`}
           </button>
           {/* Shown even with nothing to score, because its absence would read as the
               feature not existing rather than as a step not yet taken. The reason rides
