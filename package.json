@@ -1,0 +1,13 @@
+{
+  "name": "seam-correspondence-tools",
+  "private": true,
+  "type": "module",
+  "description": "Repo-level CLI tools. The browser demo lives in webdemo/ and never calls an API.",
+  "scripts": {
+    "report": "tsx tools/seam-report.ts"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.71.0",
+    "tsx": "^4.20.6"
+  }
+}

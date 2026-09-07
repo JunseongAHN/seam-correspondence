@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { parseSpec, type Pattern } from "./lib/parseSpec";
 import { parseDxf } from "./lib/parseDxf";
-import { patternToTensors, gtPairs } from "./lib/features";
+import { patternToTensors, gtPairs, featureDim, NK } from "./lib/features";
 import { predict } from "./lib/infer";
 import { placePanels, type Placed } from "./lib/render";
 import PatternSvg from "./PatternSvg";
@@ -41,6 +41,50 @@ function gtFromDoc(doc: any, keys: Array<[string, number]>): Set<string> {
   }
   if (miss) throw new Error(`${miss} stitch(es) in the file name edges this pattern does not have`);
   return out;
+}
+
+/* The evaluation, as a file tools/seam-report.ts can read.
+
+   One record per pair the run has an opinion about -- every true positive, false
+   positive and missed stitch -- with the two geometric quantities that decide a seam:
+   the ARC length in cm (dim 24 of the feature vector, not the chord in dim 4; a seam
+   matches the fabric you sew along) and the signed sagitta of largest magnitude, which
+   is how far the edge bows off its chord as a fraction of it. Both are read straight out
+   of the tensor the model was given, so the report analyses the model's own view. */
+function buildEval(res: Result, truth: Set<string>, name: string) {
+  const D = featureDim;
+  const arc = (n: number) => res.x[n * D + 7 + NK + 6] * 100;      // dim 24, cm
+  const curv = (n: number) => {
+    let best = 0;
+    for (let k = 0; k < NK; k++) {
+      const v = res.x[n * D + 7 + k];
+      if (Math.abs(v) > Math.abs(best)) best = v;
+    }
+    return best;
+  };
+  const label = (n: number) => `${res.keys[n][0]}#${res.keys[n][1]}`;
+  const ok = [...res.pred].filter((k) => truth.has(k)).length;
+  const P = res.pred.size ? ok / res.pred.size : 0;
+  const R = truth.size ? ok / truth.size : 0;
+  return {
+    garment: name,
+    f1: P + R ? (2 * P * R) / (P + R) : 0,
+    pairs: [...new Set([...res.pred, ...truth])].map((k) => {
+      const [a, b] = k.split("-").map(Number);
+      return { edge_a: label(a), edge_b: label(b),
+               pred: res.pred.has(k), gt: truth.has(k),
+               len_a: arc(a), len_b: arc(b), curv_a: curv(a), curv_b: curv(b) };
+    }),
+  };
+}
+
+function downloadEval(res: Result, truth: Set<string>, name: string) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(buildEval(res, truth, name), null, 2)],
+                                        { type: "application/json" }));
+  a.download = `${name.replace(/\.[^.]+$/, "")}_eval.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function loadGt(text: string, res: Result): Set<string> {
@@ -96,6 +140,7 @@ type Result = {
   pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
   pred: Set<string>; gt: Set<string>; ms: number; M: number;
   source: "spec" | "dxf";
+  x: Float32Array;              // the features as given to the model, for the eval export
 };
 
 export default function App() {
@@ -159,7 +204,7 @@ export default function App() {
         gt = gtFromDoc(await g.json(), t.keys);
       }
       setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
-               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec" });
+               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec", x: t.x });
       setName(fileName);
       setExample(ex);
       setMore(moreId);
@@ -289,6 +334,11 @@ export default function App() {
           <button onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
             {annotate ? "leave" : "draw"} the ground truth by hand
           </button>
+          {scored && (
+            <button onClick={() => downloadEval(res, truth, name)}>
+              save the evaluation as JSON
+            </button>
+          )}
           <label className="note" style={{ userSelect: "none" }}>
             <input type="checkbox" checked={labels}
                    onChange={(e) => setLabels(e.target.checked)} />{" "}

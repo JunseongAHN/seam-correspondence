@@ -237,3 +237,12 @@ simcpp/build-wasm/
 simcpp/data/
 simcpp/ref/
 simcpp/out/
+
+# Anthropic API key for tools/seam-report.ts -- the real one, never committed.
+# .env.example carries the variable name only.
+.env
+.env.local
+
+# root tooling (webdemo/node_modules is ignored separately above)
+/node_modules/
+api.env
