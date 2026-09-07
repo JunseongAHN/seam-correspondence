@@ -139,6 +139,7 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
                                     file = "trousers.bin", expectS = 10 }:
                                   { exact?: boolean; fp?: number; fn?: number; ok?: number;
                                     file?: string; expectS?: number }) {
+  void ok;
   const host = useRef<HTMLDivElement>(null);
   const [dump, setDump] = useState<Dump | null>(null);
   const raw = useRef<ArrayBuffer | null>(null);
@@ -201,21 +202,8 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
         <button onClick={run} disabled={busy || !exact}>
           {busy ? `solving… ${elapsed.toFixed(0)} s of about ${expectS}`
                 : exact ? `assemble it — the prediction, solved (about ${expectS} s)`
-                        : "cannot assemble this prediction"}
+                        : `cannot assemble — ${fp + fn} stitch${fp + fn === 1 ? "" : "es"} wrong`}
         </button>
-        <span className="note">
-          {exact
-            ? `the prediction for this garment is identical to its ground truth — ${ok} of `
-              + `${ok} stitches, no false positives — so the solve below assembles exactly `
-              + "what the model predicted. It runs in a Web Worker, so the page stays alive "
-              + "while it does. The body is not a mesh: the solver models it as capsules and "
-              + "a sphere, and that is what is drawn."
-            : `the prediction has ${fp} false positive${fp === 1 ? "" : "s"} and `
-              + `${fn} missed stitch${fn === 1 ? "" : "es"}. The dump's constraints are `
-              + "vertex pairs built from the ground truth, and it carries no mapping from "
-              + "a panel edge to its vertices, so a wrong stitching cannot be assembled — "
-              + "and would tear the mesh if it could."}
-        </span>
       </div>
       {err && <div className="err">{err}</div>}
       {!dump && !err && <div className="drop">loading the garment…</div>}

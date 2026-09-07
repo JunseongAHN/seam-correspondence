@@ -78,8 +78,7 @@ const EXAMPLES = {
     file: "rand_1328ERLDIC_specification.json",
     url: `${B}example/rand_1328ERLDIC_specification.json`,
     right: "sim" as const,
-    note: "A held-out GarmentCodeData garment, so the prediction can be scored. The "
-        + "right pane assembles this same garment with the wasm solver.",
+    note: "A held-out GarmentCodeData garment, so the prediction can be scored.",
   },
 };
 type ExampleKey = keyof typeof EXAMPLES;
@@ -242,10 +241,15 @@ export default function App() {
       <header>
         <h1>AutoSew — sewing pattern → stitch prediction</h1>
         <p className="sub">
-          A 2D sewing pattern in, the stitching between panel edges out, predicted by an
-          ONNX model running in your browser. A DXF carries no stitch list — draw the
-          ground truth by hand and the prediction becomes scorable, and its failures can
-          be sent to <strong>claude-sonnet-5</strong> for a report on why they failed.
+          A 2D sewing pattern in, the stitching between panel edges out, from an ONNX
+          model in your browser. A DXF has no stitch list — draw the ground truth to
+          score the prediction, and to get a failure report from{" "}
+          <strong>claude-sonnet-5</strong>.
+        </p>
+        {/* The one limit a reader has to know before judging anything on this page. */}
+        <p className="limit">
+          Currently only one-to-one correspondence is available — the training data
+          contains no multi-edge stitches, so gathers cannot be expressed.
         </p>
       </header>
 

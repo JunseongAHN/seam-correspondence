@@ -152,3 +152,11 @@ h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
 @media (prefers-color-scheme: dark) { .note.perfect { color: #4ade80; } }
 .note.warn { color: #92400e; }
 @media (prefers-color-scheme: dark) { .note.warn { color: #fbbf24; } }
+
+/* The one limit a reader has to know before judging anything here. Loud on purpose:
+   a demo that quietly cannot do a thing reads as a demo that can. */
+.limit { margin: 10px 0 0; padding: 7px 11px; font-size: 12.5px; font-weight: 600;
+  border-radius: 8px; border: 1px solid #f59e0b55; background: #f59e0b14; color: #92400e; }
+@media (prefers-color-scheme: dark) {
+  .limit { border-color: #f59e0b66; background: #f59e0b1a; color: #fbbf24; }
+}
