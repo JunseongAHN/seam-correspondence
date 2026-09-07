@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>noise-inject — 봉제 대응 검사기</title>
+<style>
+:root{
+  color-scheme:light;
+  --plane:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink2:#52514e; --ink3:#898781;
+  --hair:rgba(11,11,11,.10); --hover:rgba(11,11,11,.045);
+  --good:#2a9d5c; --bad:#d8394c; --gt:#0f9bb5; --s1:#2a78d6;
+}
+@media (prefers-color-scheme:dark){:root{
+  color-scheme:dark; --plane:#0d0d0d; --surface:#1a1a19; --ink:#fff; --ink2:#c3c2b7;
+  --ink3:#898781; --hair:rgba(255,255,255,.10); --hover:rgba(255,255,255,.06);
+  --good:#3fbc78; --bad:#ef5b6c; --gt:#3fc9e5; --s1:#3987e5;
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
+  font-size:14px;line-height:1.55}
+.mono{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1600px;margin:0 auto;padding:28px 22px 60px;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);margin:0 0 7px}
+h1{margin:0;font-size:clamp(20px,3vw,26px);font-weight:600;letter-spacing:-.02em}
+.lede{margin:9px 0 0;color:var(--ink2);max-width:88ch}
+#err{display:none;background:#fdecec;border:1px solid #f0b4b4;color:#8a1f1f;
+  border-radius:8px;padding:14px 16px;font-size:13px;white-space:pre-wrap}
+.grid{display:grid;grid-template-columns:220px minmax(0,1fr) 268px;gap:14px;align-items:start}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:10px;padding:15px}
+h2{font-size:12px;font-weight:600;letter-spacing:.05em;margin:0 0 9px;
+  text-transform:uppercase;color:var(--ink3)}
+.list{display:flex;flex-direction:column;gap:5px;max-height:74vh;overflow:auto}
+.card{border:1px solid var(--hair);border-radius:7px;padding:8px 10px;cursor:pointer;background:transparent}
+.card:hover{background:var(--hover)}
+.card.on{border-color:var(--s1);background:var(--hover)}
+.card .nm{font-size:12px;font-weight:600}
+.card .sub{font-size:10.5px;color:var(--ink3);margin-top:2px}
+.card .sc{font-size:10.5px;color:var(--ink2);margin-top:4px}
+.card .sc b{color:var(--ink)}
+.bar{display:flex;flex-wrap:wrap;gap:11px 18px;align-items:center;margin-bottom:12px}
+.grp{display:flex;align-items:center;gap:8px}
+label{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+input[type=range]{accent-color:var(--s1);width:150px}
+select{font:inherit;font-size:12px;padding:4px 7px;border:1px solid var(--hair);
+  border-radius:6px;background:var(--surface);color:var(--ink2)}
+.val{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:600;min-width:66px}
+.tog{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);cursor:pointer}
+.tog input{accent-color:var(--s1);width:14px;height:14px}
+button{font:inherit;font-size:12px;padding:5px 11px;border:1px solid var(--hair);
+  border-radius:6px;background:var(--surface);color:var(--ink2);cursor:pointer}
+.stage{position:relative;width:100%;aspect-ratio:4/3;background:#16161a;border-radius:8px;
+  overflow:hidden;cursor:crosshair;touch-action:none}
+.stage canvas{display:block;outline:none}
+.readout{margin-top:11px;font-family:"IBM Plex Mono",Consolas,monospace;font-size:12px;
+  color:var(--ink2);font-variant-numeric:tabular-nums;display:flex;flex-wrap:wrap;gap:5px 18px}
+.readout b{color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:5px 15px;margin-top:9px;font-size:11.5px;color:var(--ink2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.ln{width:15px;height:2px;border-radius:2px;flex:none}
+.hint2{font-size:11px;color:var(--ink3);margin-top:9px}
+#busy{font-size:12px;color:var(--ink3)}
+.flist{display:flex;flex-direction:column;gap:3px;max-height:36vh;overflow:auto;
+  font-family:"IBM Plex Mono",Consolas,monospace;font-size:11px}
+.frow{border:1px solid transparent;border-radius:5px;padding:4px 7px;cursor:pointer;color:var(--ink2)}
+.frow:hover{background:var(--hover)}
+.frow.on{border-color:var(--bad);background:var(--hover);color:var(--ink)}
+.det{font-size:11.5px;color:var(--ink2);display:flex;flex-direction:column;gap:4px}
+.det .row{display:flex;justify-content:space-between;gap:10px;
+  font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.det .row span:first-child{color:var(--ink3)}
+.det .row b{color:var(--ink);font-weight:600}
+.det .hd{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);margin-top:4px}
+.det hr{border:0;border-top:1px solid var(--hair);margin:3px 0}
+.pill{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 6px;border-radius:4px;font-weight:600}
+.pill.ok{background:rgba(42,157,92,.16);color:var(--good)}
+.pill.no{background:rgba(216,57,76,.16);color:var(--bad)}
+.empty{font-size:11.5px;color:var(--ink3);margin:0}
+.why{font-size:11px;color:var(--ink2);margin:6px 0 0;padding:7px 8px;border-radius:6px;
+  background:var(--hover)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">measure.py 의 decode 를 그대로 렌더링</p>
+  <h1>노이즈가 들어간 그 상태에서, 무엇이 무엇에 붙었는지</h1>
+  <p class="lede">패널 표면 자체가 그 셀의 <b>노이즈·평활이 적용된 좌표</b>다 — GT를 따로 띄우지 않는다.
+    봉제 정점 복사본을 그 표면 위에 찍고, 1-최근접이 <b>실제로 연결한 상대</b>를 선으로 잇는다.
+    <b style="color:var(--bad)">틀린 대응</b>을 클릭하면 어디에 잘못 붙었는지와
+    <b style="color:var(--gt)">같은 점의 짝 · GT 원래 좌표</b>가 어디인지 나온다. 판정은 <b>같은 봉제선(stitch)에 붙었는지</b>로 한다 — 정점 단위 정확도는 후처리 몫이다.</p>
+  <div id="busy" style="margin-top:9px">인덱스 읽는 중…</div>
+</header>
+
+<div id="err"></div>
+
+<div class="grid">
+  <div class="panel">
+    <h2>샘플</h2>
+    <div class="list" id="list"></div>
+  </div>
+
+  <div class="panel">
+    <div class="bar">
+      <div class="grp"><label for="sig">σ</label>
+        <input id="sig" type="range" min="0" max="5" step="1" value="3">
+        <span class="val" id="sigv">–</span></div>
+      <div class="grp"><label for="it">평활</label>
+        <input id="it" type="range" min="0" max="4" step="1" value="2">
+        <span class="val" id="itv">–</span></div>
+      <div class="grp"><label for="conn">연결선</label>
+        <select id="conn">
+          <option value="bad" selected>틀린 것만</option>
+          <option value="all">전부</option>
+          <option value="none">없음</option>
+        </select></div>
+      <label class="tog"><input type="checkbox" id="back"> 뒤 패널</label>
+      <label class="tog"><input type="checkbox" id="surf" checked> 표면</label>
+      <button id="reset">시점 초기화</button>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="readout" id="ro"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--good)"></i>올바른 대응</span>
+      <span><i class="dot" style="background:var(--bad)"></i>틀린 대응</span>
+      <span><i class="ln" style="background:var(--bad)"></i>실제로 붙은 상대</span>
+      <span><i class="ln" style="background:var(--gt)"></i>같은 점의 짝 (참고)</span>
+      <span><i class="dot" style="background:#e8d24a"></i>GT 원래 좌표</span>
+      <span><i class="dot" style="background:#3987e5"></i>앞 패널</span>
+      <span><i class="dot" style="background:#d95926"></i>뒤 패널</span>
+    </div>
+    <p class="hint2">점을 클릭하면 그 복사본이 선택된다 · 드래그 = 회전 · 휠 = 확대 · 우클릭 드래그 = 이동.
+      한 번의 노이즈 추첨(draw)이고 draw마다 어떤 정점이 틀리는지는 바뀐다 —
+      <span class="mono">measure.json</span>의 표는 여러 draw의 평균이다.</p>
+  </div>
+
+  <div class="panel">
+    <h2>선택한 복사본</h2>
+    <div class="det" id="det"><p class="empty">틀린 대응을 클릭하거나 아래 목록에서 고른다.</p></div>
+    <h2 style="margin-top:16px">틀린 대응 <span id="fcount" class="mono"></span></h2>
+    <div class="flist" id="flist"></div>
+  </div>
+</div>
+</div>
+
+<script src="vendor/vtk.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const fail = m => { const e = $('err'); e.style.display = 'block'; e.textContent = m; };
+
+const COL_FRONT = [0.22, 0.53, 0.90];
+const COL_BACK  = [0.85, 0.35, 0.15];
+const COL_EDGE  = [0.90, 0.90, 0.88];
+const COL_GOOD  = [0.165, 0.616, 0.361];
+const COL_BAD   = [0.847, 0.224, 0.298];
+const COL_GT    = [0.247, 0.788, 0.898];
+const COL_ORIG  = [0.910, 0.824, 0.290];
+const COL_SEL   = [1.0, 1.0, 1.0];
+const BG        = [0.086, 0.086, 0.102];
+
+const V = window.vtk;
+const { vtkPolyData } = V.Common.DataModel;
+const { vtkDataArray } = V.Common.Core;
+const { vtkActor, vtkMapper } = V.Rendering.Core;
+const { vtkGenericRenderWindow } = V.Rendering.Misc;
+
+let index = null, grw = null, ren = null, rw = null, view = null;
+let G = null;     // loaded garment: panels + the whole-garment seam arrays
+let cell = null;  // the currently applied (sigma, iters) cell
+let sel = null;   // selected copy index
+
+/* ---------- geometry helpers ---------- */
+function computeNormals(pos, faces, out){
+  out.fill(0);
+  for (let i = 0; i < faces.length; i += 3) {
+    const a = 3 * faces[i], b = 3 * faces[i+1], c = 3 * faces[i+2];
+    const ux = pos[b] - pos[a], uy = pos[b+1] - pos[a+1], uz = pos[b+2] - pos[a+2];
+    const vx = pos[c] - pos[a], vy = pos[c+1] - pos[a+1], vz = pos[c+2] - pos[a+2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+    out[a]+=nx; out[a+1]+=ny; out[a+2]+=nz;
+    out[b]+=nx; out[b+1]+=ny; out[b+2]+=nz;
+    out[c]+=nx; out[c+1]+=ny; out[c+2]+=nz;
+  }
+  for (let i = 0; i < out.length; i += 3) {
+    const l = Math.hypot(out[i], out[i+1], out[i+2]) || 1;
+    out[i] /= l; out[i+1] /= l; out[i+2] /= l;
+  }
+}
+
+function surfacePolyData(pos, faces, nrm){
+  const pd = vtkPolyData.newInstance();
+  pd.getPoints().setData(pos, 3);
+  const cells = new Uint32Array(faces.length / 3 * 4);
+  for (let f = 0, o = 0; f < faces.length; f += 3, o += 4) {
+    cells[o] = 3; cells[o+1] = faces[f]; cells[o+2] = faces[f+1]; cells[o+3] = faces[f+2];
+  }
+  pd.getPolys().setData(cells);
+  pd.getPointData().setNormals(vtkDataArray.newInstance(
+    { name: 'Normals', numberOfComponents: 3, values: nrm }));
+  return pd;
+}
+
+function loopPolyData(pos, loops){
+  const pd = vtkPolyData.newInstance();
+  pd.getPoints().setData(pos, 3);
+  let total = 0;
+  for (const L of loops) total += L.length + 2;
+  const cells = new Uint32Array(total);
+  let o = 0;
+  for (const L of loops) {
+    cells[o++] = L.length + 1;
+    for (let i = 0; i < L.length; i++) cells[o++] = L[i];
+    cells[o++] = L[0];
+  }
+  pd.getLines().setData(cells);
+  return pd;
+}
+
+function linesFrom(points, cells){
+  const pd = vtkPolyData.newInstance();
+  pd.getPoints().setData(points, 3);
+  pd.getLines().setData(cells);
+  return pd;
+}
+
+/* a marker is a small 3-axis cross of segments, so it reads at any angle */
+function crossPolyData(idxList, pos, r){
+  const n = idxList.length;
+  const P = new Float32Array(n * 18);
+  const cells = new Uint32Array(n * 9);
+  let pi = 0, ci = 0;
+  for (const i of idxList) {
+    const x = pos[3*i], y = pos[3*i+1], z = pos[3*i+2], base = pi;
+    P.set([x-r,y,z, x+r,y,z, x,y-r,z, x,y+r,z, x,y,z-r, x,y,z+r], pi * 3);
+    pi += 6;
+    for (let s = 0; s < 3; s++) {
+      cells[ci++] = 2; cells[ci++] = base + 2*s; cells[ci++] = base + 2*s + 1;
+    }
+  }
+  return linesFrom(P.subarray(0, pi * 3), cells.subarray(0, ci));
+}
+
+/* one segment per i: pos[i] -> dst[to[i]]  (to=null means dst[i]) */
+function linkPolyData(idxList, pos, to, dst){
+  const n = idxList.length;
+  const P = new Float32Array(n * 6);
+  const cells = new Uint32Array(n * 3);
+  const q = dst || pos;
+  let pi = 0, ci = 0;
+  for (const i of idxList) {
+    const j = to ? to[i] : i;
+    P.set([pos[3*i], pos[3*i+1], pos[3*i+2], q[3*j], q[3*j+1], q[3*j+2]], pi * 3);
+    cells[ci++] = 2; cells[ci++] = pi; cells[ci++] = pi + 1;
+    pi += 2;
+  }
+  return linesFrom(P.subarray(0, pi * 3), cells.subarray(0, ci));
+}
+
+function addActor(pd, color, opts){
+  opts = opts || {};
+  const m = vtkMapper.newInstance();
+  m.setInputData(pd);
+  const a = vtkActor.newInstance();
+  a.setMapper(m);
+  const p = a.getProperty();
+  p.setColor(color[0], color[1], color[2]);
+  if (opts.line) {
+    p.setLineWidth(opts.line);
+    p.setLighting(false);
+    if (opts.opacity != null) p.setOpacity(opts.opacity);
+  } else {
+    p.setOpacity(opts.opacity == null ? 0.92 : opts.opacity);
+    p.setInterpolation(1); p.setAmbient(0.30); p.setDiffuse(0.75); p.setSpecular(0.10);
+    p.setBackfaceCulling(false);
+  }
+  ren.addActor(a);
+  return a;
+}
+
+const dist = (a, i, b, j) =>
+  Math.hypot(a[3*i]-b[3*j], a[3*i+1]-b[3*j+1], a[3*i+2]-b[3*j+2]);
+const mm = v => (v * 10).toFixed(1);   // the data is in cm
+
+/* ---------- boot ---------- */
+async function boot(){
+  try {
+    const r = await fetch('data/samples/index.json');
+    if (!r.ok) throw new Error('data/samples/index.json 이 없다');
+    index = await r.json();
+  } catch (e) {
+    fail('인덱스를 못 읽었다 — ' + e.message +
+         '\n먼저  python export_seams.py --garments ...  를 돌리고, python serve.py 로 열어라.');
+    return;
+  }
+  $('busy').textContent = index.garments.length + '개 샘플 · σ ' +
+    index.sigmas.join('/') + ' mm · 평활 ' + index.iters.join('/') + ' it';
+  buildList();
+  $('sig').max = index.sigmas.length - 1;
+  $('it').max = index.iters.length - 1;
+  $('sig').value = Math.min(3, index.sigmas.length - 1);
+  $('it').value = Math.min(2, index.iters.length - 1);
+  syncLabels();
+
+  grw = vtkGenericRenderWindow.newInstance({ background: BG });
+  grw.setContainer($('stage'));
+  ren = grw.getRenderer(); rw = grw.getRenderWindow();
+  view = grw.getApiSpecificRenderWindow();
+  new ResizeObserver(() => grw.resize()).observe($('stage'));
+  $('stage').addEventListener('click', onPick);
+
+  if (index.garments.length) selectGarment(index.garments[0].garment);
+}
+
+function syncLabels(){
+  $('sigv').textContent = index.sigmas[+$('sig').value] + ' mm';
+  $('itv').textContent = index.iters[+$('it').value] + ' it';
+}
+
+function buildList(){
+  const list = $('list');
+  list.innerHTML = '';
+  for (const g of index.garments) {
+    const s = g.scores && g.scores['5|15'];
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.dataset.g = g.garment;
+    el.innerHTML =
+      '<div class="nm mono">' + g.garment + '</div>' +
+      '<div class="sub">패널 ' + g.panels + ' · seam-v ' + g.n_seam_vertices +
+      ' · seams ' + g.n_seams + '</div>' +
+      (s ? '<div class="sc"><b>' + Math.round(s.vertex * 100) + '%</b> vertex · <b>' +
+           Math.round(s.garment * 100) + '%</b> garment</div>' : '');
+    el.onclick = () => selectGarment(g.garment);
+    list.appendChild(el);
+  }
+}
+
+/* ---------- garment load ---------- */
+async function selectGarment(g){
+  for (const el of $('list').children) el.classList.toggle('on', el.dataset.g === g);
+  const base = 'data/samples/' + g + '/';
+  let panMan, panBuf, seamMan, seamBuf;
+  try {
+    const [r1, r2, r3, r4] = await Promise.all([
+      fetch(base + 'panels.json'), fetch(base + 'panels.bin'),
+      fetch(base + 'seams.json'), fetch(base + 'seams.bin'),
+    ]);
+    if (![r1, r2, r3, r4].every(r => r.ok)) throw new Error('파일 누락');
+    panMan = await r1.json(); panBuf = await r2.arrayBuffer();
+    seamMan = await r3.json(); seamBuf = await r4.arrayBuffer();
+  } catch (e) { fail(g + ' 데이터를 못 읽었다 — ' + e.message); return; }
+  $('err').style.display = 'none';
+
+  ren.removeAllActors();
+  sel = null;
+
+  const n = seamMan.n_copies;
+  const panels = panMan.panels.map(p => ({
+    name: p.name, front: p.front, nv: p.nv,
+    base: new Float32Array(panBuf, p.pos, p.nv * 3),
+    faces: new Uint32Array(panBuf, p.faces, p.nf * 3),
+    loops: p.loops.map(l => new Uint32Array(panBuf, l.off, l.n)),
+  }));
+
+  // one actor pair per panel; its geometry is rewritten on every cell change
+  const items = [];
+  let vo = 0;
+  for (const P of panels) {
+    const pos = Float32Array.from(P.base);
+    const nrm = new Float32Array(P.nv * 3);
+    computeNormals(pos, P.faces, nrm);
+    const surf = surfacePolyData(pos, P.faces, nrm);
+    const line = loopPolyData(pos, P.loops);
+    items.push({
+      P: P, pos: pos, nrm: nrm, surf: surf, line: line, vo: vo,
+      sa: addActor(surf, P.front ? COL_FRONT : COL_BACK, {}),
+      la: addActor(line, COL_EDGE, { line: 1.6 }),
+    });
+    vo += P.nv;
+  }
+  if (vo !== seamMan.n_verts) { fail(g + ': 패널 정점 수가 변위 배열과 안 맞는다'); return; }
+
+  G = {
+    garment: g, seamMan: seamMan, seamBuf: seamBuf, n: n, panels: panels, items: items,
+    gt: new Float32Array(seamBuf, seamMan.gt, n * 3),
+    pair: new Uint32Array(seamBuf, seamMan.pair, n),
+    ownPanel: new Uint32Array(seamBuf, seamMan.panel, n),
+    dyn: [],   // marker / link / selection actors, rebuilt per cell
+  };
+
+  applyBack();
+  grw.resize();
+  applyCell();
+  resetView();
+}
+
+/* ---------- cell (sigma, iters) ---------- */
+const cellIndex = () => (+$('sig').value) * G.seamMan.iters.length + (+$('it').value);
+
+function applyCell(){
+  if (!G) return;
+  const seamMan = G.seamMan, seamBuf = G.seamBuf, n = G.n;
+  const c = seamMan.cells[cellIndex()];
+  const q = new Int16Array(seamBuf, c.disp, seamMan.n_verts * 3);
+  cell = {
+    sigma: c.sigma, iters: c.iters, vertex: c.vertex, mutual: c.mutual,
+    pos:  new Float32Array(seamBuf, c.pos, n * 3),
+    lift: new Float32Array(seamBuf, c.lift, n * 3),
+    good: new Uint8Array(seamBuf, c.good, n),
+    nn:   new Uint32Array(seamBuf, c.nn, n),
+  };
+
+  // the surfaces ARE the noised state -- no separate GT copy on screen
+  for (const it of G.items) {
+    const P = it.P, pos = it.pos, nrm = it.nrm, o = it.vo * 3;
+    for (let i = 0; i < pos.length; i++) pos[i] = P.base[i] + q[o + i] * c.dscale;
+    computeNormals(pos, P.faces, nrm);
+    it.surf.getPoints().setData(pos, 3);
+    it.surf.getPointData().getNormals().setData(nrm, 3);
+    it.surf.modified();
+    it.line.getPoints().setData(pos, 3);
+    it.line.modified();
+  }
+
+  const goodIdx = [], badIdx = [];
+  for (let i = 0; i < n; i++) (cell.good[i] ? goodIdx : badIdx).push(i);
+  cell.goodIdx = goodIdx; cell.badIdx = badIdx;
+  G.r = markerRadius();
+
+  drawDynamic();
+  buildFailureList();
+  $('ro').innerHTML =
+    '<span><b>' + G.garment + '</b></span>' +
+    '<span>σ ' + c.sigma + ' mm · 평활 ' + c.iters + ' it</span>' +
+    '<span>vertex <b>' + (100 * c.vertex).toFixed(1) + '%</b></span>' +
+    '<span>상호 NN <b>' + (100 * c.mutual).toFixed(1) + '%</b></span>' +
+    '<span>올바름 <b style="color:var(--good)">' + goodIdx.length +
+    '</b> · 틀림 <b style="color:var(--bad)">' + badIdx.length + '</b></span>';
+  showDetail();
+  rw.render();
+}
+
+function markerRadius(){
+  const p = cell.pos, n = G.n;
+  const lo = [Infinity,Infinity,Infinity], hi = [-Infinity,-Infinity,-Infinity];
+  for (let i = 0; i < n; i++) for (let k = 0; k < 3; k++) {
+    const v = p[3*i+k]; if (v < lo[k]) lo[k] = v; if (v > hi[k]) hi[k] = v;
+  }
+  return Math.max(Math.hypot(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2]), 1e-3) * 0.005;
+}
+
+/* markers + correspondence links + the selection overlay */
+function drawDynamic(){
+  for (const a of G.dyn) ren.removeActor(a);
+  G.dyn = [];
+  const add = (pd, col, o) => G.dyn.push(addActor(pd, col, o));
+  const pos = cell.pos, nn = cell.nn, goodIdx = cell.goodIdx, badIdx = cell.badIdx;
+  const r = G.r, mode = $('conn').value;
+
+  if (goodIdx.length) add(crossPolyData(goodIdx, pos, r), COL_GOOD, { line: 2.5 });
+  if (badIdx.length)  add(crossPolyData(badIdx,  pos, r), COL_BAD,  { line: 3.0 });
+
+  if (mode === 'all' && goodIdx.length)
+    add(linkPolyData(goodIdx, pos, nn), COL_GOOD, { line: 1.0 });
+  if (mode !== 'none' && badIdx.length)
+    add(linkPolyData(badIdx, pos, nn), COL_BAD, { line: 1.4 });
+
+  if (sel != null) {
+    const j = nn[sel], k = G.pair[sel];
+    add(linkPolyData([sel], pos, nn), COL_BAD, { line: 5.0 });               // where it went
+    add(linkPolyData([sel], pos, G.pair), COL_GT, { line: 5.0 });            // where it should have
+    add(linkPolyData([sel, k], pos, null, G.gt), COL_ORIG, { line: 2.0 });   // drift from GT
+    add(crossPolyData([sel], G.gt, r * 3.5), COL_ORIG, { line: 4.0 });
+    add(crossPolyData([j], pos, r * 3.0), COL_BAD, { line: 5.0 });
+    add(crossPolyData([k], pos, r * 3.0), COL_GT, { line: 5.0 });
+    add(crossPolyData([sel], pos, r * 4.0), COL_SEL, { line: 5.0 });
+  }
+}
+
+function applyBack(){
+  const back = $('back').checked, surf = $('surf').checked;
+  for (const it of G.items) {
+    const show = back || it.P.front;
+    it.sa.setVisibility(show && surf);
+    it.la.setVisibility(show);
+  }
+}
+
+function resetView(){
+  const cam = ren.getActiveCamera();
+  // back to a front view first -- resetCamera keeps the current view direction,
+  // so without this the azimuth/elevation nudge accumulates on every selection
+  cam.setPosition(0, 0, 1);
+  cam.setFocalPoint(0, 0, 0);
+  cam.setViewUp(0, 1, 0);
+  ren.resetCamera();
+  cam.azimuth(28); cam.elevation(8); cam.zoom(1.25);
+  ren.resetCameraClippingRange();
+  rw.render();
+}
+
+/* ---------- selection ---------- */
+function select(i){
+  sel = i;
+  drawDynamic();
+  showDetail();
+  for (const el of $('flist').children) el.classList.toggle('on', +el.dataset.i === i);
+  rw.render();
+}
+
+const panelName = i => G.panels[G.ownPanel[i]].name;
+
+function showDetail(){
+  const d = $('det');
+  if (sel == null || !cell) {
+    d.innerHTML = '<p class="empty">틀린 대응을 클릭하거나 아래 목록에서 고른다.</p>';
+    return;
+  }
+  const i = sel, j = cell.nn[i], k = G.pair[i], ok = !!cell.good[i];
+  const pos = cell.pos, lift = cell.lift;
+  const dLiftJ = dist(lift, i, lift, j), dLiftK = dist(lift, i, lift, k);
+  const row = (a, b) => '<div class="row"><span>' + a + '</span><b>' + b + '</b></div>';
+  d.innerHTML =
+    '<div><span class="pill ' + (ok ? 'ok' : 'no') + '">' +
+      (ok ? '정답' : '오답') + ' — 봉제선 기준</span></div>' +
+    row('선택 복사본', '#' + i) +
+    row('· 소속 패널', panelName(i)) +
+    '<hr>' +
+    '<div class="hd" style="color:var(--bad)">실제 결과 — 이게 판정 기준</div>' +
+    row('붙은 상대', '#' + j) +
+    row('· 소속 패널', panelName(j)) +
+    row('· 같은 봉제선인가', ok ? '예 → 정답' : '아니오 → 오답') +
+    '<hr>' +
+    '<div class="hd" style="color:var(--gt)">참고 — 정점 단위 (후처리 대상)</div>' +
+    row('같은 점의 짝', '#' + k) +
+    row('· 소속 패널', panelName(k)) +
+    row('· 그 짝을 찾았나', j === k ? '예' : '아니오 (판정에는 무관)') +
+    row('GT 원래 좌표에서 이탈', mm(dist(pos, i, G.gt, i)) + ' mm') +
+    '<hr>' +
+    '<div class="hd">리프트 거리 — 디코더가 본 것</div>' +
+    row('· → 붙은 상대 #' + j, mm(dLiftJ) + ' mm') +
+    row('· → 같은 점의 짝 #' + k, mm(dLiftK) + ' mm') +
+    '<div class="hd">3D 거리</div>' +
+    row('· → 붙은 상대 #' + j, mm(dist(pos, i, pos, j)) + ' mm') +
+    row('· → 같은 점의 짝 #' + k, mm(dist(pos, i, pos, k)) + ' mm') +
+    (ok ? '' : '<p class="why">' +
+      '리프트 공간에서 다른 봉제선의 복사본이 더 가까웠다 — 1-최근접이 그쪽을 골랐다. ' +
+      '같은 점의 짝까지는 ' + mm(dLiftK) + ' mm, 실제로 고른 상대까지는 ' + mm(dLiftJ) + ' mm.' +
+      '</p>');
+}
+
+function buildFailureList(){
+  const fl = $('flist'), bad = cell.badIdx;
+  $('fcount').textContent = '(' + bad.length + ')';
+  fl.innerHTML = '';
+  if (!bad.length) { fl.innerHTML = '<p class="empty">이 셀에서는 전부 맞았다.</p>'; return; }
+  for (const i of bad) {
+    const el = document.createElement('div');
+    el.className = 'frow';
+    el.dataset.i = i;
+    if (i === sel) el.classList.add('on');
+    el.textContent = '#' + i + ' ' + panelName(i) + '  →  #' + cell.nn[i] + ' ' + panelName(cell.nn[i]);
+    el.onclick = () => select(i);
+    fl.appendChild(el);
+  }
+}
+
+/* click-to-select: nearest copy in screen space */
+function onPick(ev){
+  if (!G || !cell) return;
+  const rect = $('stage').getBoundingClientRect();
+  const size = view.getSize();
+  const px = (ev.clientX - rect.left) / rect.width * size[0];
+  const py = (1 - (ev.clientY - rect.top) / rect.height) * size[1];  // vtk display y is bottom-up
+
+  let best = -1, bestD = 16;   // tolerance, pixels
+  const pos = cell.pos;
+  for (let i = 0; i < G.n; i++) {
+    const p = view.worldToDisplay(pos[3*i], pos[3*i+1], pos[3*i+2], ren);
+    const d = Math.hypot(p[0] - px, p[1] - py);
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  if (best >= 0) select(best);
+}
+
+/* ---------- controls ---------- */
+$('sig').oninput   = () => { syncLabels(); applyCell(); };
+$('it').oninput    = () => { syncLabels(); applyCell(); };
+$('conn').onchange = () => { drawDynamic(); rw.render(); };
+$('back').onchange = () => { applyBack(); rw.render(); };
+$('surf').onchange = () => { applyBack(); rw.render(); };
+$('reset').onclick = resetView;
+
+boot();
+</script>
+</body>
+</html>
