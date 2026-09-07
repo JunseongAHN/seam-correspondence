@@ -261,7 +261,6 @@ export default function App() {
         {/* The examples live inside the drop zone, so stop their clicks reaching it --
             otherwise picking one also opens the file dialog behind it. */}
         <div className="tries" onClick={(e) => e.stopPropagation()}>
-        <div className="tryit">
           or try{" "}
           {(Object.keys(EXAMPLES) as ExampleKey[]).map((k, i) => (
             <span key={k}>
@@ -273,40 +272,40 @@ export default function App() {
             </span>
           ))}
         </div>
-
-        {/* The five are GarmentCodeData too, so they belong under that example rather
-            than competing with it: the row appears once example 2 is chosen, and stays
-            while one of them is loaded. */}
-        {(example === "gcd" || more !== null) && (
-        <div className="tryit more">
-          more held-out garments, from worst to best —{" "}
-          {MORE.map((g, i) => (
-            <span key={g.id}>
-              {i > 0 && <span className="sep">·</span>}
-              <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
-                      disabled={busy} title={g.what}
-                      onClick={async () => {
-                        setBusy(true); setErr(null);
-                        try {
-                          const u = `${B}example/${g.id}_specification.json`;
-                          const r = await fetch(u);
-                          if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
-                          await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
-                        } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
-                      }}>
-                F1 {g.f1}
-              </button>
-            </span>
-          ))}
-          <span className="note" style={{ marginLeft: 10 }}>
-            picked by scoring a sample of the test split with the model this page runs, then
-            taking a spread — not a highlight reel. Each opens beside{" "}
-            <strong className="gt">its ground-truth drape, in red</strong>.
-          </span>
-        </div>
-        )}
-        </div>
       </div>
+
+      {/* The five are GarmentCodeData too, so the row appears once example 2 is chosen
+          and stays while one of them is loaded. It sits below the drop zone rather than
+          in it: the zone is for getting a pattern in, and this is a whole second reading
+          -- five scores and the sentence explaining how they were picked. */}
+      {(example === "gcd" || more !== null) && (
+      <div className="tryit more">
+        more held-out garments, from worst to best —{" "}
+        {MORE.map((g, i) => (
+          <span key={g.id}>
+            {i > 0 && <span className="sep">·</span>}
+            <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
+                    disabled={busy} title={g.what}
+                    onClick={async () => {
+                      setBusy(true); setErr(null);
+                      try {
+                        const u = `${B}example/${g.id}_specification.json`;
+                        const r = await fetch(u);
+                        if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
+                        await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
+                      } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
+                    }}>
+              F1 {g.f1}
+            </button>
+          </span>
+        ))}
+        <span className="note" style={{ marginLeft: 10 }}>
+          picked by scoring a sample of the test split with the model this page runs, then
+          taking a spread — not a highlight reel. Each opens beside{" "}
+          <strong className="gt">its ground-truth drape, in red</strong>.
+        </span>
+      </div>
+      )}
 
       {err && <div className="err">{err}</div>}
 
@@ -315,12 +314,19 @@ export default function App() {
           <button onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
             {annotate ? "leave" : "draw"} the ground truth by hand
           </button>
-          {scored && (
-            <button className={showReport ? "on" : ""}
-                    onClick={() => setShowReport((v) => !v)}>
-              {showReport ? "hide" : "show"} LLM evaluation report
-            </button>
-          )}
+          {/* Shown even with nothing to score, because its absence would read as the
+              feature not existing rather than as a step not yet taken. The reason rides
+              in the label: a disabled button beside an explanation is two things to
+              read, and the explanation is short enough to be the label. */}
+          <button className={showReport ? "on" : ""} disabled={!scored}
+                  title={scored ? undefined
+                                : "A report is written from misses and false positives, "
+                                  + "which need a ground truth to be measured against."}
+                  onClick={() => setShowReport((v) => !v)}>
+            {scored
+              ? `${showReport ? "hide" : "show"} LLM evaluation report`
+              : "LLM evaluation report — ⚠️ needs a ground truth"}
+          </button>
           <label className="note" style={{ userSelect: "none" }}>
             <input type="checkbox" checked={labels}
                    onChange={(e) => setLabels(e.target.checked)} />{" "}

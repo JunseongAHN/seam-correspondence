@@ -43,6 +43,9 @@ function Markdown({ md }: { md: string }) {
 
 export default function LlmReport({ name, doc }: { name: string; doc: EvalDoc }) {
   const file = REPORTS[name];
+  /* A report on nothing is not an error, it is the best outcome the page has. Say so,
+     and do not spend a call finding out. */
+  const nFail = doc.pairs.filter((p) => p.pred !== p.gt).length;
   const [md, setMd] = useState<string | null>(null);
   const [live, setLive] = useState(false);          // is what's shown freshly generated?
   const [gateProblems, setGate] = useState<string[] | null>(null);
@@ -89,18 +92,26 @@ export default function LlmReport({ name, doc }: { name: string; doc: EvalDoc })
 
   return (
     <div className="llmreport">
+      {!nFail && (
+        <p className="note perfect">
+          Wow, everything is correct! 🎉 — all {doc.pairs.length} stitches found, no
+          misses and no false positives. Nothing to explain, so no call is made.
+        </p>
+      )}
       <div className="examples">
-        {API ? (
+        {API && nFail > 0 ? (
           <button onClick={generate} disabled={busy || cool > 0}>
             {busy ? "writing…" : cool > 0 ? `generate again in ${cool}s` : "generate a new report"}
           </button>
         ) : null}
+        {nFail > 0 && (
         <span className="note">
           <strong>claude-sonnet-5</strong>, from this page's evaluation.
           {" "}The gate checks the report's <em>shape</em>, not whether it is right.
           {API ? " One per 30s." : ""}
           {md && !live && file ? " Showing the checked-in run." : ""}
         </span>
+        )}
       </div>
       {!file && !API && (
         <p className="note">
