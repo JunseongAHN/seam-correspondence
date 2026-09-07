@@ -24,8 +24,20 @@ export default async function handler(req: any, res: any) {
   if (!secret) return res.status(500).json({ error: "PROXY_SECRET is not configured" });
   if (req.headers["x-proxy-secret"] !== secret)
     return res.status(401).json({ error: "not authorised" });
-  if (!process.env.ANTHROPIC_API_KEY)
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY is not configured" });
+  /* Trim and check the shape. A key pasted with a stray character is not a 401 later,
+     it is a TypeError while the header object is being built -- "Cannot convert argument
+     to a ByteString" -- which surfaces as an opaque FUNCTION_INVOCATION_FAILED with no
+     hint that the credential is what is wrong. */
+  const key = (process.env.ANTHROPIC_API_KEY ?? "").trim();
+  if (!key) return res.status(500).json({ error: "ANTHROPIC_API_KEY is not configured" });
+  const bad = [...key].findIndex((c) => c.charCodeAt(0) > 255);
+  if (bad >= 0 || !/^sk-ant-/.test(key))
+    return res.status(500).json({
+      error: bad >= 0
+        ? `ANTHROPIC_API_KEY has a non-Latin-1 character at index ${bad}; it cannot go in `
+          + "a header. Re-add it with nothing but the key: vercel env rm/add"
+        : "ANTHROPIC_API_KEY does not start with sk-ant- ; re-add it with nothing but the key",
+    });
 
   let data: EvalFile;
   try {
@@ -42,7 +54,7 @@ export default async function handler(req: any, res: any) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
+      "x-api-key": key,
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify(requestBody(data, MODEL)),
