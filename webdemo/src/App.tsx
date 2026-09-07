@@ -243,7 +243,9 @@ export default function App() {
         <h1>AutoSew — sewing pattern → stitch prediction</h1>
         <p className="sub">
           A 2D sewing pattern in, the stitching between panel edges out, predicted by an
-          ONNX model running in your browser.
+          ONNX model running in your browser. A DXF carries no stitch list — draw the
+          ground truth by hand and the prediction becomes scorable, and its failures can
+          be sent to <strong>claude-sonnet-5</strong> for a report on why they failed.
         </p>
       </header>
 
@@ -253,47 +255,57 @@ export default function App() {
         onClick={() => fileRef.current?.click()}>
         <input ref={fileRef} type="file" accept=".dxf,.json" hidden
                onChange={(e) => { const f = e.target.files?.[0]; if (f) runFile(f); }} />
-        {busy ? "running…" : "import a DXF — drop it here, or click to choose"}
-      </div>
+        <div className="dropline">
+          {busy ? "running…" : "import a DXF — drop it here, or click to choose"}
+        </div>
+        {/* The examples live inside the drop zone, so stop their clicks reaching it --
+            otherwise picking one also opens the file dialog behind it. */}
+        <div className="tries" onClick={(e) => e.stopPropagation()}>
+        <div className="tryit">
+          or try{" "}
+          {(Object.keys(EXAMPLES) as ExampleKey[]).map((k, i) => (
+            <span key={k}>
+              {i > 0 && <span className="sep">·</span>}
+              <button className={`link ${example === k ? "on" : ""}`}
+                      disabled={busy} onClick={() => runExample(k)}>
+                {EXAMPLES[k].label}
+              </button>
+            </span>
+          ))}
+        </div>
 
-      <div className="tryit">
-        or try{" "}
-        {(Object.keys(EXAMPLES) as ExampleKey[]).map((k, i) => (
-          <span key={k}>
-            {i > 0 && <span className="sep">·</span>}
-            <button className={`link ${example === k ? "on" : ""}`}
-                    disabled={busy} onClick={() => runExample(k)}>
-              {EXAMPLES[k].label}
-            </button>
+        {/* The five are GarmentCodeData too, so they belong under that example rather
+            than competing with it: the row appears once example 2 is chosen, and stays
+            while one of them is loaded. */}
+        {(example === "gcd" || more !== null) && (
+        <div className="tryit more">
+          more held-out garments, from worst to best —{" "}
+          {MORE.map((g, i) => (
+            <span key={g.id}>
+              {i > 0 && <span className="sep">·</span>}
+              <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
+                      disabled={busy} title={g.what}
+                      onClick={async () => {
+                        setBusy(true); setErr(null);
+                        try {
+                          const u = `${B}example/${g.id}_specification.json`;
+                          const r = await fetch(u);
+                          if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
+                          await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
+                        } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
+                      }}>
+                F1 {g.f1}
+              </button>
+            </span>
+          ))}
+          <span className="note" style={{ marginLeft: 10 }}>
+            picked by scoring a sample of the test split with the model this page runs, then
+            taking a spread — not a highlight reel. Each opens beside{" "}
+            <strong className="gt">its ground-truth drape, in red</strong>.
           </span>
-        ))}
-      </div>
-
-      <div className="tryit">
-        more held-out garments, from worst to best —{" "}
-        {MORE.map((g, i) => (
-          <span key={g.id}>
-            {i > 0 && <span className="sep">·</span>}
-            <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
-                    disabled={busy} title={g.what}
-                    onClick={async () => {
-                      setBusy(true); setErr(null);
-                      try {
-                        const u = `${B}example/${g.id}_specification.json`;
-                        const r = await fetch(u);
-                        if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
-                        await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
-                      } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
-                    }}>
-              F1 {g.f1}
-            </button>
-          </span>
-        ))}
-        <span className="note" style={{ marginLeft: 10 }}>
-          picked by scoring a sample of the test split with the model this page runs, then
-          taking a spread — not a highlight reel. Each opens beside{" "}
-          <strong className="gt">its ground-truth drape, in red</strong>.
-        </span>
+        </div>
+        )}
+        </div>
       </div>
 
       {err && <div className="err">{err}</div>}

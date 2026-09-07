@@ -118,3 +118,29 @@ h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
 }
 .note.gateok { color: #0b6b30; font-weight: 600; }
 .note.gatefail { color: #b3272e; font-weight: 600; }
+
+/* The examples belong in the drop zone: they are the other way of getting a pattern in,
+   and a reader who has no DXF should not have to look elsewhere for one. */
+.drop { padding: 22px 24px 18px; }
+.dropline { font-size: 13px; }
+.tries { margin-top: 14px; padding-top: 12px; border-top: 1px solid #0000000f;
+         cursor: default; }
+.tries .tryit:first-child { margin-top: 0; }
+.drop:hover .tries { color: #777; }        /* the hover tint is for the zone, not these */
+
+/* A button that sets its own background must set its own colour: in dark mode the page's
+   near-white text was being inherited onto a white button, which is invisible. */
+.examples button { color: #1a1a1e; }
+@media (prefers-color-scheme: dark) {
+  .examples button { background: #26262b; color: #e8e8ea; border-color: #ffffff2e; }
+  .examples button:hover:not(:disabled) { border-color: #6a8cff; color: #9db4ff; }
+  .examples button.on { background: #6a8cff; color: #fff; border-color: #6a8cff; }
+  .tryit button.link { color: #9db4ff; }
+  .tryit button.link:hover:not(:disabled) { color: #c3d0ff; }
+  .tries { border-top-color: #ffffff1a; }
+  .drop { border-color: #ffffff33; }
+  .drop:hover { border-color: #6a8cff; }
+  .energies { color: #b9b9c0; background: #ffffff0a; }
+  .split h2 { color: #9a9aa2; }
+  .note.wide, .examples .note, .tryit { color: #9a9aa2; }
+}
