@@ -10,14 +10,18 @@ to continue the work.
 
 ## Failure report (Anthropic API)
 
-Give it an eval JSON (edge pairs with `pred`/`gt`, arc lengths and sagitta, exported by the
-demo's "save the evaluation as JSON" button) and it returns a reviewer-readable Markdown
-breakdown: failures grouped into categories with a likely cause each, plus three ranked
-next actions. Run it with `npm run report -- eval/real_dxf_01.json --out
-reports/real_dxf_01.md`. It is a **local CLI** — the key comes from
-`process.env.ANTHROPIC_API_KEY`, via a shell `export` or a git-ignored `api.env` (see
-[api.env.example](api.env.example)), and the browser demo never calls the API. The gate exits
-non-zero unless every MISS and FALSE_POSITIVE is assigned to exactly one category, the
-three established causes (shape mismatch, arc-vs-chord, mirror axis) are named, and there
-are exactly three next actions. Generated report:
-[reports/real_dxf_01.md](reports/real_dxf_01.md).
+Give it an eval JSON — edge pairs with `pred`/`gt`, arc lengths, sagitta, what the model
+chose instead and how sure it was, exported by the demo's own button — and it returns a
+Markdown breakdown: failures grouped into categories with a cause each, plus three ranked
+next actions. Run it locally with `npm run report -- eval/real_dxf_01.json --out
+reports/real_dxf_01.md`, or press **show LLM evaluation report** on the
+[live demo](https://junseongahn.github.io/seam-correspondence/) and generate a fresh one.
+The key is never in the page: locally it comes from `process.env.ANTHROPIC_API_KEY` (a
+git-ignored `api.env`, see [api.env.example](api.env.example)); in the browser the call
+goes to a Cloudflare Worker that enforces one report per IP per 30 s and forwards to a
+Vercel function that holds the key — Anthropic refuses the Cloudflare edge outright, which
+is why the call is not made there. The gate exits non-zero unless every MISS and
+FALSE_POSITIVE is assigned to exactly one category, the three established causes (shape
+mismatch, arc-vs-chord, mirror axis) are addressed, and there are exactly three next
+actions; it checks the report's shape, not whether the reasoning is right. Generated
+report: [reports/real_dxf_01.md](reports/real_dxf_01.md).

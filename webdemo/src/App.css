@@ -97,3 +97,24 @@ h1 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
   .note.gtnote { color: #e2a9ab; border-left-color: #ff6b6b; }
   .pill.name.gt { background: #ff6b6b26; color: #ff8b8b; }
 }
+
+/* The LLM failure report, shown in the page. Deliberately plain: it is a generated
+   document, and dressing it up would lend it authority the gate does not check for. */
+.llmreport { margin: 12px 0; padding: 12px 14px; border: 1px solid #0000001a;
+             border-left: 3px solid #6a8cff; border-radius: 8px; background: #6a8cff08; }
+.llmreport .note { display: block; margin: 0 0 10px; }
+.md { font-size: 13px; line-height: 1.6; }
+.md h2 { font-size: 14px; margin: 4px 0 8px; }
+.md h3 { font-size: 12.5px; margin: 14px 0 6px; color: #555; text-transform: uppercase;
+         letter-spacing: .04em; }
+.md p { margin: 0 0 8px; }
+.md li { margin: 0 0 5px 18px; }
+.md li.sub { margin-left: 34px; color: #666; font-size: 12px; }
+.md code { background: #0000000d; padding: 1px 4px; border-radius: 4px; font-size: 12px; }
+@media (prefers-color-scheme: dark) {
+  .llmreport { border-color: #ffffff1f; background: #6a8cff12; }
+  .md h3, .md li.sub { color: #aaa; }
+  .md code { background: #ffffff14; }
+}
+.note.gateok { color: #0b6b30; font-weight: 600; }
+.note.gatefail { color: #b3272e; font-weight: 600; }

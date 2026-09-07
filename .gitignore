@@ -246,3 +246,12 @@ simcpp/out/
 # root tooling (webdemo/node_modules is ignored separately above)
 /node_modules/
 api.env
+# Worker secrets for `wrangler dev` -- the deployed key is a Worker secret, not a file.
+worker/.dev.vars
+worker/.wrangler/
+
+# Vercel project link (account- and project-specific, not shared)
+.vercel/
+
+.vercel
+.env*.local

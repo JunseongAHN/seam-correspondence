@@ -4,10 +4,14 @@
   "type": "module",
   "description": "Repo-level CLI tools. The browser demo lives in webdemo/ and never calls an API.",
   "scripts": {
-    "report": "tsx tools/seam-report.ts"
+    "report": "tsx tools/seam-report.ts",
+    "worker:dev": "wrangler dev --config worker/wrangler.toml",
+    "worker:deploy": "wrangler deploy --config worker/wrangler.toml"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.71.0",
-    "tsx": "^4.20.6"
+    "tsx": "^4.20.6",
+    "wrangler": "^4.0.0",
+    "vercel": "^48.0.0"
   }
 }

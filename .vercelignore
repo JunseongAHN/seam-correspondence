@@ -1,0 +1,10 @@
+# The Vercel project is one function. Everything else in this repo -- the 12 MB demo
+# bundle, the solver, the checkpoints -- would be uploaded on every deploy for nothing.
+*
+!api
+!api/**
+!tools
+!tools/**
+!package.json
+!package-lock.json
+!vercel.json

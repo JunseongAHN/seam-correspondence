@@ -1,0 +1,27 @@
+name = "seam-report"
+main = "index.ts"
+compatibility_date = "2026-09-01"
+
+# Secrets, never vars:
+#   npx wrangler secret put PROXY_SECRET -c worker/wrangler.toml
+# The Anthropic key is NOT here and cannot usefully be: a Worker cannot reach
+# api.anthropic.com at all (403 "Request not allowed"), directly or through AI Gateway.
+# It lives in the Vercel function. Clear the leftovers from those attempts:
+#   npx wrangler secret delete ANTHROPIC_API_KEY -c worker/wrangler.toml
+#   npx wrangler secret delete CF_AIG_TOKEN      -c worker/wrangler.toml
+
+# The rate-limit store:  npx wrangler kv namespace create RATE -c worker/wrangler.toml
+[[kv_namespaces]]
+binding = "RATE"
+id = "7d313c77bd114500a789798205809473"
+
+[vars]
+# Comma-separated. localhost is here so a local `npm run dev` can call the deployed
+# worker; CORS gates other pages, not curl, so the 30 s window is the real limit.
+ALLOWED_ORIGIN = "https://junseongahn.github.io,http://localhost:5173,http://127.0.0.1:5173"
+
+# The Vercel function that makes the Anthropic call. This is the project alias, not the
+# per-deploy URL -- that one changes on every production deploy and would break here.
+# Deployment Protection must be off on that project, or Vercel answers a 302 to its SSO
+# login instead of the function; PROXY_SECRET is what actually guards the endpoint.
+UPSTREAM = "https://seam-correspondence-personal-c403.vercel.app/api/report"

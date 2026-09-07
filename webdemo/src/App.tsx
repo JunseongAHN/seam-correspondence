@@ -1,13 +1,15 @@
 import { useCallback, useRef, useState } from "react";
 import { parseSpec, type Pattern } from "./lib/parseSpec";
 import { parseDxf } from "./lib/parseDxf";
-import { patternToTensors, gtPairs, featureDim, NK } from "./lib/features";
+import { patternToTensors, gtPairs } from "./lib/features";
+import { buildEval } from "./lib/evalDoc";
 import { predict, type Scores } from "./lib/infer";
 import { placePanels, type Placed } from "./lib/render";
 import PatternSvg from "./PatternSvg";
 import WeldGT from "./WeldGT";         // the CLO drape with its weld-derived seams
 import SimViewer from "./SimViewer";   // the wasm assembly solve, rendered
 import GtDrape from "./GtDrape";       // the ground-truth drape, solved on the host
+import LlmReport from "./LlmReport";   // the failure report, canned or generated
 import "./App.css";
 
 // BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.
@@ -41,80 +43,6 @@ function gtFromDoc(doc: any, keys: Array<[string, number]>): Set<string> {
   }
   if (miss) throw new Error(`${miss} stitch(es) in the file name edges this pattern does not have`);
   return out;
-}
-
-/* The evaluation, as a file tools/seam-report.ts can read.
-
-   The geometry alone -- two lengths and two curvatures per pair -- cannot say why a
-   stitch was missed, so a report built on it can only guess, and will. What separates
-   the failure modes is carried here instead:
-
-     shape_mismatch   how badly the two edges fail to interlock, the metric behind the
-                      0-of-32 finding: the best of the four ways one sagitta profile can
-                      be laid against the other (as-is, negated, reversed, both),
-                      as a fraction of the larger profile's amplitude. 0 means the two
-                      edges fit together; above 0.5 they are unrelated shapes.
-     a_chose/b_chose  what each edge's argmax partner actually was, with its probability.
-                      For a MISS this is the whole story: which edge took it, and whether
-                      the model was confident or barely preferred it.
-     p_pair           the model's probability for the pair in question.
-
-   Lengths are ARC lengths in cm (dim 24), not the chord in dim 4. Everything is read
-   from the tensor the model was given, so the report analyses the model's own view. */
-function buildEval(res: Result, truth: Set<string>, name: string) {
-  const D = featureDim;
-  const sag = (n: number) =>
-    Array.from({ length: NK }, (_, k) => res.x[n * D + 7 + k]);
-  const arc = (n: number) => res.x[n * D + 7 + NK + 6] * 100;      // dim 24, cm
-  const curv = (n: number) => {
-    let best = 0;
-    for (const v of sag(n)) if (Math.abs(v) > Math.abs(best)) best = v;
-    return best;
-  };
-
-  /* Port of dxfcheck/shape_vs_hit.py:88-94, kept identical so the browser and the
-     analysis scripts describe the same garment the same way. */
-  const shape = (i: number, j: number) => {
-    const s1 = sag(i), s2 = sag(j);
-    const amp = Math.max(...s1.map(Math.abs), ...s2.map(Math.abs), 1e-9);
-    const cands: [string, number[]][] = [
-      ["+s", s1], ["-s", s1.map((v) => -v)],
-      ["+rev", [...s1].reverse()], ["-rev", [...s1].reverse().map((v) => -v)],
-    ];
-    let bw = "+s", bv = Infinity;
-    for (const [w, v] of cands) {
-      const d = Math.max(...s2.map((q, k) => Math.abs(q - v[k])));
-      if (d < bv) { bv = d; bw = w; }
-    }
-    return { mismatch: bv / amp, relation: bw };
-  };
-
-  const label = (n: number) => `${res.keys[n][0]}#${res.keys[n][1]}`;
-  const chose = (n: number) => {
-    const b = res.scores.best[n];
-    return b < 0 || b >= res.M
-      ? { partner: "dustbin (nothing)", p: res.scores.prob(n, res.M) }
-      : { partner: label(b), p: res.scores.prob(n, b) };
-  };
-  const ok = [...res.pred].filter((k) => truth.has(k)).length;
-  const P = res.pred.size ? ok / res.pred.size : 0;
-  const R = truth.size ? ok / truth.size : 0;
-  return {
-    garment: name,
-    f1: P + R ? (2 * P * R) / (P + R) : 0,
-    pairs: [...new Set([...res.pred, ...truth])].map((k) => {
-      const [a, b] = k.split("-").map(Number);
-      const sh = shape(a, b);
-      const ca = chose(a), cb = chose(b);
-      return { edge_a: label(a), edge_b: label(b),
-               pred: res.pred.has(k), gt: truth.has(k),
-               len_a: arc(a), len_b: arc(b), curv_a: curv(a), curv_b: curv(b),
-               shape_mismatch: sh.mismatch, shape_relation: sh.relation,
-               p_pair: res.scores.prob(a, b),
-               a_chose: ca.partner, p_a_chose: ca.p,
-               b_chose: cb.partner, p_b_chose: cb.p };
-    }),
-  };
 }
 
 function downloadEval(res: Result, truth: Set<string>, name: string) {
@@ -191,6 +119,7 @@ export default function App() {
   const [name, setName] = useState("");
   const [example, setExample] = useState<ExampleKey | null>(null);
   const [more, setMore] = useState<string | null>(null);   // which held-out garment
+  const [showReport, setShowReport] = useState(false);
   const [annotate, setAnnotate] = useState(false);
   const [labels, setLabels] = useState(true);
   const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
@@ -375,8 +304,9 @@ export default function App() {
             {annotate ? "leave" : "draw"} the ground truth by hand
           </button>
           {scored && (
-            <button onClick={() => downloadEval(res, truth, name)}>
-              save the evaluation as JSON
+            <button className={showReport ? "on" : ""}
+                    onClick={() => setShowReport((v) => !v)}>
+              {showReport ? "hide" : "show"} LLM evaluation report
             </button>
           )}
           <label className="note" style={{ userSelect: "none" }}>
@@ -404,6 +334,18 @@ export default function App() {
             </>
           )}
         </div>
+      )}
+
+      {res && scored && showReport && (
+        <>
+          <LlmReport name={name} doc={buildEval(res, truth, name)} />
+          <div className="examples">
+            <button onClick={() => downloadEval(res, truth, name)}>
+              save the evaluation as JSON
+            </button>
+            <span className="note">the input the report is written from</span>
+          </div>
+        </>
       )}
 
       {res && (
