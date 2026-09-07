@@ -5,6 +5,7 @@ its panel edges out — extended to take real CLO exports, with an ARAP assembly
 C++/WebAssembly and a browser demo that runs the whole pipeline client-side.
 
 **Live: <https://junseongahn.github.io/seam-correspondence/>**
+<img width="1056" height="848" alt="image" src="https://github.com/user-attachments/assets/ac05c2bc-e0a9-4f62-940e-6c10c99e5745" />
 
 TF1 0.9490 against the paper's 0.9706 on a quarter of the training data. The interesting
 result is not the reproduction: it is that the benchmark did not predict real-world
