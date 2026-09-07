@@ -14,7 +14,16 @@ export async function loadModel(url = `${import.meta.env.BASE_URL}model/autosew.
   return session;
 }
 
-export async function predict(t: Tensors): Promise<{ pairs: Set<string>; ms: number }> {
+/** What the model actually thought, not just what survived the threshold.
+
+    A failure report cannot say why an edge was missed without knowing what took it
+    instead and how sure the model was, so `best` (each edge's argmax partner, M for the
+    dustbin) and `prob` (the symmetrised assignment probability of any pair) come back
+    alongside the pairs. */
+export type Scores = { best: Int32Array; prob: (i: number, j: number) => number };
+
+export async function predict(t: Tensors):
+    Promise<{ pairs: Set<string>; ms: number; scores: Scores }> {
   const s = await loadModel();
   const M = t.M;
   const feeds: Record<string, ort.Tensor> = {
@@ -73,5 +82,5 @@ export async function predict(t: Tensors): Promise<{ pairs: Set<string>; ms: num
         if (j !== i && j !== best[i] && Ps[i * N + j] >= TAU) add(j);
     }
   }
-  return { pairs, ms };
+  return { pairs, ms, scores: { best, prob: (i, j) => Ps[i * N + j] } };
 }

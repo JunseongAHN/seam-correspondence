@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { parseSpec, type Pattern } from "./lib/parseSpec";
 import { parseDxf } from "./lib/parseDxf";
 import { patternToTensors, gtPairs, featureDim, NK } from "./lib/features";
-import { predict } from "./lib/infer";
+import { predict, type Scores } from "./lib/infer";
 import { placePanels, type Placed } from "./lib/render";
 import PatternSvg from "./PatternSvg";
 import WeldGT from "./WeldGT";         // the CLO drape with its weld-derived seams
@@ -45,24 +45,57 @@ function gtFromDoc(doc: any, keys: Array<[string, number]>): Set<string> {
 
 /* The evaluation, as a file tools/seam-report.ts can read.
 
-   One record per pair the run has an opinion about -- every true positive, false
-   positive and missed stitch -- with the two geometric quantities that decide a seam:
-   the ARC length in cm (dim 24 of the feature vector, not the chord in dim 4; a seam
-   matches the fabric you sew along) and the signed sagitta of largest magnitude, which
-   is how far the edge bows off its chord as a fraction of it. Both are read straight out
-   of the tensor the model was given, so the report analyses the model's own view. */
+   The geometry alone -- two lengths and two curvatures per pair -- cannot say why a
+   stitch was missed, so a report built on it can only guess, and will. What separates
+   the failure modes is carried here instead:
+
+     shape_mismatch   how badly the two edges fail to interlock, the metric behind the
+                      0-of-32 finding: the best of the four ways one sagitta profile can
+                      be laid against the other (as-is, negated, reversed, both),
+                      as a fraction of the larger profile's amplitude. 0 means the two
+                      edges fit together; above 0.5 they are unrelated shapes.
+     a_chose/b_chose  what each edge's argmax partner actually was, with its probability.
+                      For a MISS this is the whole story: which edge took it, and whether
+                      the model was confident or barely preferred it.
+     p_pair           the model's probability for the pair in question.
+
+   Lengths are ARC lengths in cm (dim 24), not the chord in dim 4. Everything is read
+   from the tensor the model was given, so the report analyses the model's own view. */
 function buildEval(res: Result, truth: Set<string>, name: string) {
   const D = featureDim;
+  const sag = (n: number) =>
+    Array.from({ length: NK }, (_, k) => res.x[n * D + 7 + k]);
   const arc = (n: number) => res.x[n * D + 7 + NK + 6] * 100;      // dim 24, cm
   const curv = (n: number) => {
     let best = 0;
-    for (let k = 0; k < NK; k++) {
-      const v = res.x[n * D + 7 + k];
-      if (Math.abs(v) > Math.abs(best)) best = v;
-    }
+    for (const v of sag(n)) if (Math.abs(v) > Math.abs(best)) best = v;
     return best;
   };
+
+  /* Port of dxfcheck/shape_vs_hit.py:88-94, kept identical so the browser and the
+     analysis scripts describe the same garment the same way. */
+  const shape = (i: number, j: number) => {
+    const s1 = sag(i), s2 = sag(j);
+    const amp = Math.max(...s1.map(Math.abs), ...s2.map(Math.abs), 1e-9);
+    const cands: [string, number[]][] = [
+      ["+s", s1], ["-s", s1.map((v) => -v)],
+      ["+rev", [...s1].reverse()], ["-rev", [...s1].reverse().map((v) => -v)],
+    ];
+    let bw = "+s", bv = Infinity;
+    for (const [w, v] of cands) {
+      const d = Math.max(...s2.map((q, k) => Math.abs(q - v[k])));
+      if (d < bv) { bv = d; bw = w; }
+    }
+    return { mismatch: bv / amp, relation: bw };
+  };
+
   const label = (n: number) => `${res.keys[n][0]}#${res.keys[n][1]}`;
+  const chose = (n: number) => {
+    const b = res.scores.best[n];
+    return b < 0 || b >= res.M
+      ? { partner: "dustbin (nothing)", p: res.scores.prob(n, res.M) }
+      : { partner: label(b), p: res.scores.prob(n, b) };
+  };
   const ok = [...res.pred].filter((k) => truth.has(k)).length;
   const P = res.pred.size ? ok / res.pred.size : 0;
   const R = truth.size ? ok / truth.size : 0;
@@ -71,9 +104,15 @@ function buildEval(res: Result, truth: Set<string>, name: string) {
     f1: P + R ? (2 * P * R) / (P + R) : 0,
     pairs: [...new Set([...res.pred, ...truth])].map((k) => {
       const [a, b] = k.split("-").map(Number);
+      const sh = shape(a, b);
+      const ca = chose(a), cb = chose(b);
       return { edge_a: label(a), edge_b: label(b),
                pred: res.pred.has(k), gt: truth.has(k),
-               len_a: arc(a), len_b: arc(b), curv_a: curv(a), curv_b: curv(b) };
+               len_a: arc(a), len_b: arc(b), curv_a: curv(a), curv_b: curv(b),
+               shape_mismatch: sh.mismatch, shape_relation: sh.relation,
+               p_pair: res.scores.prob(a, b),
+               a_chose: ca.partner, p_a_chose: ca.p,
+               b_chose: cb.partner, p_b_chose: cb.p };
     }),
   };
 }
@@ -141,6 +180,7 @@ type Result = {
   pred: Set<string>; gt: Set<string>; ms: number; M: number;
   source: "spec" | "dxf";
   x: Float32Array;              // the features as given to the model, for the eval export
+  scores: Scores;               // and what it made of them, for the same reason
 };
 
 export default function App() {
@@ -196,7 +236,7 @@ export default function App() {
         ? parseDxf(text, fileName.replace(/\.dxf$/i, ""))
         : parseSpec(JSON.parse(text), fileName.replace("_specification.json", ""));
       const t = patternToTensors(pattern);
-      const { pairs, ms } = await predict(t);
+      const { pairs, ms, scores } = await predict(t);
       let gt = isDxf ? new Set<string>() : gtPairs(pattern, t.keys);
       if (gtUrl) {
         const g = await fetch(gtUrl);
@@ -204,7 +244,7 @@ export default function App() {
         gt = gtFromDoc(await g.json(), t.keys);
       }
       setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
-               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec", x: t.x });
+               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec", x: t.x, scores });
       setName(fileName);
       setExample(ex);
       setMore(moreId);

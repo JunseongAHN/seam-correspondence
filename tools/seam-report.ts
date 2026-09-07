@@ -25,7 +25,12 @@ const DEBUG_MODEL = "claude-haiku-4-5"; // --model claude-haiku-4-5 while iterat
    one seam into two edges across a panel's mirror axis. */
 const KNOWN_CAUSES = ["shape mismatch", "arc", "mirror"];
 
-type Pair = { edge_a: string; edge_b: string; pred: boolean; gt: boolean; len_a: number; len_b: number; curv_a: number; curv_b: number };
+type Pair = {
+  edge_a: string; edge_b: string; pred: boolean; gt: boolean;
+  len_a: number; len_b: number; curv_a: number; curv_b: number;
+  shape_mismatch: number; shape_relation: string; p_pair: number;
+  a_chose: string; p_a_chose: number; b_chose: string; p_b_chose: number;
+};
 type EvalFile = { garment: string; f1: number; pairs: Pair[] };
 type Report = {
   summary: string;
@@ -66,13 +71,39 @@ const reportTool: Anthropic.Tool = {
   },
 };
 
+/* Lengths and curvatures alone do not distinguish the failure modes, so a report built
+   on them can only speculate. What decides each case is what the model chose instead,
+   how sure it was, and whether the two edges interlock at all -- so those go in too, and
+   the legend tells the reader how to read them. */
+const LEGEND = [
+  "Each failure is two lines. Field guide:",
+  "  len            arc length in cm -- the fabric sewn along, not the chord.",
+  "  curvature      signed sagitta of largest magnitude, as a fraction of the chord.",
+  "                 0.00 means a straight edge; sign says which way it bows.",
+  "  shape_mismatch how badly the two edges fail to interlock, over the best of the four",
+  "                 ways one sagitta profile can lie against the other. 0.00 = they fit",
+  "                 together; >0.50 = unrelated shapes. The bracket says which relation",
+  "                 fitted best (+s as-is, -s negated, +rev reversed, -rev both).",
+  "  p_pair         the model's probability for THIS pair.",
+  "  chose          each edge's actual argmax partner and its probability. 'dustbin'",
+  "                 means the model decided that edge is sewn to nothing at all.",
+].join("\n");
+
 function condense(data: EvalFile): string {
   const fails = data.pairs.filter((p) => p.pred !== p.gt);
-  const lines = fails.map((p) => {
+  const lines = fails.flatMap((p) => {
     const kind = p.gt && !p.pred ? "MISS" : "FALSE_POSITIVE";
-    return `${kind}: ${p.edge_a} <-> ${p.edge_b} | len ${p.len_a.toFixed(1)}/${p.len_b.toFixed(1)} | curvature ${p.curv_a.toFixed(2)}/${p.curv_b.toFixed(2)}`;
+    return [
+      `${kind}: ${p.edge_a} <-> ${p.edge_b} | len ${p.len_a.toFixed(1)}/${p.len_b.toFixed(1)}`
+      + ` | curvature ${p.curv_a.toFixed(2)}/${p.curv_b.toFixed(2)}`
+      + ` | shape_mismatch ${p.shape_mismatch.toFixed(2)} (${p.shape_relation})`
+      + ` | p_pair ${p.p_pair.toFixed(3)}`,
+      `    ${p.edge_a} chose ${p.a_chose} p=${p.p_a_chose.toFixed(2)}`
+      + ` ; ${p.edge_b} chose ${p.b_chose} p=${p.p_b_chose.toFixed(2)}`,
+    ];
   });
-  return `garment=${data.garment} f1=${data.f1.toFixed(3)} failures=${fails.length}\n${lines.join("\n")}`;
+  return `${LEGEND}\n\ngarment=${data.garment} f1=${data.f1.toFixed(3)}`
+       + ` failures=${fails.length}\n${lines.join("\n")}`;
 }
 
 function render(r: Report, usage: Anthropic.Usage, ms: number, model: string): string {
@@ -123,12 +154,17 @@ async function main() {
       "Be concrete; never invent pairs that are not in the input. " +
       "Every MISS and FALSE_POSITIVE listed must fall into exactly one category, and the counts must " +
       "sum to the stated failure count. " +
-      "Three causes are already established for this pipeline and your analysis must engage with them " +
-      "by name where the evidence supports it: 'shape mismatch' (a concave edge eased onto a convex one, " +
-      "so the two sagitta values disagree in sign or magnitude even when the lengths match), " +
-      "'arc' length versus chord length (a seam matches the fabric sewn along, not the straight line " +
-      "between corners), and 'mirror' axis artifacts (a CAD export splitting one seam into two edges " +
-      "where a panel crosses its own mirror line).",
+      "Ground every claim in the numbers given. The evidence that separates the cases is " +
+      "shape_mismatch and what each edge chose instead: a MISS where an edge chose the dustbin at " +
+      "high probability is the model refusing to sew it at all, which is a different failure from " +
+      "one where a rival edge took it at a probability just above the true pair's. " +
+      "Three causes are established for this pipeline and you must address all three BY NAME: " +
+      "'shape mismatch' (edges that do not interlock -- read shape_mismatch directly), " +
+      "'arc' length versus chord length (a seam matches the fabric sewn along; the lengths here " +
+      "are already arc lengths), and 'mirror' axis artifacts (a CAD export splitting one seam into " +
+      "two edges where a panel crosses its own mirror line). " +
+      "If the data does not support one of them as a cause of THESE failures, say so plainly -- " +
+      "'no evidence of X here, because ...' is the correct answer and inventing a role for it is not.",
     tools: [reportTool],
     tool_choice: { type: "tool", name: "write_failure_report" },
     messages: [{ role: "user", content: condense(data) }],
