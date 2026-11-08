@@ -28,7 +28,7 @@ export default function App() {
         </p>
       </header>
 
-      <DropZone busy={w.busy} example={w.example} onFile={w.runFile} onExample={w.runExample} />
+      <DropZone busy={w.busy} loadingModel={w.loadingModel} example={w.example} onFile={w.runFile} onExample={w.runExample} />
 
       {(w.example === "gcd" || w.more !== null) && (
         <MoreGarments busy={w.busy} name={w.name} onPick={w.runMore} />

@@ -3,7 +3,7 @@
    get what they need as props; none of them holds this state itself. */
 import { useCallback, useState } from "react";
 import type { Pattern } from "@/core-algorithm/pattern";
-import { gtPairs, patternToTensors, predict, type Scores } from "@/core-algorithm/inference";
+import { gtPairs, modelLoaded, patternToTensors, predict, type Scores } from "@/core-algorithm/inference";
 import { annotationClick, gtFromDoc } from "@/features/annotation";
 import { scoreStats } from "@/features/evaluation";
 import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl, parseInput,
@@ -22,6 +22,8 @@ export type Result = {
 export function useWorkspace() {
   const [res, setRes] = useState<Result | null>(null);
   const [busy, setBusy] = useState(false);
+  // the first prediction also fetches the model, which takes far longer than running it
+  const [loadingModel, setLoadingModel] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [show, setShow] = useState<Show>({ correct: true, fp: true, fn: true, gt: false });
   const [name, setName] = useState("");
@@ -61,7 +63,9 @@ export function useWorkspace() {
     try {
       const { pattern, isDxf } = parseInput(text, fileName);
       const t = patternToTensors(pattern);
+      setLoadingModel(!modelLoaded());
       const { pairs, ms, scores } = await predict(t);
+      setLoadingModel(false);
       let gt = isDxf ? new Set<string>() : gtPairs(pattern, t.keys);
       if (gtUrl) {
         const g = await fetch(gtUrl);
@@ -76,7 +80,7 @@ export function useWorkspace() {
     } catch (e: any) {
       setErr(String(e?.message ?? e)); setRes(null); setExample(null); setMore(null);
     }
-    finally { setBusy(false); }
+    finally { setBusy(false); setLoadingModel(false); }
   }, []);
 
   const runFile = useCallback(async (file: File) => {
@@ -121,7 +125,7 @@ export function useWorkspace() {
   });
 
   return {
-    res, busy, err, name, example, more, truth, scored, stats, exact, hasOwnGt, right,
+    res, busy, loadingModel, err, name, example, more, truth, scored, stats, exact, hasOwnGt, right,
     show, labels, showReport, annotate, userPairs, selected,
     setErr, setShow, setLabels, setUserPairs,
     toggleReport: () => setShowReport((v) => !v),

@@ -16,8 +16,24 @@ describe("parseInput", () => {
     const r = parseInput(spec, "rand_JYO1DHSFGH_specification.json");
     expect([r.isDxf, r.pattern.name, r.pattern.panels.length]).toEqual([false, "rand_JYO1DHSFGH", 4]);
   });
-  it("throws on text that is neither", () => {
-    expect(() => parseInput("not json", "x.json")).toThrow();
+  it("names the file and what it was read as when JSON does not parse", () => {
+    expect(() => parseInput("not a pattern", "x.json"))
+      .toThrow(/^could not read x\.json as a pattern specification \(JSON\): /);
+  });
+  it("says the same of JSON that is not a specification", () => {
+    expect(() => parseInput("{}", "x.json"))
+      .toThrow(/^could not read x\.json as a pattern specification \(JSON\): /);
+  });
+  it("names the file when a DXF does not parse", () => {
+    expect(() => parseInput("hello\nworld\n", "x.dxf")).toThrow(/^could not read x\.dxf as a DXF: /);
+    expect(() => parseInput("", "x.dxf")).toThrow(/^could not read x\.dxf as a DXF: /);
+  });
+  it("passes on the DXF reader's own reason when it finds no panels", () => {
+    expect(() => parseInput("0\nSECTION\n2\nENTITIES\n0\nENDSEC\n0\nEOF\n", "x.dxf"))
+      .toThrow("could not read x.dxf as a DXF: no panel blocks with a boundary polyline (layer 8 or 1)");
+  });
+  it("refuses a specification that parses but has no panels", () => {
+    expect(() => parseInput('{"panels": {}}', "x.json")).toThrow("no panels found in x.json");
   });
 });
 

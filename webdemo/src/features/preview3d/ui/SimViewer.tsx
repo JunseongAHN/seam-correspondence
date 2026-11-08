@@ -176,7 +176,8 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
     const t0 = performance.now();
     const tick = setInterval(() => setElapsed((performance.now() - t0) / 1000), 250);
     try { setResult(await solveInWorker(dump, raw.current)); setStage("solved"); }
-    catch (e: any) { setErr(String(e?.stack ?? e?.message ?? e)); }
+    // the pane keeps the input geometry and the button, so a failed solve can be retried
+    catch (e: any) { setErr(`the solver could not run: ${e?.message ?? e}`); }
     finally { clearInterval(tick); setBusy(false); }
   }, [dump]);
 

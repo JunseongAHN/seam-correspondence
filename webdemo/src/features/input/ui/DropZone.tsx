@@ -4,8 +4,10 @@ import shared from "@/styles/shared.module.css";
 import s from "./DropZone.module.css";
 
 /** Where a pattern comes in: drop or choose a file, or pick one of the examples. */
-export default function DropZone({ busy, example, onFile, onExample }: {
+export default function DropZone({ busy, loadingModel, example, onFile, onExample }: {
   busy: boolean;
+  /** the model is still being fetched, the first time a pattern is run */
+  loadingModel: boolean;
   example: ExampleKey | null;
   onFile: (file: File) => void;
   onExample: (key: ExampleKey) => void;
@@ -19,7 +21,7 @@ export default function DropZone({ busy, example, onFile, onExample }: {
         <input ref={fileRef} type="file" accept=".dxf,.json" hidden
                onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); }} />
         <div className={s.dropline}>
-          {busy ? "running…" : "import a DXF — drop it here, or click to choose"}
+          {busy ? (loadingModel ? "loading the model…" : "running…") : "import a DXF — drop it here, or click to choose"}
         </div>
         {/* The examples live inside the drop zone, so stop their clicks reaching it --
             otherwise picking one also opens the file dialog behind it. */}

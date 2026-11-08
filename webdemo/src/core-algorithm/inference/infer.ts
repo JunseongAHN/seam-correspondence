@@ -10,9 +10,16 @@ const ONE_TO_ONE = true;
 let session: ort.InferenceSession | null = null;
 
 export async function loadModel(url = `${import.meta.env.BASE_URL}model/autosew.onnx`) {
-  if (!session) session = await ort.InferenceSession.create(url, { executionProviders: ["wasm"] });
+  if (!session) {
+    // onnxruntime's own message names a "data file", which does not say the model is missing
+    try { session = await ort.InferenceSession.create(url, { executionProviders: ["wasm"] }); }
+    catch (e: any) { throw new Error(`could not load the model (${url}): ${e?.message ?? e}`); }
+  }
   return session;
 }
+
+/** Whether the model is already in memory, so a caller can say it is fetching it first. */
+export const modelLoaded = () => session !== null;
 
 /** What the model actually thought, not just what survived the threshold.
 
