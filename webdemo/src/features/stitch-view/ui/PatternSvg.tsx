@@ -14,7 +14,11 @@
    hand.  A DXF has no stitch list, so this is how ground truth gets made for a real
    garment -- and once it exists the prediction can actually be scored against it. */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { edgePolyline, edgeMid, stitchColor, type Placed } from "../logic";
+import {
+  clientToUser, dragView, edgeStyle, focusNodes, isLit, midpointsByNode, nodeIndex,
+  pairGroups, pairPartners, patternGeometry, stitchIndexByEdge, strokeScale, svgFrame,
+  unitsPerPixel, zoomAt, type Drag, type Placed, type View,
+} from "../logic";
 import type { Pattern } from "@/core-algorithm/pattern";
 
 export type SvgProps = {
@@ -47,165 +51,57 @@ export default function PatternSvg({
      exactly like clicking an edge does nothing. */
   useEffect(() => { setFocus(null); }, [keys]);
 
-  /** node -> correspondence group, so both sides of a pair share a colour */
-  const group = useMemo(() => {
-    const src = annotate ? (userPairs ?? new Set<string>()) : pred;
-    const m = new Map<number, number>();
-    if ((!annotate && scored) || src.size === 0) return m;
-    const parent = new Map<number, number>();
-    const find = (a: number): number => {
-      while (parent.get(a) !== a) { parent.set(a, parent.get(parent.get(a)!)!); a = parent.get(a)!; }
-      return a;
-    };
-    for (const k of src) for (const t of k.split("-").map(Number)) if (!parent.has(t)) parent.set(t, t);
-    for (const k of src) {
-      const [a, b] = k.split("-").map(Number);
-      const ra = find(a), rb = find(b);
-      if (ra !== rb) parent.set(ra, rb);
-    }
-    /* Number the groups in the order the pairs were MADE, not by node index: otherwise
-       adding one pair renumbers the rest and every colour on screen shifts, which makes
-       hand-annotation impossible to follow. */
-    const gi = new Map<number, number>();
-    for (const k of src) {
-      for (const t of k.split("-").map(Number)) {
-        const r = find(t);
-        if (!gi.has(r)) gi.set(r, gi.size);
-      }
-    }
-    for (const t of parent.keys()) m.set(t, gi.get(find(t))!);
-    return m;
-  }, [pred, userPairs, annotate, scored]);
+  /* In the scored view colour comes from the ground-truth stitch index, not from the
+     prediction, so there are no prediction groups to draw. */
+  const group = useMemo(
+    () => (!annotate && scored ? new Map<number, number>()
+                               : pairGroups(annotate ? (userPairs ?? new Set<string>()) : pred)),
+    [pred, userPairs, annotate, scored]);
 
-  const node = useMemo(() => {
-    const m = new Map<string, number>();
-    keys.forEach(([pn, ei], i) => m.set(`${pn}#${ei}`, i));
-    return m;
-  }, [keys]);
+  const node = useMemo(() => nodeIndex(keys), [keys]);
 
-  const pts = placed.flatMap((p) => p.verts);
-  const xs = pts.map((v) => v[0]), ys = pts.map((v) => v[1]);
-  const [x0, x1] = [Math.min(...xs), Math.max(...xs)];
-  const [y0, y1] = [Math.min(...ys), Math.max(...ys)];
-  const pad = 12;
-  const W = x1 - x0 + 2 * pad, H = y1 - y0 + 2 * pad;
-  const tx = (p: [number, number]) => `${p[0] - x0 + pad},${y1 - p[1] + pad}`;
+  const frame = useMemo(() => svgFrame(placed), [placed]);
+  const { W, H } = frame;
 
-  /* Zoom and pan.  Some pieces are 1.6 cm strips whose two long edges sit closer together
-     than a comfortable click target, so without zoom they cannot be picked apart. */
-  const [view, setView] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [view, setView] = useState<View | null>(null);
   const v = view ?? { x: 0, y: 0, w: W, h: H };
   const svgRef = useRef<SVGSVGElement>(null);
-  /* Panning stores the pointer position in CLIENT pixels and the scale as it was when the
-     drag began.  Converting through the live viewBox instead would feed each update back
-     into the next frame's conversion, which reads as stutter. */
-  const drag = useRef<{ cx: number; cy: number; vx: number; vy: number;
-                        s: number; moved: boolean } | null>(null);
-  const S = Math.max(v.w, v.h) / 220;             // strokes stay even as you zoom in
-
-  /** user units per client pixel, under preserveAspectRatio="xMidYMid meet" */
-  const pxScale = () => {
-    const r = svgRef.current!.getBoundingClientRect();
-    return Math.max(v.w / r.width, v.h / r.height);
-  };
-
-  const toUser = (e: { clientX: number; clientY: number }) => {
-    const r = svgRef.current!.getBoundingClientRect();
-    const s = pxScale();
-    return { x: v.x + (e.clientX - r.left - (r.width - v.w / s) / 2) * s,
-             y: v.y + (e.clientY - r.top - (r.height - v.h / s) / 2) * s };
-  };
+  const drag = useRef<Drag | null>(null);
+  const S = strokeScale(v);
 
   /* React registers wheel listeners as passive, so preventDefault inside onWheel is
      ignored and the page scrolls along with the zoom.  Block it with a native listener. */
   useEffect(() => {
-    const el = svgRef.current!;
+    const el = svgRef.current;
+    if (!el) return;
     const stop = (e: WheelEvent) => e.preventDefault();
     el.addEventListener("wheel", stop, { passive: false });
     return () => el.removeEventListener("wheel", stop);
   }, []);
 
   const onWheel = (e: React.WheelEvent) => {
-    const p = toUser(e);
-    const k = Math.exp(e.deltaY * 0.0015);
-    const w = Math.min(Math.max(v.w * k, W / 60), W * 1.4);
-    const h = w * (v.h / v.w);
-    setView({ x: p.x - ((p.x - v.x) * w) / v.w, y: p.y - ((p.y - v.y) * h) / v.h, w, h });
+    const el = svgRef.current;
+    if (!el) return;
+    setView(zoomAt(v, clientToUser(v, el.getBoundingClientRect(), e), e.deltaY, W));
   };
 
-  /* Path strings, midpoints and arc lengths depend on the pattern, not on the viewBox, so
-     they are built once.  Recomputing 48 polylines on every pan frame is what made
-     dragging stutter even after the coordinate feedback was fixed. */
-  const geom = useMemo(() => placed.map((p) => {
-    const cx = p.verts.reduce((s, q) => s + q[0], 0) / p.verts.length - x0 + pad;
-    const cy = y1 - p.verts.reduce((s, q) => s + q[1], 0) / p.verts.length + pad;
-    const edges = p.edges.map((_: unknown, i: number) => {
-      const poly = edgePolyline(p, i);
-      let arc = 0;
-      for (let q = 1; q < poly.length; q++)
-        arc += Math.hypot(poly[q][0] - poly[q - 1][0], poly[q][1] - poly[q - 1][1]);
-      if (p.blowUp) arc /= p.blowUp;      // undo the display stretch on a thin piece
-      const m = edgeMid(p, i);
-      return { d: `M ${poly.map(tx).join(" L ")}`, arc,
-               mx: m[0] - x0 + pad, my: y1 - m[1] + pad };
-    });
-    return { name: p.name, blowUp: p.blowUp, cx, cy, edges };
-  }), [placed, x0, y1]);
-
-  const mid = useMemo(() => {
-    const m = new Map<number, [number, number]>();
-    geom.forEach((g, pi) => g.edges.forEach((e, i) => {
-      const n = node.get(`${placed[pi].name}#${i}`);
-      if (n !== undefined) m.set(n, [e.mx, e.my]);
-    }));
-    return m;
-  }, [geom, node, placed]);
+  const geom = useMemo(() => patternGeometry(placed, frame), [placed, frame]);
+  const mid = useMemo(() => midpointsByNode(geom, node), [geom, node]);
 
   /* Which nodes a click keeps lit.  In the scored view `group` is deliberately empty --
      colour comes from the ground-truth stitch index there, not from the prediction -- so
      focus has to be read off the pairings this view actually draws, or clicking an edge in
      a scored pattern dims nothing at all. */
-  const partners = useMemo(() => {
-    const m = new Map<number, Set<number>>();
-    const src = annotate ? [...(userPairs ?? [])] : scored ? [...pred, ...gt] : [...pred];
-    for (const k of src) {
-      const [a, b] = k.split("-").map(Number);
-      if (!m.has(a)) m.set(a, new Set());
-      if (!m.has(b)) m.set(b, new Set());
-      m.get(a)!.add(b); m.get(b)!.add(a);
-    }
-    return m;
-  }, [pred, gt, userPairs, annotate, scored]);
+  const partners = useMemo(
+    () => pairPartners(annotate ? (userPairs ?? []) : scored ? [...pred, ...gt] : pred),
+    [pred, gt, userPairs, annotate, scored]);
 
-  const focusSet = useMemo(() => {
-    if (focus === null) return null;
-    const g = group.get(focus);
-    if (g !== undefined) {
-      const s = new Set<number>();
-      for (const [n, gg] of group) if (gg === g) s.add(n);
-      return s;
-    }
-    return new Set<number>([focus, ...(partners.get(focus) ?? [])]);
-  }, [focus, group, partners]);
+  const focusSet = useMemo(() => focusNodes(focus, group, partners), [focus, group, partners]);
+  const lit = (a: number, b: number) => isLit(focusSet, a, b);
 
-  /** a stitch line survives the focus if either of its ends is lit */
-  const lit = (a: number, b: number) =>
-    focusSet === null || focusSet.has(a) || focusSet.has(b);
-
-  /* Which ground-truth stitch each edge belongs to, so both sides share a colour.  A
-     specification carries that list; a DXF does not, and its ground truth arrives as node
-     pairs instead -- without this fallback a scored DXF would render entirely grey. */
-  const stitchOf = new Map<string, number>();
-  if (!annotate) {
-    if (pattern.stitches.length)
-      pattern.stitches.forEach((sides, si) =>
-        sides.forEach(([pn, ei]) => stitchOf.set(`${pn}#${ei}`, si)));
-    else
-      [...gt].forEach((k, si) => k.split("-").map(Number).forEach((n) => {
-        const key = keys[n];
-        if (key) stitchOf.set(`${key[0]}#${key[1]}`, si);
-      }));
-  }
+  const stitchOf = useMemo(
+    () => (annotate ? new Map<string, number>() : stitchIndexByEdge(pattern, gt, keys)),
+    [annotate, pattern, gt, keys]);
 
   const line = (a: number, b: number, cls: string, key: string, w?: number) => {
     const m1 = mid.get(a), m2 = mid.get(b);
@@ -223,15 +119,16 @@ export default function PatternSvg({
            if (e.button !== 0) return;
            (e.target as Element).setPointerCapture?.(e.pointerId);
            drag.current = { cx: e.clientX, cy: e.clientY, vx: v.x, vy: v.y,
-                            s: pxScale(), moved: false };
+                            s: unitsPerPixel(v, e.currentTarget.getBoundingClientRect()),
+                            moved: false };
          }}
          onPointerMove={(e) => {
            const d = drag.current;
            if (!d) return;
-           const dx = (e.clientX - d.cx) * d.s, dy = (e.clientY - d.cy) * d.s;
-           if (!d.moved && Math.hypot(e.clientX - d.cx, e.clientY - d.cy) < 4) return;
+           const next = dragView(d, e.clientX, e.clientY, v);
+           if (!next) return;
            d.moved = true;
-           setView({ x: d.vx - dx, y: d.vy - dy, w: v.w, h: v.h });
+           setView(next);
          }}
          onPointerUp={(e) => {
            (e.target as Element).releasePointerCapture?.(e.pointerId);
@@ -249,15 +146,11 @@ export default function PatternSvg({
             const isSel = annotate && ni !== undefined && ni === selected;
             const inFocus = focusSet !== null && ni !== undefined && focusSet.has(ni);
             const dim = focusSet !== null && !inFocus;
-            const col = isSel ? "#f97316"
-                      : si === undefined || dim ? "#c9c9c9"
-                      : stitchColor(si);
-            const w = isSel ? 3.2
-                    : si === undefined ? (annotate ? 0.9 : 0.5)
-                    : inFocus ? 2.6 : scored ? 1.1 : 1.4;
+            const { color, width } = edgeStyle({ selected: isSel, stitch: si, inFocus, dim,
+                                                 annotate, scored });
             return (
               <g key={i}>
-                <path d={e.d} stroke={col} strokeWidth={w * S} fill="none"
+                <path d={e.d} stroke={color} strokeWidth={width * S} fill="none"
                       strokeLinecap="round" />
                 {/* a fat invisible copy, so a thin edge is still easy to hit */}
                 <path d={e.d} stroke="transparent" strokeWidth={2.2 * S} fill="none"
