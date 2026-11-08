@@ -116,8 +116,16 @@ export default function PatternSvg({
              y: v.y + (e.clientY - r.top - (r.height - v.h / s) / 2) * s };
   };
 
+  /* React registers wheel listeners as passive, so preventDefault inside onWheel is
+     ignored and the page scrolls along with the zoom.  Block it with a native listener. */
+  useEffect(() => {
+    const el = svgRef.current!;
+    const stop = (e: WheelEvent) => e.preventDefault();
+    el.addEventListener("wheel", stop, { passive: false });
+    return () => el.removeEventListener("wheel", stop);
+  }, []);
+
   const onWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
     const p = toUser(e);
     const k = Math.exp(e.deltaY * 0.0015);
     const w = Math.min(Math.max(v.w * k, W / 60), W * 1.4);
