@@ -140,27 +140,6 @@ export async function solveParsed(d: Dump): Promise<SimResult> {
   return runSim(await loadSim(), d);
 }
 
-/** Fetch a dump from public/sim/ and solve it. */
-export async function solveDump(name = "trousers.bin"): Promise<SimResult> {
-  return (await solveDumpFull(name)).result;
-}
-
-/** Same, but hand back the parsed dump too: the flat rest panels, the initial
-    placement and the body primitives are what a viewer needs alongside the result. */
-export async function solveDumpFull(
-  name = "trousers.bin",
-): Promise<{ dump: Dump; result: SimResult }> {
-  const [Mod, buf] = await Promise.all([
-    loadSim(),
-    fetch(`${base()}${name}`).then((r) => {
-      if (!r.ok) throw new Error(`${r.status} fetching ${name}`);
-      return r.arrayBuffer();
-    }),
-  ]);
-  const dump = parseDump(buf);
-  return { dump, result: runSim(Mod, dump) };
-}
-
 /** Does this browser's WebAssembly accept a v128 (fixed-width SIMD) module? */
 export function simdSupported(): boolean {
   // (module (func (result v128) v128.const i32x4 0 0 0 0))
