@@ -1,237 +1,14 @@
-import { useCallback, useRef, useState } from "react";
-import { parseDxf, parseSpec, type Pattern } from "@/core-algorithm/pattern";
-import { gtPairs, patternToTensors, predict, type Scores } from "@/core-algorithm/inference";
-import { PatternSvg, placePanels, type Placed } from "@/features/stitch-view";
-import { GtDrape, SimViewer, WeldGT } from "@/features/preview3d";
-import { buildEval, LlmReport } from "@/features/evaluation";
+import { AnnotateToggle, AnnotationTools } from "@/features/annotation";
+import { ReportPanel, ReportToggle, ResultBar } from "@/features/evaluation";
+import { DropZone, ExampleNote, MoreGarments } from "@/features/input";
+import { RightPane } from "@/features/preview3d";
+import { FocusHint, LabelsToggle, LineToggles, PatternSvg } from "@/features/stitch-view";
+import { useWorkspace } from "./useWorkspace";
 import "./App.css";
 
-// BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.
-const B = import.meta.env.BASE_URL;
-/** Hand-drawn ground truth, saved as panel/edge names so it survives a reparse. */
-function downloadGt(res: Result, pairs: Set<string>, name: string) {
-  const doc = {
-    source: name,
-    panels: res.pattern.panels.length,
-    edges: res.M,
-    stitches: [...pairs].map((k) => k.split("-").map(Number).map((n) => res.keys[n])),
-  };
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(doc, null, 2)],
-                                        { type: "application/json" }));
-  a.download = `${name.replace(/\.[^.]+$/, "")}_gt.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-/** A saved ground truth names panel/edge, not node indices, so it survives a reparse. */
-function gtFromDoc(doc: any, keys: Array<[string, number]>): Set<string> {
-  const idx = new Map(keys.map(([p, e], i) => [`${p}#${e}`, i]));
-  const out = new Set<string>();
-  let miss = 0;
-  for (const st of doc.stitches ?? []) {
-    const ns = (st as Array<[string, number]>).map(([p, e]) => idx.get(`${p}#${e}`));
-    if (ns.length !== 2 || ns.some((n) => n === undefined)) { miss++; continue; }
-    const [a, b] = ns as number[];
-    out.add(`${Math.min(a, b)}-${Math.max(a, b)}`);
-  }
-  if (miss) throw new Error(`${miss} stitch(es) in the file name edges this pattern does not have`);
-  return out;
-}
-
-function downloadEval(res: Result, truth: Set<string>, name: string) {
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(buildEval(res, truth, name), null, 2)],
-                                        { type: "application/json" }));
-  a.download = `${name.replace(/\.[^.]+$/, "")}_eval.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function loadGt(text: string, res: Result): Set<string> {
-  return gtFromDoc(JSON.parse(text), res.keys);
-}
-
-const EXAMPLES = {
-  clo: {
-    label: "1. CLO tutorial example",
-    file: "panel_seperated.dxf",
-    url: `${B}example/panel_seperated.dxf`,
-    right: "drape" as const,
-    // A DXF carries no stitch list.  This one is scorable only because the ground truth
-    // was drawn by hand in this very demo and exported -- 20 stitches over 40 of the 48
-    // edges -- which is why the CLO numbers in the report exist at all.
-    gtUrl: `${B}example/panel_seperated_gt.json`,
-    note: "10 pieces exported from CLO. A DXF carries no stitch list, so the ground truth "
-        + "here was drawn by hand in this demo — 20 stitches over 40 of the 48 edges — and "
-        + "the prediction is scored against it. The right pane is CLO's own drape, not a "
-        + "simulation of this prediction.",
-  },
-  gcd: {
-    label: "2. GarmentCode test data",
-    file: "rand_1328ERLDIC_specification.json",
-    url: `${B}example/rand_1328ERLDIC_specification.json`,
-    right: "sim" as const,
-    note: "A held-out GarmentCodeData garment, so the prediction can be scored.",
-  },
-};
-type ExampleKey = keyof typeof EXAMPLES;
-
-/* More held-out garments, chosen by scoring a sample of the test split with the model
-   this demo ships and taking a spread rather than a highlight reel.  The first one it
-   gets completely wrong; two it gets exactly right. */
-/* `sim` is the solver input, shipped only for the garments the model gets exactly
-   right: the dump's constraints are vertex pairs built from the ground truth and it
-   carries no edge->vertex mapping, so a wrong stitching cannot honestly be assembled.
-   expectS is measured in a real browser, not guessed: 25.8 s and 109.4 s, both with
-   mono violations 0 and energies matching the native solve to the printed digits. */
-const MORE: Array<{ id: string; f1: string; what: string;
-                    sim?: { file: string; expectS: number } }> = [
-  { id: "rand_JYO1DHSFGH", f1: "0.00", what: "4 panels, 4 stitches — none found" },
-  { id: "rand_I88DFY2AKV", f1: "0.76", what: "8 panels, 24 stitches" },
-  { id: "rand_E3IN9RH60H", f1: "0.94", what: "14 panels, 44 stitches" },
-  { id: "rand_3C7X2I6WQ7", f1: "1.00", what: "6 panels, 24 stitches — exact",
-    sim: { file: "rand_3C7X2I6WQ7.bin", expectS: 26 } },
-  { id: "rand_GE9NBC1HFY", f1: "1.00", what: "14 panels, 48 stitches — exact",
-    sim: { file: "rand_GE9NBC1HFY.bin", expectS: 110 } },
-];
-
-type Result = {
-  pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
-  pred: Set<string>; gt: Set<string>; ms: number; M: number;
-  source: "spec" | "dxf";
-  x: Float32Array;              // the features as given to the model, for the eval export
-  scores: Scores;               // and what it made of them, for the same reason
-};
-
 export default function App() {
-  const [res, setRes] = useState<Result | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [show, setShow] = useState({ correct: true, fp: true, fn: true, gt: false });
-  const [name, setName] = useState("");
-  const [example, setExample] = useState<ExampleKey | null>(null);
-  const [more, setMore] = useState<string | null>(null);   // which held-out garment
-  const [showReport, setShowReport] = useState(false);
-  const [annotate, setAnnotate] = useState(false);
-  const [labels, setLabels] = useState(true);
-  const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
-  const [selected, setSelected] = useState<number | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-  const gtRef = useRef<HTMLInputElement>(null);
-
-  /** Click one edge then another to sew them together; click a paired edge to undo it.
-
-      Two things to keep right here.  StrictMode invokes a state updater twice to check it
-      is pure, so the updater must not have side effects -- setUserPairs cannot live
-      inside setSelected -- and it must be idempotent, which a has/delete/add toggle is
-      not: run twice it adds and then removes, and the pair silently vanishes.  So the
-      add-or-remove decision is made out here and the updater just applies it. */
-  const onEdgeClick = useCallback((n: number) => {
-    if (selected === n) { setSelected(null); return; }        // same edge: deselect
-    if (selected === null) {
-      // already sewn?  clicking it again undoes that stitch
-      const owner = [...userPairs].find((k) => k.split("-").map(Number).includes(n));
-      if (owner) { setUserPairs((p) => { const q = new Set(p); q.delete(owner); return q; }); return; }
-      setSelected(n);
-      return;
-    }
-    const k = `${Math.min(selected, n)}-${Math.max(selected, n)}`;
-    const remove = userPairs.has(k);
-    setUserPairs((p) => {
-      const q = new Set(p);
-      if (remove) q.delete(k); else q.add(k);
-      return q;
-    });
-    setSelected(null);
-  }, [selected, userPairs]);
-
-  /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
-      A DXF carries no stitches, so there is nothing to score it against. */
-  const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null,
-                                     moreId: string | null = null,
-                                     gtUrl: string | null = null) => {
-    setBusy(true); setErr(null);
-    try {
-      const isDxf = /\.dxf$/i.test(fileName);
-      const pattern = isDxf
-        ? parseDxf(text, fileName.replace(/\.dxf$/i, ""))
-        : parseSpec(JSON.parse(text), fileName.replace("_specification.json", ""));
-      const t = patternToTensors(pattern);
-      const { pairs, ms, scores } = await predict(t);
-      let gt = isDxf ? new Set<string>() : gtPairs(pattern, t.keys);
-      if (gtUrl) {
-        const g = await fetch(gtUrl);
-        if (!g.ok) throw new Error(`${gtUrl}: HTTP ${g.status}`);
-        gt = gtFromDoc(await g.json(), t.keys);
-      }
-      setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
-               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec", x: t.x, scores });
-      setName(fileName);
-      setExample(ex);
-      setMore(moreId);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e)); setRes(null); setExample(null); setMore(null);
-    }
-    finally { setBusy(false); }
-  }, []);
-
-  const runFile = useCallback(async (file: File) => {
-    await runText(await file.text(), file.name, null);
-  }, [runText]);
-
-  const runExample = useCallback(async (key: ExampleKey) => {
-    const e = EXAMPLES[key];
-    setBusy(true); setErr(null);
-    try {
-      const r = await fetch(e.url);
-      if (!r.ok) throw new Error(`${e.url}: HTTP ${r.status}`);
-      await runText(await r.text(), e.file, key, null,
-                    "gtUrl" in e ? (e as { gtUrl: string }).gtUrl : null);
-    } catch (ex: any) { setErr(String(ex?.message ?? ex)); setBusy(false); }
-  }, [runText]);
-
-  // hand-drawn ground truth outranks the file's, so a DXF becomes scorable
-  const truth = userPairs.size ? userPairs : res?.gt ?? new Set<string>();
-  const scored = !!res && truth.size > 0;
-  const stats = (() => {
-    if (!res) return null;
-    const ok = [...res.pred].filter((k) => truth.has(k)).length;
-    const P = res.pred.size ? ok / res.pred.size : 0;
-    const R = truth.size ? ok / truth.size : 0;
-    return { ok, fp: res.pred.size - ok, fn: truth.size - ok,
-             f1: P + R ? (2 * P * R) / (P + R) : 0, P, R,
-             mine: userPairs.size > 0 };
-  })();
-  const exact = !!stats && stats.fp === 0 && stats.fn === 0;
-  /* The input brought its own stitch list -- a specification, or the example whose
-     hand-drawn truth is checked in. Nothing to draw. */
-  const hasOwnGt = !!res && res.gt.size > 0;
-
-  /* What sits beside the pattern.  A held-out garment gets its ground-truth drape --
-     red, and labelled as ground truth, because it is the only pane on the page that is
-     not the model's output and a 3D shape is persuasive enough to be mistaken for one. */
-  const right = example
-    ? (EXAMPLES[example].right === "sim"
-        ? { title: "assembled by the wasm solver · 3D", gt: false,
-            node: <SimViewer exact={exact} fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> }
-        : { title: "CLO's own drape · 3D", gt: false, node: <WeldGT /> })
-    : more
-    ? (() => {
-        /* Exact prediction: it can actually be assembled, so offer the solve rather
-           than a picture of the answer.  Anything else gets the ground truth's shape,
-           in red, because its own stitching would tear the mesh. */
-        const sim = MORE.find((g) => g.id === more)?.sim;
-        return sim && exact
-          ? { title: "assembled by the wasm solver · 3D — the prediction, solved",
-              gt: false,
-              node: <SimViewer exact fp={0} fn={0} ok={stats?.ok ?? 0}
-                               file={sim.file} expectS={sim.expectS} /> }
-          : { title: "ground-truth drape · 3D", gt: true,
-              node: <GtDrape id={more} exact={exact}
-                             fp={stats?.fp ?? 0} fn={stats?.fn ?? 0} /> };
-      })()
-    : null;
+  const w = useWorkspace();
+  const { res } = w;
 
   return (
     <div className="app">
@@ -250,194 +27,56 @@ export default function App() {
         </p>
       </header>
 
-      <div className="drop"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) runFile(f); }}
-        onClick={() => fileRef.current?.click()}>
-        <input ref={fileRef} type="file" accept=".dxf,.json" hidden
-               onChange={(e) => { const f = e.target.files?.[0]; if (f) runFile(f); }} />
-        <div className="dropline">
-          {busy ? "running…" : "import a DXF — drop it here, or click to choose"}
-        </div>
-        {/* The examples live inside the drop zone, so stop their clicks reaching it --
-            otherwise picking one also opens the file dialog behind it. */}
-        <div className="tries" onClick={(e) => e.stopPropagation()}>
-          or try{" "}
-          {(Object.keys(EXAMPLES) as ExampleKey[]).map((k, i) => (
-            <span key={k}>
-              {i > 0 && <span className="sep">·</span>}
-              <button className={`link ${example === k ? "on" : ""}`}
-                      disabled={busy} onClick={() => runExample(k)}>
-                {EXAMPLES[k].label}
-              </button>
-            </span>
-          ))}
-        </div>
-      </div>
+      <DropZone busy={w.busy} example={w.example} onFile={w.runFile} onExample={w.runExample} />
 
-      {/* The five are GarmentCodeData too, so the row appears once example 2 is chosen
-          and stays while one of them is loaded. It sits below the drop zone rather than
-          in it: the zone is for getting a pattern in, and this is a whole second reading
-          -- five scores and the sentence explaining how they were picked. */}
-      {(example === "gcd" || more !== null) && (
-      <div className="tryit more">
-        more held-out garments, from worst to best —{" "}
-        {MORE.map((g, i) => (
-          <span key={g.id}>
-            {i > 0 && <span className="sep">·</span>}
-            <button className={`link ${name.startsWith(g.id) ? "on" : ""}`}
-                    disabled={busy} title={g.what}
-                    onClick={async () => {
-                      setBusy(true); setErr(null);
-                      try {
-                        const u = `${B}example/${g.id}_specification.json`;
-                        const r = await fetch(u);
-                        if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
-                        await runText(await r.text(), `${g.id}_specification.json`, null, g.id);
-                      } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
-                    }}>
-              F1 {g.f1}
-            </button>
-          </span>
-        ))}
-        <span className="note" style={{ marginLeft: 10 }}>
-          picked by scoring a sample of the test split with the model this page runs, then
-          taking a spread — not a highlight reel. Each opens beside{" "}
-          <strong className="gt">its ground-truth drape, in red</strong>.
-        </span>
-      </div>
+      {(w.example === "gcd" || w.more !== null) && (
+        <MoreGarments busy={w.busy} name={w.name} onPick={w.runMore} />
       )}
 
-      {err && <div className="err">{err}</div>}
+      {w.err && <div className="err">{w.err}</div>}
 
       {res && (
         <div className="examples">
-          {/* Only an input with no stitch list needs one drawn. Offering it on an example
-              that already has one invites a second, conflicting truth for the same
-              garment -- so the button says why it is off rather than disappearing. */}
-          <button disabled={hasOwnGt}
-                  onClick={() => { setAnnotate((v) => !v); setSelected(null); }}>
-            {hasOwnGt
-              ? "ground truth — this example already has one"
-              : `${annotate ? "leave" : "draw"} the ground truth by hand`}
-          </button>
-          {/* Shown even with nothing to score, because its absence would read as the
-              feature not existing rather than as a step not yet taken. The reason rides
-              in the label: a disabled button beside an explanation is two things to
-              read, and the explanation is short enough to be the label. */}
-          <button className={showReport ? "on" : ""} disabled={!scored}
-                  title={scored ? undefined
-                                : "A report is written from misses and false positives, "
-                                  + "which need a ground truth to be measured against."}
-                  onClick={() => setShowReport((v) => !v)}>
-            {scored
-              ? `${showReport ? "hide" : "show"} LLM evaluation report`
-              : "LLM evaluation report — ⚠️ needs a ground truth"}
-          </button>
-          <label className="note" style={{ userSelect: "none" }}>
-            <input type="checkbox" checked={labels}
-                   onChange={(e) => setLabels(e.target.checked)} />{" "}
-            edge index and length
-          </label>
-          {annotate && (
-            <>
-              <button onClick={() => { setUserPairs(new Set()); setSelected(null); }}
-                      disabled={!userPairs.size}>clear ({userPairs.size})</button>
-              <button disabled={!userPairs.size}
-                      onClick={() => downloadGt(res, userPairs, name)}>save as JSON</button>
-              <button onClick={() => gtRef.current?.click()}>load JSON</button>
-              <input ref={gtRef} type="file" accept=".json" hidden
-                     onChange={async (e) => {
-                       const f = e.target.files?.[0];
-                       if (!f) return;
-                       try { setUserPairs(loadGt(await f.text(), res)); setErr(null); }
-                       catch (ex: any) { setErr(String(ex?.message ?? ex)); }
-                     }} />
-              <span className="note">
-                click one edge, then the edge it is sewn to. Click a pair again to undo it.
-              </span>
-            </>
+          <AnnotateToggle hasOwnGt={w.hasOwnGt} annotate={w.annotate} onToggle={w.toggleAnnotate} />
+          <ReportToggle scored={w.scored} showReport={w.showReport} onToggle={w.toggleReport} />
+          <LabelsToggle labels={w.labels} onChange={w.setLabels} />
+          {w.annotate && (
+            <AnnotationTools res={res} name={w.name} userPairs={w.userPairs}
+                             onClear={w.clearPairs} onLoad={w.loadPairs} onError={w.setErr} />
           )}
         </div>
       )}
 
-      {res && scored && showReport && (
-        <>
-          <LlmReport name={name} doc={buildEval(res, truth, name)} />
-          <div className="examples">
-            <button onClick={() => downloadEval(res, truth, name)}>
-              save the evaluation as JSON
-            </button>
-            <span className="note">the input the report is written from</span>
-          </div>
-        </>
-      )}
+      {res && w.scored && w.showReport && <ReportPanel res={res} truth={w.truth} name={w.name} />}
 
       {res && (
         <>
-          <div className="bar">
-            <span className="pill name">{name}</span>
-            <span className="pill">{res.pattern.panels.length} panels</span>
-            <span className="pill">{res.M} edges</span>
-            {scored && stats ? (
-              <>
-                {stats.mine && <span className="pill">{userPairs.size} hand-drawn stitches</span>}
-                <span className="pill ok">correct {stats.ok}</span>
-                <span className="pill fp">FP {stats.fp}</span>
-                <span className="pill fn">FN {stats.fn}</span>
-                <span className="pill">P {stats.P.toFixed(3)}</span>
-                <span className="pill">R {stats.R.toFixed(3)}</span>
-                <span className="pill">F1 {stats.f1.toFixed(3)}</span>
-                {stats.mine && <span className="pill">scored against your ground truth</span>}
-              </>
-            ) : (
-              <>
-                <span className="pill ok">{res.pred.size} predicted stitches</span>
-                <span className="pill">no ground truth in a DXF</span>
-              </>
-            )}
-            <span className="pill t">{res.ms.toFixed(0)} ms</span>
-          </div>
+          <ResultBar name={w.name} panels={res.pattern.panels.length} edges={res.M}
+                     predicted={res.pred.size} ms={res.ms}
+                     stats={w.scored ? w.stats : null} handDrawn={w.userPairs.size} />
 
-          {example && <p className="note wide">{EXAMPLES[example].note}</p>}
+          {w.example && <ExampleNote example={w.example} />}
 
-          {scored && (
-            <div className="toggles">
-              {(["correct", "fp", "fn", "gt"] as const).map((k) => (
-                <label key={k}>
-                  <input type="checkbox" checked={show[k]}
-                         onChange={(e) => setShow({ ...show, [k]: e.target.checked })} />
-                  {k === "gt" ? "ground-truth stitches" : k === "correct" ? k : k.toUpperCase()}
-                </label>
-              ))}
-            </div>
-          )}
+          {w.scored && <LineToggles show={w.show} onChange={w.setShow} />}
 
-          {right ? (
+          {w.right ? (
             <div className="split">
               <section>
                 <h2>predicted stitching · 2D</h2>
-                <PatternSvg {...res} gt={truth} show={show} height="62vh"
-                              annotate={annotate} labels={labels} userPairs={userPairs}
-                              selected={selected} onEdgeClick={onEdgeClick} />
+                <PatternSvg {...res} gt={w.truth} show={w.show} height="62vh"
+                              annotate={w.annotate} labels={w.labels} userPairs={w.userPairs}
+                              selected={w.selected} onEdgeClick={w.onEdgeClick} />
               </section>
               <section>
-                <h2 className={right.gt ? "gt" : undefined}>{right.title}</h2>
-                {right.node}
+                <RightPane pane={w.right} />
               </section>
             </div>
           ) : (
             <>
-              {!scored && (
-                <p className="note wide">
-                  Edges of a predicted pair share a colour. Click an edge to focus its
-                  correspondence — it is drawn thick and every other pair drops to grey.
-                  Click again, or click the background, to clear.
-                </p>
-              )}
-              <PatternSvg {...res} gt={truth} show={show}
-                    annotate={annotate} labels={labels} userPairs={userPairs}
-                    selected={selected} onEdgeClick={onEdgeClick} />
+              {!w.scored && <FocusHint />}
+              <PatternSvg {...res} gt={w.truth} show={w.show}
+                    annotate={w.annotate} labels={w.labels} userPairs={w.userPairs}
+                    selected={w.selected} onEdgeClick={w.onEdgeClick} />
             </>
           )}
         </>

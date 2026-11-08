@@ -1,1 +1,2 @@
-export { buildEval, type EvalDoc } from "./evalDoc";
+export { buildEval, type EvalDoc, type EvalSource } from "./evalDoc";
+export { scoreStats, type Stats } from "./metrics";
