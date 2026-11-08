@@ -251,12 +251,6 @@ export default function PatternSvg({
               <g key={i}>
                 <path d={e.d} stroke={col} strokeWidth={w * S} fill="none"
                       strokeLinecap="round" />
-                {labels && (
-                  <text x={e.mx} y={e.my + 1.6 * S} className="elabel"
-                        style={{ fontSize: 4.6 * S }}>
-                    {i} · {e.arc.toFixed(1)}
-                  </text>
-                )}
                 {/* a fat invisible copy, so a thin edge is still easy to hit */}
                 <path d={e.d} stroke="transparent" strokeWidth={2.2 * S} fill="none"
                       strokeLinecap="round"
@@ -273,13 +267,6 @@ export default function PatternSvg({
               </g>
             );
           })}
-          <text x={g.cx} y={g.cy} className="plabel" style={{ fontSize: 4 * S }}>{g.name}</text>
-          {g.blowUp && (
-            <text x={g.cx} y={g.cy + 4.6 * S} className="plabel scalenote"
-                  style={{ fontSize: 3.1 * S }}>
-              width ×{g.blowUp.toFixed(1)}, not to scale
-            </text>
-          )}
         </g>
       ))}
 
@@ -309,6 +296,27 @@ export default function PatternSvg({
           </>
         );
       })()}
+
+      {/* labels last, so no edge or stitch line drawn after them can cover them */}
+      <g className="labels">
+        {geom.map((g) => (
+          <g key={g.name}>
+            {labels && g.edges.map((e, i) => (
+              <text key={i} x={e.mx} y={e.my + 1.6 * S} className="elabel"
+                    style={{ fontSize: 4.6 * S }}>
+                {i} · {e.arc.toFixed(1)}
+              </text>
+            ))}
+            <text x={g.cx} y={g.cy} className="plabel" style={{ fontSize: 4 * S }}>{g.name}</text>
+            {g.blowUp && (
+              <text x={g.cx} y={g.cy + 4.6 * S} className="plabel scalenote"
+                    style={{ fontSize: 3.1 * S }}>
+                width ×{g.blowUp.toFixed(1)}, not to scale
+              </text>
+            )}
+          </g>
+        ))}
+      </g>
     </svg>
   );
 }

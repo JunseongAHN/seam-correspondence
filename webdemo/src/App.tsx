@@ -413,7 +413,7 @@ export default function App() {
                 <label key={k}>
                   <input type="checkbox" checked={show[k]}
                          onChange={(e) => setShow({ ...show, [k]: e.target.checked })} />
-                  {k === "gt" ? "ground-truth stitches" : k}
+                  {k === "gt" ? "ground-truth stitches" : k === "correct" ? k : k.toUpperCase()}
                 </label>
               ))}
             </div>
