@@ -1,0 +1,20 @@
+.canvas { width: 100%; height: auto; max-height: 78vh; background: #fff;
+  border: 1px solid var(--hairline); border-radius: var(--radius); touch-action: none; }
+/* hand-drawn ground truth */
+.canvas.annotating { cursor: crosshair; }
+@media (prefers-color-scheme: dark) { .canvas { background: #fff; } }
+
+.plabel { font-size: 2.4px; fill: #999; text-anchor: middle; paint-order: stroke; stroke: #fff;
+  stroke-width: .6px; stroke-linejoin: round; pointer-events: none; }
+.plabel.scalenote { fill: #b45309; opacity: .85; }
+.elabel { fill: #444; text-anchor: middle; paint-order: stroke; stroke: #fff;
+  stroke-width: .6px; stroke-linejoin: round; pointer-events: none; }
+
+.ok { stroke: #16a34a; stroke-width: 0.8; }
+.fp { stroke: #dc2626; stroke-width: 1.1; }
+.fn { stroke: #111; stroke-width: 0.8; stroke-dasharray: 2 1.6; }
+.gtline { stroke: var(--accent); stroke-width: 0.5; opacity: .5; }
+/* DXF input: no ground truth exists, so predictions are shown neutrally
+   rather than as false positives. */
+.predline { stroke: #6a3cff; stroke-width: 0.45; opacity: .45; }
+.userline { stroke: #f97316; opacity: .75; }

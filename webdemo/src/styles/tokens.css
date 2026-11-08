@@ -1,0 +1,18 @@
+/* Colours and sizes more than one component uses, and the page's own defaults.
+   Imported once, from main.tsx.  Component styles are CSS modules beside each component;
+   classes several features share are in shared.module.css. */
+:root {
+  color-scheme: light dark;
+  --accent: #6a8cff;          /* highlights: hover borders, the report's rule, ground-truth lines */
+  --link: #4a6cff;
+  --muted: #666;
+  --gt: #b3272e;              /* ground truth: the one thing on the page that is not a prediction */
+  --ok: #0b6b30;
+  --hairline: #0000001a;
+  --radius: 10px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+@media (prefers-color-scheme: dark) {
+  body { background: #131316; color: #e8e8ea; }
+}

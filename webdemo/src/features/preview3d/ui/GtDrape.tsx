@@ -22,6 +22,9 @@ import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
 import { loadDrape, type Drape } from "../logic";
+import shared from "@/styles/shared.module.css";
+import s from "./GtDrape.module.css";
+import vtk from "./vtk.module.css";
 
 const RED: [number, number, number] = [0.86, 0.13, 0.15];
 
@@ -115,7 +118,7 @@ export default function GtDrape({ id, exact, fp, fn }:
 
   return (
     <>
-      <p className="note gtnote">
+      <p className={`${shared.note} ${s.gtnote}`}>
         <strong>Red is the ground truth, not the prediction.</strong> This garment was
         assembled from its ground-truth stitching by the same solver the demo ships,
         run once on the host, so what you see is the shape the correct answer produces.
@@ -129,35 +132,35 @@ export default function GtDrape({ id, exact, fp, fn }:
             + " be assembled: sewing an edge to the wrong partner drags the surface"
             + " through itself and tears the mesh. Only the ground truth is solved here."}
       </p>
-      <p className="note">
+      <p className={shared.note}>
         A seam can also be sewn the right pair but the wrong way round. Nothing here
         guesses that: the vertex-to-vertex correspondence comes from welding the
         coincident vertices of the simulated mesh, and the solve starts from the
         specification's own per-panel 3D placement rather than from any drape — so each
         panel begins on its own side of the body and the seams close without twisting.
       </p>
-      {err && <div className="err">{err}</div>}
-      {!drape && !err && <div className="drop">loading the ground-truth drape…</div>}
+      {err && <div className={shared.err}>{err}</div>}
+      {!drape && !err && <div className={shared.drop}>loading the ground-truth drape…</div>}
       {drape && (
         <>
-          <div className="bar">
-            <span className="pill name gt">ground-truth drape</span>
+          <div className={shared.bar}>
+            <span className={`${shared.pill} ${shared.name} ${shared.gt}`}>ground-truth drape</span>
             {/* the headline fact about this pane, where the eye already is */}
-            <span className={`pill ${exact ? "ok" : "fp"}`}>
+            <span className={`${shared.pill} ${exact ? shared.ok : shared.fp}`}>
               {exact ? "prediction identical — this is its assembly too"
                      : `prediction differs by ${fp + fn} stitch${fp + fn === 1 ? "" : "es"}`}
             </span>
-            <span className="pill">{drape.n} verts</span>
-            <span className="pill">{drape.M} faces</span>
-            <span className="pill">solved on the host, native build</span>
+            <span className={shared.pill}>{drape.n} verts</span>
+            <span className={shared.pill}>{drape.M} faces</span>
+            <span className={shared.pill}>solved on the host, native build</span>
           </div>
-          <div className="toggles">
+          <div className={shared.toggles}>
             <label><input type="checkbox" checked={showBody}
                           onChange={(e) => setShowBody(e.target.checked)} /> body capsules</label>
             <label><input type="checkbox" checked={wire}
                           onChange={(e) => setWire(e.target.checked)} /> mesh edges</label>
           </div>
-          <div className="vtk" ref={host} />
+          <div className={vtk.vtk} ref={host} />
         </>
       )}
     </>

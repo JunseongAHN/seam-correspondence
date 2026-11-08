@@ -1,0 +1,4 @@
+/* The render surface every 3D viewer draws into.  62vh because these only ever sit in the
+   right half of the split, beside a 62vh pattern. */
+.vtk { width: 100%; height: 62vh; border: 1px solid var(--hairline); border-radius: var(--radius);
+  background: #fff; overflow: hidden; }

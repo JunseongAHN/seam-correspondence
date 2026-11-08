@@ -1,0 +1,10 @@
+.seg { display: inline-flex; border: 1px solid #0000001f; border-radius: 7px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 4px 11px; cursor: pointer;
+  font: inherit; font-size: 12.5px; color: inherit; }
+.seg button.on { background: var(--accent); color: #fff; }
+.energies { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: #444;
+  background: #00000008; border-radius: 8px; padding: 8px 10px; margin: 10px 0;
+  white-space: pre-wrap; }
+@media (prefers-color-scheme: dark) {
+  .energies { color: #b9b9c0; background: #ffffff0a; }
+}

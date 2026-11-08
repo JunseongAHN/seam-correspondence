@@ -1,0 +1,7 @@
+.gtnote { margin: 0 0 6px; color: #7a3236; font-size: 12px; line-height: 1.55;
+           border-left: 3px solid #d9363e; padding: 4px 0 4px 9px; }
+.gtnote strong { color: var(--gt); }
+@media (prefers-color-scheme: dark) {
+  .gtnote strong { color: #ff8b8b; }
+  .gtnote { color: #e2a9ab; border-left-color: #ff6b6b; }
+}

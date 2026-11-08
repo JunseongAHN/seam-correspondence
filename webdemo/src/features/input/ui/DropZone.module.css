@@ -1,0 +1,10 @@
+/* The examples belong in the drop zone: they are the other way of getting a pattern in,
+   and a reader who has no DXF should not have to look elsewhere for one. */
+.dropline { font-size: 13px; }
+.tries { margin-top: 14px; padding-top: 12px; border-top: 1px solid #0000000f;
+         cursor: default; font-size: 12.5px; }
+.tries .tryit:first-child { margin-top: 0; }
+.zone:hover .tries { color: #777; }        /* the hover tint is for the zone, not these */
+@media (prefers-color-scheme: dark) {
+  .tries { border-top-color: #ffffff1a; }
+}

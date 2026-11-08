@@ -8,6 +8,8 @@
    Data comes from dxfcheck/export_weld_gt.py, which refuses to write the file unless the
    weld groups reproduce CLO's own merge count exactly. */
 import { useEffect, useRef, useState } from "react";
+import shared from "@/styles/shared.module.css";
+import vtk from "./vtk.module.css";
 import "@kitware/vtk.js/Rendering/Profiles/Geometry";
 import vtkGenericRenderWindow from "@kitware/vtk.js/Rendering/Misc/GenericRenderWindow";
 import vtkPolyData from "@kitware/vtk.js/Common/DataModel/PolyData";
@@ -125,20 +127,20 @@ export default function WeldGT() {
     return () => { window.removeEventListener("resize", onResize); grw.delete(); };
   }, [gt, k, surface]);
 
-  if (err) return <div className="err">weld GT: {err}</div>;
-  if (!gt) return <div className="drop">loading the weld ground truth…</div>;
+  if (err) return <div className={shared.err}>weld GT: {err}</div>;
+  if (!gt) return <div className={shared.drop}>loading the weld ground truth…</div>;
 
   const segs = gt.welds.reduce((s, g) => s + g.length - 1, 0);
   return (
     <>
-      <div className="bar">
-        <span className="pill name">{gt.source}</span>
-        <span className="pill">{gt.panelSizes.length} panels</span>
-        <span className="pill">{gt.welds.length} weld groups</span>
-        <span className="pill ok">{segs} merged vertices</span>
-        <span className="pill">{segs === gt.merged ? "matches CLO's merge count" : "MISMATCH"}</span>
+      <div className={shared.bar}>
+        <span className={`${shared.pill} ${shared.name}`}>{gt.source}</span>
+        <span className={shared.pill}>{gt.panelSizes.length} panels</span>
+        <span className={shared.pill}>{gt.welds.length} weld groups</span>
+        <span className={`${shared.pill} ${shared.ok}`}>{segs} merged vertices</span>
+        <span className={shared.pill}>{segs === gt.merged ? "matches CLO's merge count" : "MISMATCH"}</span>
       </div>
-      <div className="toggles">
+      <div className={shared.toggles}>
         <label>
           explode
           <input type="range" min={0} max={1.5} step={0.05} value={k}
@@ -151,7 +153,7 @@ export default function WeldGT() {
           panel surfaces
         </label>
       </div>
-      <div className="vtk" ref={host} />
+      <div className={vtk.vtk} ref={host} />
     </>
   );
 }

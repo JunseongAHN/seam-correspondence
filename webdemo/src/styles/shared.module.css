@@ -1,0 +1,60 @@
+/* Classes more than one feature uses.  Anything only one component uses lives beside it. */
+
+/* a dashed box: the import zone, and every pane's loading message */
+.drop { border: 1.5px dashed #bbb; border-radius: var(--radius); padding: 22px 24px 18px;
+  text-align: center; color: #777; cursor: pointer; transition: .15s; }
+.drop:hover { border-color: var(--accent); color: var(--link); background: #6a8cff0a; }
+.err { margin-top: 14px; padding: 10px 12px; border-radius: 8px;
+  background: #ff4d4f14; color: #c22; border: 1px solid #ff4d4f33; }
+
+.bar { display: flex; flex-wrap: wrap; gap: 7px; margin: 18px 0 10px; align-items: center; }
+.pill { padding: 3px 9px; border-radius: 999px; background: #0000000d; font-size: 12.5px; }
+.pill.name { font-weight: 600; background: var(--hairline); }
+.pill.ok { background: #10893e1f; color: var(--ok); }
+.pill.fp { background: #d9363e1f; color: var(--gt); }
+.pill.fn { background: #0000001f; }
+.pill.t  { background: #6a8cff1f; color: #3a5cd0; }
+
+.toggles { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; color: #555; font-size: 13px; }
+.toggles label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+
+/* a row of buttons and notes */
+.examples { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.examples button { border: 1px solid #bbb; border-radius: 8px; background: #fff;
+  padding: 7px 12px; font: inherit; cursor: pointer; }
+.examples button:hover:not(:disabled) { border-color: var(--accent); color: var(--link); }
+.examples button:disabled { opacity: .5; cursor: default; }
+.examples .note { color: var(--muted); font-size: 12px; }
+/* A button that sets its own background must set its own colour: in dark mode the page's
+   near-white text was being inherited onto a white button, which is invisible. */
+.examples button { color: #1a1a1e; }
+
+.note.wide { margin: 10px 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.note.warn { color: #92400e; }
+
+/* the heading over each pane of the split */
+.paneTitle { margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: #555;
+  letter-spacing: .02em; }
+
+/* The ground-truth drape pane.  Red throughout, and loud about it: it is the one thing
+   on the page that is not a prediction, and a 3D shape is convincing enough that a
+   viewer will assume it is the model's output unless told otherwise. */
+.gt { color: var(--gt); }
+.paneTitle.gt { color: var(--gt); }
+.pill.name.gt { background: #d9363e24; color: var(--gt); }
+
+@media (prefers-color-scheme: dark) {
+  .toggles { color: #9a9aa2; }
+  .pill { background: #ffffff14; }
+  .pill.name { background: #ffffff24; }
+  .gt, .paneTitle.gt { color: #ff8b8b; }
+  .pill.name.gt { background: #ff6b6b26; color: #ff8b8b; }
+  .examples button { background: #26262b; color: #e8e8ea; border-color: #ffffff2e; }
+  .examples button:hover:not(:disabled) { border-color: var(--accent); color: #9db4ff; }
+  .examples button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .drop { border-color: #ffffff33; }
+  .drop:hover { border-color: var(--accent); }
+  .paneTitle { color: #9a9aa2; }
+  .note.wide, .examples .note { color: #9a9aa2; }
+  .note.warn { color: #fbbf24; }
+}

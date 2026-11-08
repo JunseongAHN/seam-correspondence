@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { gtFromText, gtToDoc, type GtSource } from "../logic";
+import shared from "@/styles/shared.module.css";
 
 /** Hand-drawn ground truth, saved as panel/edge names so it survives a reparse. */
 function downloadGt(res: GtSource, pairs: Set<string>, name: string) {
@@ -35,7 +36,7 @@ export default function AnnotationTools({ res, name, userPairs, onClear, onLoad,
                        try { onLoad(gtFromText(await f.text(), res.keys)); }
                        catch (ex: any) { onError(String(ex?.message ?? ex)); }
                      }} />
-              <span className="note">
+              <span className={shared.note}>
                 click one edge, then the edge it is sewn to. Click a pair again to undo it.
               </span>
             </>

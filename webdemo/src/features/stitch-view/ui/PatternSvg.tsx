@@ -20,6 +20,7 @@ import {
   unitsPerPixel, zoomAt, type Drag, type Placed, type View,
 } from "../logic";
 import type { Pattern } from "@/core-algorithm/pattern";
+import s from "./PatternSvg.module.css";
 
 export type SvgProps = {
   pattern: Pattern;
@@ -111,7 +112,7 @@ export default function PatternSvg({
   };
 
   return (
-    <svg ref={svgRef} className={`canvas${annotate ? " annotating" : ""}`}
+    <svg ref={svgRef} className={`${s.canvas}${annotate ? ` ${s.annotating}` : ""}`}
          style={height ? { height } : undefined}
          viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} preserveAspectRatio="xMidYMid meet"
          onWheel={onWheel}
@@ -173,13 +174,13 @@ export default function PatternSvg({
 
       {annotate && [...(userPairs ?? [])].map((k) => {
         const [a, b] = k.split("-").map(Number);
-        return line(a, b, "userline", `u${k}`, 1.2);
+        return line(a, b, s.userline, `u${k}`, 1.2);
       })}
 
       {!annotate && !scored && [...pred].map((k) => {
         const [a, b] = k.split("-").map(Number);
         if (!lit(a, b)) return null;
-        return line(a, b, "predline", `x${k}`, focusSet !== null ? 1.4 : 0.45);
+        return line(a, b, s.predline, `x${k}`, focusSet !== null ? 1.4 : 0.45);
       })}
 
       {scored && show && (() => {
@@ -190,10 +191,10 @@ export default function PatternSvg({
         };
         return (
           <>
-            {show.gt && [...gt].map((k) => draw(k, "gtline", "g"))}
-            {show.correct && [...pred].filter((k) => gt.has(k)).map((k) => draw(k, "ok", "c"))}
-            {show.fp && [...pred].filter((k) => !gt.has(k)).map((k) => draw(k, "fp", "p"))}
-            {show.fn && [...gt].filter((k) => !pred.has(k)).map((k) => draw(k, "fn", "n"))}
+            {show.gt && [...gt].map((k) => draw(k, s.gtline, "g"))}
+            {show.correct && [...pred].filter((k) => gt.has(k)).map((k) => draw(k, s.ok, "c"))}
+            {show.fp && [...pred].filter((k) => !gt.has(k)).map((k) => draw(k, s.fp, "p"))}
+            {show.fn && [...gt].filter((k) => !pred.has(k)).map((k) => draw(k, s.fn, "n"))}
           </>
         );
       })()}
@@ -203,14 +204,14 @@ export default function PatternSvg({
         {geom.map((g) => (
           <g key={g.name}>
             {labels && g.edges.map((e, i) => (
-              <text key={i} x={e.mx} y={e.my + 1.6 * S} className="elabel"
+              <text key={i} x={e.mx} y={e.my + 1.6 * S} className={s.elabel}
                     style={{ fontSize: 4.6 * S }}>
                 {i} · {e.arc.toFixed(1)}
               </text>
             ))}
-            <text x={g.cx} y={g.cy} className="plabel" style={{ fontSize: 4 * S }}>{g.name}</text>
+            <text x={g.cx} y={g.cy} className={s.plabel} style={{ fontSize: 4 * S }}>{g.name}</text>
             {g.blowUp && (
-              <text x={g.cx} y={g.cy + 4.6 * S} className="plabel scalenote"
+              <text x={g.cx} y={g.cy + 4.6 * S} className={`${s.plabel} ${s.scalenote}`}
                     style={{ fontSize: 3.1 * S }}>
                 width ×{g.blowUp.toFixed(1)}, not to scale
               </text>

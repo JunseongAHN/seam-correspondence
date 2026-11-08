@@ -21,6 +21,9 @@ import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
 import { loadDumpRaw, solveInWorker, simdSupported, type Dump, type SimResult } from "@/core-algorithm/sim";
+import shared from "@/styles/shared.module.css";
+import styles from "./SimViewer.module.css";
+import vtk from "./vtk.module.css";
 
 type Stage = "flat" | "placed" | "solved";
 
@@ -198,39 +201,39 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
 
   return (
     <>
-      <div className="examples">
+      <div className={shared.examples}>
         <button onClick={run} disabled={busy || !exact}>
           {busy ? `solving… ${elapsed.toFixed(0)} s of about ${expectS}`
                 : exact ? `assemble it — the prediction, solved (about ${expectS} s)`
                         : `cannot assemble — ${fp + fn} stitch${fp + fn === 1 ? "" : "es"} wrong`}
         </button>
       </div>
-      {err && <div className="err">{err}</div>}
-      {!dump && !err && <div className="drop">loading the garment…</div>}
+      {err && <div className={shared.err}>{err}</div>}
+      {!dump && !err && <div className={shared.drop}>loading the garment…</div>}
       {dump && (
         <>
-          <div className="bar">
-            <span className="pill name">{file}</span>
-            <span className="pill">{dump.n} verts</span>
-            <span className="pill">{dump.M} faces</span>
-            <span className="pill">{dump.K} stitch pairs</span>
-            <span className="pill">{dump.NC} cylinders · {dump.NS} spheres</span>
+          <div className={shared.bar}>
+            <span className={`${shared.pill} ${shared.name}`}>{file}</span>
+            <span className={shared.pill}>{dump.n} verts</span>
+            <span className={shared.pill}>{dump.M} faces</span>
+            <span className={shared.pill}>{dump.K} stitch pairs</span>
+            <span className={shared.pill}>{dump.NC} cylinders · {dump.NS} spheres</span>
             {result ? (
               <>
-                <span className={`pill ${result.monoViolations === 0 ? "ok" : "fp"}`}>
+                <span className={`${shared.pill} ${result.monoViolations === 0 ? shared.ok : shared.fp}`}>
                   mono violations {result.monoViolations}
                 </span>
-                <span className="pill t">{(result.wallMs / 1000).toFixed(2)} s</span>
+                <span className={`${shared.pill} ${shared.t}`}>{(result.wallMs / 1000).toFixed(2)} s</span>
               </>
             ) : (
-              <span className="pill">not solved yet</span>
+              <span className={shared.pill}>not solved yet</span>
             )}
-            <span className="pill">simd {String(simdSupported())}</span>
+            <span className={shared.pill}>simd {String(simdSupported())}</span>
           </div>
-          <div className="toggles">
-            <span className="seg">
+          <div className={shared.toggles}>
+            <span className={styles.seg}>
               {(["flat", "placed", "solved"] as const).map((s) => (
-                <button key={s} className={stage === s ? "on" : ""}
+                <button key={s} className={stage === s ? styles.on : ""}
                         disabled={s === "solved" && !result}
                         onClick={() => setStage(s)}>
                   {s === "flat" ? "2D panels in" : s === "placed" ? "initial placement" : "solved output"}
@@ -245,14 +248,14 @@ export default function SimViewer({ exact = true, fp = 0, fn = 0, ok = 0,
                           onChange={(e) => setWire(e.target.checked)} /> mesh edges</label>
           </div>
           {result && (
-            <pre className="energies">
+            <pre className={styles.energies}>
 {`E_arap   = ${result.energies[0]}
 E_bend   = ${result.energies[1]}
 E_stitch = ${result.energies[2]}
 E_obst   = ${result.energies[3]}`}
             </pre>
           )}
-          <div className="vtk" ref={host} />
+          <div className={vtk.vtk} ref={host} />
         </>
       )}
     </>

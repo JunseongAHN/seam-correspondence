@@ -1,3 +1,5 @@
+import shared from "@/styles/shared.module.css";
+
 /* Shown even with nothing to score, because its absence would read as the
    feature not existing rather than as a step not yet taken. The reason rides
    in the label: a disabled button beside an explanation is two things to
@@ -8,7 +10,7 @@ export default function ReportToggle({ scored, showReport, onToggle }: {
   onToggle: () => void;
 }) {
   return (
-          <button className={showReport ? "on" : ""} disabled={!scored}
+          <button className={showReport ? shared.on : ""} disabled={!scored}
                   title={scored ? undefined
                                 : "A report is written from misses and false positives, "
                                   + "which need a ground truth to be measured against."}

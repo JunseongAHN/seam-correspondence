@@ -7,6 +7,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { EvalDoc } from "../logic";
+import shared from "@/styles/shared.module.css";
+import styles from "./LlmReport.module.css";
 
 const B = import.meta.env.BASE_URL;
 const API = import.meta.env.VITE_REPORT_API as string | undefined;
@@ -26,13 +28,13 @@ function inline(s: string) {
 
 function Markdown({ md }: { md: string }) {
   return (
-    <div className="md">
+    <div className={styles.md}>
       {md.split("\n").map((ln, i) => {
         if (!ln.trim()) return null;
         if (ln.startsWith("## ")) return <h3 key={i}>{ln.slice(3)}</h3>;
         if (ln.startsWith("# ")) return <h2 key={i}>{ln.slice(2)}</h2>;
         const bullet = ln.match(/^(\s*)- (.*)$/);
-        if (bullet) return <li key={i} className={bullet[1] ? "sub" : ""}>{inline(bullet[2])}</li>;
+        if (bullet) return <li key={i} className={bullet[1] ? styles.sub : ""}>{inline(bullet[2])}</li>;
         const num = ln.match(/^(\d+)\. (.*)$/);
         if (num) return <li key={i} className="num"><b>{num[1]}.</b> {inline(num[2])}</li>;
         return <p key={i}>{inline(ln)}</p>;
@@ -91,21 +93,21 @@ export default function LlmReport({ name, doc }: { name: string; doc: EvalDoc })
   };
 
   return (
-    <div className="llmreport">
+    <div className={styles.llmreport}>
       {!nFail && (
-        <p className="note perfect">
+        <p className={`${shared.note} ${styles.note} ${styles.perfect}`}>
           Wow, everything is correct! 🎉 — all {doc.pairs.length} stitches found, no
           misses and no false positives. Nothing to explain, so no call is made.
         </p>
       )}
-      <div className="examples">
+      <div className={shared.examples}>
         {API && nFail > 0 ? (
           <button onClick={generate} disabled={busy || cool > 0}>
             {busy ? "writing…" : cool > 0 ? `generate again in ${cool}s` : "generate a new report"}
           </button>
         ) : null}
         {nFail > 0 && (
-        <span className="note">
+        <span className={`${shared.note} ${styles.note}`}>
           <strong>claude-sonnet-5</strong>, from this page's evaluation.
           {" "}The gate checks the report's <em>shape</em>, not whether it is right.
           {API ? " One per 30s." : ""}
@@ -114,19 +116,19 @@ export default function LlmReport({ name, doc }: { name: string; doc: EvalDoc })
         )}
       </div>
       {!file && !API && (
-        <p className="note">
+        <p className={`${shared.note} ${styles.note}`}>
           No report for this garment. Save the evaluation, then{" "}
           <code>npm run report -- &lt;file&gt;.json --out reports/&lt;name&gt;.md</code>.
         </p>
       )}
       {gateProblems && (
-        <p className={`note ${gateProblems.length ? "gatefail" : "gateok"}`}>
+        <p className={`${shared.note} ${styles.note} ${gateProblems.length ? styles.gatefail : styles.gateok}`}>
           {gateProblems.length ? `GATE FAILED — ${gateProblems.join("; ")}` : "GATE PASSED"}
         </p>
       )}
-      {err && <div className="err">{err}</div>}
-      {busy && !md && <div className="drop">writing the report…</div>}
-      {file && !md && !err && !busy && <div className="drop">loading…</div>}
+      {err && <div className={shared.err}>{err}</div>}
+      {busy && !md && <div className={shared.drop}>writing the report…</div>}
+      {file && !md && !err && !busy && <div className={shared.drop}>loading…</div>}
       {md && <Markdown md={md} />}
     </div>
   );

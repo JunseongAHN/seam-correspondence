@@ -1,4 +1,5 @@
 import { buildEval, type EvalSource } from "../logic";
+import shared from "@/styles/shared.module.css";
 import LlmReport from "./LlmReport";
 
 function downloadEval(res: EvalSource, truth: Set<string>, name: string) {
@@ -19,11 +20,11 @@ export default function ReportPanel({ res, truth, name }: {
   return (
         <>
           <LlmReport name={name} doc={buildEval(res, truth, name)} />
-          <div className="examples">
+          <div className={shared.examples}>
             <button onClick={() => downloadEval(res, truth, name)}>
               save the evaluation as JSON
             </button>
-            <span className="note">the input the report is written from</span>
+            <span className={shared.note}>the input the report is written from</span>
           </div>
         </>
   );
