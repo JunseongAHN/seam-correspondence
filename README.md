@@ -24,6 +24,12 @@ stitches, so gathers cannot be expressed.
 | `dxfcheck/` | the CLO DXF path, and the diagnostics behind REPORT.md |
 | `tools/`, `api/`, `worker/` | the failure report, below |
 
+## Web demo
+
+<https://junseongahn.github.io/seam-correspondence/> — a DXF or GarmentCodeData pattern in, the predicted stitching out, with a 3D pane beside it, all in the browser.
+The code is in [`webdemo/`](webdemo/): `npm install && npm run dev` there, and `npm test` for the tests.
+How it is laid out, what runs in a Web Worker and why: [webdemo/README.md](webdemo/README.md).
+
 ## Failure report (Anthropic API)
 
 Takes only the failures out of an evaluation — edge pairs with `pred`/`gt`, arc lengths,
