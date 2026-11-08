@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist -t"
+    "deploy": "gh-pages -d dist -t",
+    "test": "vitest run"
   },
   "dependencies": {
     "@kitware/vtk.js": "^36.10.0",
@@ -27,7 +28,8 @@
     "gh-pages": "^6.3.0",
     "oxlint": "^1.79.0",
     "typescript": "~6.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "vitest": "^5.0.5"
   },
   "homepage": "https://junseongahn.github.io/seam-correspondence/"
 }

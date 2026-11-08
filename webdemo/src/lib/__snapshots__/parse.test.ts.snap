@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`parseDxf > panel_seperated.dxf 1`] = `
+{
+  "edges": 48,
+  "panels": 10,
+  "stitches": 0,
+}
+`;
+
+exports[`parseSpec > rand_3C7X2I6WQ7 1`] = `
+{
+  "edges": 54,
+  "panels": 6,
+  "stitches": 24,
+}
+`;
+
+exports[`parseSpec > rand_1328ERLDIC 1`] = `
+{
+  "edges": 54,
+  "panels": 6,
+  "stitches": 24,
+}
+`;
+
+exports[`parseSpec > rand_E3IN9RH60H 1`] = `
+{
+  "edges": 98,
+  "panels": 14,
+  "stitches": 44,
+}
+`;
+
+exports[`parseSpec > rand_GE9NBC1HFY 1`] = `
+{
+  "edges": 104,
+  "panels": 14,
+  "stitches": 48,
+}
+`;
+
+exports[`parseSpec > rand_I88DFY2AKV 1`] = `
+{
+  "edges": 70,
+  "panels": 8,
+  "stitches": 24,
+}
+`;
+
+exports[`parseSpec > rand_JYO1DHSFGH 1`] = `
+{
+  "edges": 16,
+  "panels": 4,
+  "stitches": 4,
+}
+`;
