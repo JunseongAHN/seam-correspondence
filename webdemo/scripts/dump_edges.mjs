@@ -6,8 +6,8 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-const { parseDxf } = await server.ssrLoadModule("/src/lib/parseDxf.ts");
-const { edgePolyline } = await server.ssrLoadModule("/src/lib/curves.ts");
+const { parseDxf } = await server.ssrLoadModule("/src/core-algorithm/pattern/index.ts");
+const { edgePolyline } = await server.ssrLoadModule("/src/core-algorithm/pattern/index.ts");
 
 const path = process.argv[2] ?? "C:/repos/seam-correspondence/clo_example/panel_seperated.dxf";
 const pat = parseDxf(readFileSync(path, "utf8"), "clo");

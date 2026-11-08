@@ -2,7 +2,7 @@
    computed separately in App.tsx and get their own test when moved to logic/. */
 import { describe, expect, it } from "vitest";
 import { buildEval } from "./evalDoc";
-import { featureDim } from "./features";
+import { featureDim } from "@/core-algorithm/inference";
 
 const source = (M: number, pred: string[]) => ({
   keys: Array.from({ length: M }, (_, i): [string, number] => ["p", i]),

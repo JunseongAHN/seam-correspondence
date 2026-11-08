@@ -11,7 +11,7 @@
    The sagitta profile removes the type decision.  Both a specification curve and a DXF
    polyline reduce to the same thing -- signed perpendicular deviation from the chord, at
    K uniform arclength positions, divided by the chord length. */
-import { KT, type Edge, type Pt } from "./parseSpec";
+import { KT, type Edge, type Pt } from "./types";
 
 export const SAMPLES_PER_EDGE = 32;
 

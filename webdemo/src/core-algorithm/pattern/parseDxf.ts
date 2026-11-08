@@ -11,7 +11,7 @@
    There is also no stitch ground truth in the file, so the caller gets an empty
    `stitches` and the UI has nothing to score against. */
 import DxfParser from "dxf-parser";
-import { KT, type Edge, type Panel, type Pattern, type Pt } from "./parseSpec";
+import { KT, type Edge, type Panel, type Pattern, type Pt } from "./types";
 import { ENCODING } from "./encoding";
 
 const MM = 10.0;               // CLO exports mm; the model works in cm

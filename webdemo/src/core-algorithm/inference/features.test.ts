@@ -2,12 +2,11 @@
    (scripts/feature_parity.mjs + dxfcheck/feature_parity.py) needs the training checkpoint
    and data; this pins the TS output so a refactor cannot move it unnoticed. */
 import { describe, expect, it } from "vitest";
-import { parseSpec } from "./parseSpec";
-import { parseDxf } from "./parseDxf";
+import { parseDxf, parseSpec } from "@/core-algorithm/pattern";
 import { featureDim, gtPairs, patternToTensors } from "./features";
-import clo from "../../public/example/panel_seperated.dxf?raw";
-import s3C7X from "../../public/example/rand_3C7X2I6WQ7_specification.json?raw";
-import sJYO1 from "../../public/example/rand_JYO1DHSFGH_specification.json?raw";
+import clo from "/public/example/panel_seperated.dxf?raw";
+import s3C7X from "/public/example/rand_3C7X2I6WQ7_specification.json?raw";
+import sJYO1 from "/public/example/rand_JYO1DHSFGH_specification.json?raw";
 
 describe("patternToTensors", () => {
   it("has the width the shipped model expects", () => {

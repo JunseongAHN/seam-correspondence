@@ -20,7 +20,7 @@ import vtkMapper from "@kitware/vtk.js/Rendering/Core/Mapper";
 import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
-import { loadDumpRaw, solveInWorker, simdSupported, type Dump, type SimResult } from "./lib/sim";
+import { loadDumpRaw, solveInWorker, simdSupported, type Dump, type SimResult } from "@/core-algorithm/sim";
 
 type Stage = "flat" | "placed" | "solved";
 

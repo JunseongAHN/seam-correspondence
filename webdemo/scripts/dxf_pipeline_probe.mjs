@@ -4,8 +4,8 @@ import { readFileSync } from "node:fs";
 import { createServer } from "vite";
 
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
-const { parseDxf } = await server.ssrLoadModule("/src/lib/parseDxf.ts");
-const { patternToTensors } = await server.ssrLoadModule("/src/lib/features.ts");
+const { parseDxf } = await server.ssrLoadModule("/src/core-algorithm/pattern/index.ts");
+const { patternToTensors } = await server.ssrLoadModule("/src/core-algorithm/inference/index.ts");
 
 const file = process.argv[2] ?? "C:/repos/seam-correspondence/clo_example/panel_seperated.dxf";
 const text = readFileSync(file, "utf8");

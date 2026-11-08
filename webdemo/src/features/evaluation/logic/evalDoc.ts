@@ -1,5 +1,4 @@
-import { featureDim, NK } from "./features";
-import type { Scores } from "./infer";
+import { featureDim, NK, type Scores } from "@/core-algorithm/inference";
 
 /* The evaluation, as a file tools/seam-report.ts and the report Worker both read.
 

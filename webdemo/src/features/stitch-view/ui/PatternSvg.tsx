@@ -14,8 +14,8 @@
    hand.  A DXF has no stitch list, so this is how ground truth gets made for a real
    garment -- and once it exists the prediction can actually be scored against it. */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { edgePolyline, edgeMid, stitchColor, type Placed } from "./lib/render";
-import type { Pattern } from "./lib/parseSpec";
+import { edgePolyline, edgeMid, stitchColor, type Placed } from "../logic";
+import type { Pattern } from "@/core-algorithm/pattern";
 
 export type SvgProps = {
   pattern: Pattern;

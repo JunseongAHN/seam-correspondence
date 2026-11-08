@@ -6,7 +6,7 @@
  * endpoint to call, so only the checked-in report is shown and the command that made it.
  */
 import { useEffect, useRef, useState } from "react";
-import type { EvalDoc } from "./lib/evalDoc";
+import type { EvalDoc } from "../logic";
 
 const B = import.meta.env.BASE_URL;
 const API = import.meta.env.VITE_REPORT_API as string | undefined;

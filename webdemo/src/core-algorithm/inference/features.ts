@@ -8,9 +8,7 @@
    With ARC_FEATURES two dims are appended: the edge's ARC length and arc/chord.  Dim 4
    is the chord, but what a seam matches is the arc -- the length of fabric you sew
    along -- and the two differ by up to a third on a real collar. */
-import { edgePolyline, sagittaProfile } from "./curves";
-import { KT, type Pattern, type Pt } from "./parseSpec";
-import { ENCODING } from "./encoding";
+import { ENCODING, KT, edgePolyline, sagittaProfile, type Pattern, type Pt } from "@/core-algorithm/pattern";
 
 export const F_DIM = 24;
 export const N_CURV = 11;          // dims 7..17: the curvature block, whatever encodes it

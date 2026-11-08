@@ -21,7 +21,7 @@ import vtkMapper from "@kitware/vtk.js/Rendering/Core/Mapper";
 import vtkActor from "@kitware/vtk.js/Rendering/Core/Actor";
 import vtkCylinderSource from "@kitware/vtk.js/Filters/Sources/CylinderSource";
 import vtkSphereSource from "@kitware/vtk.js/Filters/Sources/SphereSource";
-import { loadDrape, type Drape } from "./lib/drape";
+import { loadDrape, type Drape } from "../logic";
 
 const RED: [number, number, number] = [0.86, 0.13, 0.15];
 

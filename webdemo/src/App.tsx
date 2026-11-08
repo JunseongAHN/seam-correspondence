@@ -1,15 +1,9 @@
 import { useCallback, useRef, useState } from "react";
-import { parseSpec, type Pattern } from "./lib/parseSpec";
-import { parseDxf } from "./lib/parseDxf";
-import { patternToTensors, gtPairs } from "./lib/features";
-import { buildEval } from "./lib/evalDoc";
-import { predict, type Scores } from "./lib/infer";
-import { placePanels, type Placed } from "./lib/render";
-import PatternSvg from "./PatternSvg";
-import WeldGT from "./WeldGT";         // the CLO drape with its weld-derived seams
-import SimViewer from "./SimViewer";   // the wasm assembly solve, rendered
-import GtDrape from "./GtDrape";       // the ground-truth drape, solved on the host
-import LlmReport from "./LlmReport";   // the failure report, canned or generated
+import { parseDxf, parseSpec, type Pattern } from "@/core-algorithm/pattern";
+import { gtPairs, patternToTensors, predict, type Scores } from "@/core-algorithm/inference";
+import { PatternSvg, placePanels, type Placed } from "@/features/stitch-view";
+import { GtDrape, SimViewer, WeldGT } from "@/features/preview3d";
+import { buildEval, LlmReport } from "@/features/evaluation";
 import "./App.css";
 
 // BASE_URL, not an absolute path: the GitHub Pages build is served from /<repo>/.

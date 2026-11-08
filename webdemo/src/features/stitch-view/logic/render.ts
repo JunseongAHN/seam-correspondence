@@ -1,7 +1,7 @@
 /* 2D pattern layout + drawing.  Mirrors autosew/viz/visualize.py: panels are placed
    by their spec transform, back panels (tz<0) shifted right, stitched edge pairs
    share a colour, and the prediction is overlaid green / red / black-dashed. */
-import { type Panel, type Pattern, type Pt } from "./parseSpec";
+import { type Panel, type Pattern, type Pt } from "@/core-algorithm/pattern";
 
 export interface Placed {
   name: string; verts: Pt[]; edges: any[]; back: boolean;
