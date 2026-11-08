@@ -12,7 +12,7 @@
    `stitches` and the UI has nothing to score against. */
 import DxfParser from "dxf-parser";
 import { KT, type Edge, type Panel, type Pattern, type Pt } from "./parseSpec";
-import { ENCODING } from "./features";
+import { ENCODING } from "./encoding";
 
 const MM = 10.0;               // CLO exports mm; the model works in cm
 const BOUNDARY_LAYERS = ["8", "1"];   // preferred first

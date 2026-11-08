@@ -8,7 +8,8 @@ import { createServer } from "vite";
 const server = await createServer({ server: { middlewareMode: true }, appType: "custom" });
 const { parseSpec } = await server.ssrLoadModule("/src/lib/parseSpec.ts");
 const { parseDxf } = await server.ssrLoadModule("/src/lib/parseDxf.ts");
-const { patternToTensors, featureDim, ENCODING } = await server.ssrLoadModule("/src/lib/features.ts");
+const { patternToTensors, featureDim } = await server.ssrLoadModule("/src/lib/features.ts");
+const { ENCODING } = await server.ssrLoadModule("/src/lib/encoding.ts");
 
 const out = { encoding: ENCODING, featureDim, cases: {} };
 for (const [name, path, kind] of [

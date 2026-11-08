@@ -10,14 +10,12 @@
    along -- and the two differ by up to a third on a real collar. */
 import { edgePolyline, sagittaProfile } from "./curves";
 import { KT, type Pattern, type Pt } from "./parseSpec";
+import { ENCODING } from "./encoding";
 
 export const F_DIM = 24;
 export const N_CURV = 11;          // dims 7..17: the curvature block, whatever encodes it
 export const N_ARC = 2;            // appended when ARC_FEATURES: arc/100, arc/chord
 
-export type CurvatureEncoding = "tagged" | "sagitta";
-/** Must match the checkpoint the ONNX model was exported from. */
-export const ENCODING: CurvatureEncoding = "sagitta";
 export const SAGITTA_SAMPLES = 11;
 /** Must match the checkpoint too: the shipped model is trained with them. */
 export const ARC_FEATURES = true;
