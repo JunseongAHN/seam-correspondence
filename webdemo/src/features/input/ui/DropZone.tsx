@@ -1,18 +1,20 @@
 import { useRef } from "react";
-import { EXAMPLES, type ExampleKey } from "../logic";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { openPattern } from "@/app/workspaceSlice";
+import { EXAMPLES, exampleOpenArg, type ExampleKey } from "../logic";
 import shared from "@/styles/shared.module.css";
 import s from "./DropZone.module.css";
 
 /** Where a pattern comes in: drop or choose a file, or pick one of the examples. */
-export default function DropZone({ busy, loadingModel, example, onFile, onExample }: {
-  busy: boolean;
-  /** the model is still being fetched, the first time a pattern is run */
-  loadingModel: boolean;
-  example: ExampleKey | null;
-  onFile: (file: File) => void;
-  onExample: (key: ExampleKey) => void;
-}) {
+export default function DropZone() {
   const fileRef = useRef<HTMLInputElement>(null);
+  const busy = useAppSelector((st) => st.workspace.busy);
+  // the model is still being fetched, the first time a pattern is run
+  const loadingModel = useAppSelector((st) => st.workspace.modelStatus === "loading");
+  const example = useAppSelector((st) => st.workspace.example);
+  const dispatch = useAppDispatch();
+  const onFile = (file: File) => { dispatch(openPattern({ source: "file", file })); };
+  const onExample = (key: ExampleKey) => { dispatch(openPattern(exampleOpenArg(key))); };
   return (
       <div className={`${shared.drop} ${s.zone}`}
         onDragOver={(e) => e.preventDefault()}

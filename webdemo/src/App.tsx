@@ -27,11 +27,9 @@ export default function App() {
         </p>
       </header>
 
-      <DropZone busy={w.busy} loadingModel={w.loadingModel} example={w.example} onFile={w.runFile} onExample={w.runExample} />
+      <DropZone />
 
-      {(w.example === "gcd" || w.more !== null) && (
-        <MoreGarments busy={w.busy} name={w.name} onPick={w.runMore} />
-      )}
+      <MoreGarments />
 
       {w.err && <div className={shared.err}>{w.err}</div>}
 
@@ -50,7 +48,7 @@ export default function App() {
         <>
           <ResultBar />
 
-          {w.example && <ExampleNote example={w.example} />}
+          <ExampleNote />
 
           <LineToggles />
 
