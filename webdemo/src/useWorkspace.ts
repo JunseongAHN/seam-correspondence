@@ -10,7 +10,7 @@ import type { Scores } from "@/core-algorithm/inference";
 import { toPairList, toPairSet } from "@/adapters/pairs";
 import { getResult } from "@/adapters/resultCache";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { annotateToggled, edgeClicked, errorSet, openPattern, pairsCleared, pairsLoaded,
+import { annotateToggled, errorSet, openPattern, pairsCleared, pairsLoaded,
          selectScored, selectStats, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
 import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl,
          type ExampleKey } from "@/features/input";
@@ -26,7 +26,7 @@ export type Result = {
 
 export function useWorkspace() {
   const dispatch = useAppDispatch();
-  const { result: meta, busy, modelStatus, error: err, name, example, more, pane, annotate, selected } =
+  const { result: meta, busy, modelStatus, error: err, name, example, more, pane, annotate } =
     useAppSelector((s) => s.workspace);
   const userPairs = useAppSelector(selectUserPairs);
   const truth = useAppSelector(selectTruth);
@@ -45,7 +45,6 @@ export function useWorkspace() {
         M: meta.edges, x: objects.x, scores: objects.scores }
     : null), [meta, objects, placed, pred, gt]);
 
-  const onEdgeClick = useCallback((n: number) => { dispatch(edgeClicked(n)); }, [dispatch]);
 
   const runFile = useCallback((file: File) => {
     dispatch(openPattern({ source: "file", file }));
@@ -81,11 +80,11 @@ export function useWorkspace() {
   return {
     res, busy, loadingModel: modelStatus === "loading", err, name, example, more, truth, scored,
     stats, hasOwnGt, right,
-    annotate, userPairs, selected,
+    annotate, userPairs,
     setErr,
     toggleAnnotate: () => { dispatch(annotateToggled()); },
     clearPairs: () => { dispatch(pairsCleared()); },
     loadPairs: (p: Set<string>) => { dispatch(pairsLoaded(toPairList(p))); },
-    onEdgeClick, runFile, runExample, runMore,
+    runFile, runExample, runMore,
   };
 }

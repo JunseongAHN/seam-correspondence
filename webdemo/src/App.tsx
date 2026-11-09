@@ -2,8 +2,7 @@ import { AnnotateToggle, AnnotationTools } from "@/features/annotation";
 import { ReportPanel, ReportToggle, ResultBar, useEvaluationState } from "@/features/evaluation";
 import { DropZone, ExampleNote, MoreGarments } from "@/features/input";
 import { RightPane } from "@/features/preview3d";
-import { FocusHint, LabelsToggle, LineToggles, PatternSvg,
-         useStitchViewState } from "@/features/stitch-view";
+import { FocusHint, LabelsToggle, LineToggles, PatternSvg } from "@/features/stitch-view";
 import { useWorkspace } from "./useWorkspace";
 import shared from "@/styles/shared.module.css";
 import s from "./App.module.css";
@@ -11,7 +10,6 @@ import s from "./App.module.css";
 export default function App() {
   const w = useWorkspace();
   const { res } = w;
-  const view = useStitchViewState();
   const evaluation = useEvaluationState();
 
   return (
@@ -43,7 +41,7 @@ export default function App() {
         <div className={shared.examples}>
           <AnnotateToggle hasOwnGt={w.hasOwnGt} annotate={w.annotate} onToggle={w.toggleAnnotate} />
           <ReportToggle scored={w.scored} showReport={evaluation.showReport} onToggle={evaluation.toggleReport} />
-          <LabelsToggle labels={view.labels} onChange={view.setLabels} />
+          <LabelsToggle />
           {w.annotate && (
             <AnnotationTools res={res} name={w.name} userPairs={w.userPairs}
                              onClear={w.clearPairs} onLoad={w.loadPairs} onError={w.setErr} />
@@ -61,15 +59,13 @@ export default function App() {
 
           {w.example && <ExampleNote example={w.example} />}
 
-          {w.scored && <LineToggles show={view.show} onChange={view.setShow} />}
+          <LineToggles />
 
           {w.right ? (
             <div className={s.split}>
               <section>
                 <h2 className={shared.paneTitle}>predicted stitching · 2D</h2>
-                <PatternSvg {...res} gt={w.truth} show={view.show} height="62vh"
-                              annotate={w.annotate} labels={view.labels} userPairs={w.userPairs}
-                              selected={w.selected} onEdgeClick={w.onEdgeClick} />
+                <PatternSvg height="62vh" />
               </section>
               <section>
                 <RightPane pane={w.right} />
@@ -77,10 +73,8 @@ export default function App() {
             </div>
           ) : (
             <>
-              {!w.scored && <FocusHint />}
-              <PatternSvg {...res} gt={w.truth} show={view.show}
-                    annotate={w.annotate} labels={view.labels} userPairs={w.userPairs}
-                    selected={w.selected} onEdgeClick={w.onEdgeClick} />
+              <FocusHint />
+              <PatternSvg />
             </>
           )}
         </>

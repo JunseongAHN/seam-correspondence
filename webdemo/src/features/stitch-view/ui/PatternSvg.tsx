@@ -13,16 +13,41 @@
    Annotation, when `annotate` is on: click one edge then another to sew them together by
    hand.  A DXF has no stitch list, so this is how ground truth gets made for a real
    garment -- and once it exists the prediction can actually be scored against it. */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getResult } from "@/adapters/resultCache";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { edgeClicked, selectPred, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
 import {
   clientToUser, dragView, edgeStyle, focusNodes, isLit, midpointsByNode, nodeIndex,
-  pairGroups, pairPartners, patternGeometry, stitchIndexByEdge, strokeScale, svgFrame,
-  unitsPerPixel, zoomAt, type Drag, type Placed, type View,
+  pairGroups, pairPartners, patternGeometry, placePanels, stitchIndexByEdge, strokeScale,
+  svgFrame, unitsPerPixel, zoomAt, type Drag, type Placed, type View,
 } from "../logic";
 import type { Pattern } from "@/core-algorithm/pattern";
 import s from "./PatternSvg.module.css";
 
-export type SvgProps = {
+/** The loaded result's pattern, or nothing before one is loaded.  Only `height` comes from
+    outside: the same view is taller on its own than beside the 3D pane. */
+export default function PatternSvg({ height }: { height?: string }) {
+  const meta = useAppSelector((st) => st.workspace.result);
+  const annotate = useAppSelector((st) => st.workspace.annotate);
+  const selected = useAppSelector((st) => st.workspace.selected);
+  const userPairs = useAppSelector(selectUserPairs);
+  const pred = useAppSelector(selectPred);
+  const truth = useAppSelector(selectTruth);
+  const show = useAppSelector((st) => st.stitchView.show);
+  const labels = useAppSelector((st) => st.stitchView.labels);
+  const dispatch = useAppDispatch();
+  const onEdgeClick = useCallback((n: number) => { dispatch(edgeClicked(n)); }, [dispatch]);
+  // the pattern and its node keys are in the result cache; the layout is drawn from them once
+  const objects = getResult(meta?.id);
+  const placed = useMemo(() => (objects ? placePanels(objects.pattern) : null), [objects]);
+  if (!objects || !placed) return null;
+  return <PatternView pattern={objects.pattern} placed={placed} keys={objects.keys} pred={pred}
+                      gt={truth} show={show} height={height} annotate={annotate} labels={labels}
+                      userPairs={userPairs} selected={selected} onEdgeClick={onEdgeClick} />;
+}
+
+type SvgProps = {
   pattern: Pattern;
   placed: Placed[];
   keys: Array<[string, number]>;
@@ -39,7 +64,7 @@ export type SvgProps = {
   onEdgeClick?: (node: number) => void;
 };
 
-export default function PatternSvg({
+function PatternView({
   pattern, placed, keys, pred, gt, show, height,
   annotate = false, labels = true, userPairs, selected = null, onEdgeClick,
 }: SvgProps) {
