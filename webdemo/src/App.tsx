@@ -9,7 +9,6 @@ import s from "./App.module.css";
 
 export default function App() {
   const w = useWorkspace();
-  const { res } = w;
 
   return (
     <div className={s.app}>
@@ -36,21 +35,18 @@ export default function App() {
 
       {w.err && <div className={shared.err}>{w.err}</div>}
 
-      {res && (
+      {w.loaded && (
         <div className={shared.examples}>
-          <AnnotateToggle hasOwnGt={w.hasOwnGt} annotate={w.annotate} onToggle={w.toggleAnnotate} />
+          <AnnotateToggle />
           <ReportToggle />
           <LabelsToggle />
-          {w.annotate && (
-            <AnnotationTools res={res} name={w.name} userPairs={w.userPairs}
-                             onClear={w.clearPairs} onLoad={w.loadPairs} onError={w.setErr} />
-          )}
+          <AnnotationTools />
         </div>
       )}
 
       <ReportPanel />
 
-      {res && (
+      {w.loaded && (
         <>
           <ResultBar />
 
