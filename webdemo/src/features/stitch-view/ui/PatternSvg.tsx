@@ -26,6 +26,11 @@ import {
 import type { Pattern } from "@/core-algorithm/pattern";
 import s from "./PatternSvg.module.css";
 
+/* An edge label as one string, not `{i} · {length}` in JSX: React makes that three text
+   nodes, Chrome paints each its halo and then its fill, and the length's halo covered the
+   index. */
+const labelText = (i: number, arc: number) => `${i} · ${arc.toFixed(1)}`;
+
 /** The loaded result's pattern, or nothing before one is loaded.  Only `height` comes from
     outside: the same view is taller on its own than beside the 3D pane. */
 export default function PatternSvg({ height }: { height?: string }) {
@@ -134,7 +139,7 @@ function PatternView({
     const edges: LabelEdge[] = geom.flatMap((g) => g.edges.map((e, i) => {
       const ni = node.get(`${g.name}#${i}`);
       return { id: `${g.name}#${i}`, mid: [e.mx, e.my], a: [e.ax, e.ay], b: [e.bx, e.by],
-               center: [g.cx, g.cy], text: `${i} · ${e.arc.toFixed(1)}`, length: e.arc,
+               center: [g.cx, g.cy], text: labelText(i, e.arc), length: e.arc,
                focused: focusSet !== null && ni !== undefined && focusSet.has(ni) };
     }));
     const obstacles: LabelObstacle[] = geom.flatMap((g) => [
@@ -254,7 +259,7 @@ function PatternView({
               return (
                 <text key={i} x={at.x} y={at.y} dominantBaseline="middle" className={s.elabel}
                       style={{ fontSize: 4.6 * S }}>
-                  {i} · {e.arc.toFixed(1)}
+                  {labelText(i, e.arc)}
                 </text>
               );
             })}
