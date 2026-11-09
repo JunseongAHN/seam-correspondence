@@ -133,6 +133,8 @@ export default function WeldGT() {
   const segs = gt.welds.reduce((s, g) => s + g.length - 1, 0);
   return (
     <>
+      {/* the drape first, straight under its heading; what it is and its controls below */}
+      <div className={vtk.vtk} ref={host} />
       <div className={shared.bar}>
         <span className={`${shared.pill} ${shared.name}`}>{gt.source}</span>
         <span className={shared.pill}>{gt.panelSizes.length} panels</span>
@@ -153,7 +155,6 @@ export default function WeldGT() {
           panel surfaces
         </label>
       </div>
-      <div className={vtk.vtk} ref={host} />
     </>
   );
 }
