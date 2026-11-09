@@ -1,12 +1,19 @@
 /* Everything the page shares between its features: the loaded pattern and what the model
    made of it, the ground truth it is scored against, and the view switches.  Features
-   get what they need as props; none of them holds this state itself. */
-import { useCallback, useState } from "react";
+   get what they need as props; none of them holds this state itself.
+
+   The load itself now lives in the store (app/workspaceSlice); what is left here moves
+   there feature by feature. */
+import { useCallback, useMemo, useState } from "react";
 import type { Pattern } from "@/core-algorithm/pattern";
-import { gtPairs, modelLoaded, patternToTensors, predict, type Scores } from "@/core-algorithm/inference";
-import { annotationClick, gtFromDoc } from "@/features/annotation";
+import type { Scores } from "@/core-algorithm/inference";
+import { toPairSet } from "@/adapters/pairs";
+import { getResult } from "@/adapters/resultCache";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { errorSet, openPattern } from "@/app/workspaceSlice";
+import { annotationClick } from "@/features/annotation";
 import { scoreStats } from "@/features/evaluation";
-import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl, parseInput,
+import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl,
          type ExampleKey } from "@/features/input";
 import { pickRightPane } from "@/features/preview3d";
 import { placePanels, type Placed } from "@/features/stitch-view";
@@ -14,23 +21,29 @@ import { placePanels, type Placed } from "@/features/stitch-view";
 export type Result = {
   pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
   pred: Set<string>; gt: Set<string>; ms: number; M: number;
-  source: "spec" | "dxf";
   x: Float32Array;              // the features as given to the model, for the eval export
   scores: Scores;               // and what it made of them, for the same reason
 };
 
 export function useWorkspace() {
-  const [res, setRes] = useState<Result | null>(null);
-  const [busy, setBusy] = useState(false);
-  // the first prediction also fetches the model, which takes far longer than running it
-  const [loadingModel, setLoadingModel] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [name, setName] = useState("");
-  const [example, setExample] = useState<ExampleKey | null>(null);
-  const [more, setMore] = useState<string | null>(null);   // which held-out garment
+  const dispatch = useAppDispatch();
+  const { result: meta, busy, modelStatus, error: err, name, example, more, pane } =
+    useAppSelector((s) => s.workspace);
   const [annotate, setAnnotate] = useState(false);
   const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
+
+  /* The result as the components still take it: the store's small part, the cache's big
+     part, and the layout drawn from the pattern.  Each piece is memoised on what it is
+     made from, so a component sees a new object only when a new result arrives. */
+  const objects = getResult(meta?.id);
+  const placed = useMemo(() => (objects ? placePanels(objects.pattern) : null), [objects]);
+  const pred = useMemo(() => toPairSet(meta?.pred ?? []), [meta?.pred]);
+  const gt = useMemo(() => toPairSet(meta?.gt ?? []), [meta?.gt]);
+  const res: Result | null = useMemo(() => (meta && objects && placed
+    ? { pattern: objects.pattern, placed, keys: objects.keys, pred, gt, ms: meta.ms,
+        M: meta.edges, x: objects.x, scores: objects.scores }
+    : null), [meta, objects, placed, pred, gt]);
 
   /** Click one edge then another to sew them together; click a paired edge to undo it.
 
@@ -51,58 +64,23 @@ export function useWorkspace() {
     setSelected(next);
   }, [selected, userPairs]);
 
-  /** One pipeline for both inputs: text -> Pattern -> features -> ONNX -> pairs.
-      A DXF carries no stitches, so there is nothing to score it against. */
-  const runText = useCallback(async (text: string, fileName: string, ex: ExampleKey | null,
-                                     moreId: string | null = null,
-                                     gtUrl: string | null = null) => {
-    setBusy(true); setErr(null);
-    try {
-      const { pattern, isDxf } = parseInput(text, fileName);
-      const t = patternToTensors(pattern);
-      setLoadingModel(!modelLoaded());
-      const { pairs, ms, scores } = await predict(t);
-      setLoadingModel(false);
-      let gt = isDxf ? new Set<string>() : gtPairs(pattern, t.keys);
-      if (gtUrl) {
-        const g = await fetch(gtUrl);
-        if (!g.ok) throw new Error(`${gtUrl}: HTTP ${g.status}`);
-        gt = gtFromDoc(await g.json(), t.keys);
-      }
-      setRes({ pattern, placed: placePanels(pattern), keys: t.keys, pred: pairs,
-               gt, ms, M: t.M, source: isDxf ? "dxf" : "spec", x: t.x, scores });
-      setName(fileName);
-      setExample(ex);
-      setMore(moreId);
-    } catch (e: any) {
-      setErr(String(e?.message ?? e)); setRes(null); setExample(null); setMore(null);
-    }
-    finally { setBusy(false); setLoadingModel(false); }
-  }, []);
+  const runFile = useCallback((file: File) => {
+    dispatch(openPattern({ source: "file", file }));
+  }, [dispatch]);
 
-  const runFile = useCallback(async (file: File) => {
-    await runText(await file.text(), file.name, null);
-  }, [runText]);
-
-  const runExample = useCallback(async (key: ExampleKey) => {
+  const runExample = useCallback((key: ExampleKey) => {
     const e = EXAMPLES[key];
-    setBusy(true); setErr(null);
-    try {
-      const r = await fetch(e.url);
-      if (!r.ok) throw new Error(`${e.url}: HTTP ${r.status}`);
-      await runText(await r.text(), e.file, key, null, exampleGtUrl(key));
-    } catch (ex: any) { setErr(String(ex?.message ?? ex)); setBusy(false); }
-  }, [runText]);
+    dispatch(openPattern({ source: "url", url: e.url, fileName: e.file, gtUrl: exampleGtUrl(key),
+                           example: key, more: null, exampleRight: e.right, moreSim: null }));
+  }, [dispatch]);
 
-  const runMore = useCallback(async (id: string) => {
-    setBusy(true); setErr(null);
-    try {
-      const u = moreSpecUrl(id);
-      const r = await fetch(u);
-      if (!r.ok) throw new Error(`${u}: HTTP ${r.status}`);
-      await runText(await r.text(), moreSpecFile(id), null, id);
-    } catch (e: any) { setErr(String(e?.message ?? e)); setBusy(false); }
-  }, [runText]);
+  const runMore = useCallback((id: string) => {
+    dispatch(openPattern({ source: "url", url: moreSpecUrl(id), fileName: moreSpecFile(id),
+                           gtUrl: null, example: null, more: id, exampleRight: null,
+                           moreSim: MORE.find((g) => g.id === id)?.sim ?? null }));
+  }, [dispatch]);
+
+  const setErr = useCallback((m: string | null) => { dispatch(errorSet(m)); }, [dispatch]);
 
   // hand-drawn ground truth outranks the file's, so a DXF becomes scorable
   const truth = userPairs.size ? userPairs : res?.gt ?? new Set<string>();
@@ -114,15 +92,16 @@ export function useWorkspace() {
   const hasOwnGt = !!res && res.gt.size > 0;
 
   const right = pickRightPane({
-    example: example ? EXAMPLES[example].right : null,
+    example: example ? pane.exampleRight : null,
     more,
-    moreSim: MORE.find((g) => g.id === more)?.sim,
+    moreSim: more ? pane.moreSim ?? undefined : undefined,
     exact,
     stats,
   });
 
   return {
-    res, busy, loadingModel, err, name, example, more, truth, scored, stats, exact, hasOwnGt, right,
+    res, busy, loadingModel: modelStatus === "loading", err, name, example, more, truth, scored,
+    stats, hasOwnGt, right,
     annotate, userPairs, selected,
     setErr, setUserPairs,
     toggleAnnotate: () => { setAnnotate((v) => !v); setSelected(null); },
