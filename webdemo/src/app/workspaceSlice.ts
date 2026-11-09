@@ -4,11 +4,12 @@
    The result itself is split.  What is small and plain -- its name, sizes, timing and the
    predicted and ground-truth pairs -- is here; the parsed pattern, the feature tensor and
    the model's scores are in adapters/resultCache, and `result.id` finds them. */
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { toPairList } from "@/adapters/pairs";
+import { createAsyncThunk, createSelector, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { addPair, removePair, toPairList, toPairSet } from "@/adapters/pairs";
 import { dropResult, putResult, retainOnly } from "@/adapters/resultCache";
 import { gtPairs, modelLoaded, patternToTensors, predict } from "@/core-algorithm/inference";
-import { gtFromDoc } from "@/features/annotation/logic";
+import { annotationClick, gtFromDoc } from "@/features/annotation/logic";
+import { scoreStats } from "@/features/evaluation/logic";
 import { parseInput, type ExampleKey } from "@/features/input/logic";
 
 export type ModelStatus = "idle" | "loading" | "ready" | "error";
@@ -38,12 +39,18 @@ export type WorkspaceState = {
   error: string | null;
   /** the newest openPattern; an older one that finishes later is ignored */
   latest: string | null;
+  /* Drawing a ground truth by hand: annotation's toolbar changes these, and the 2D view
+     both draws them and takes the clicks that make them. */
+  annotate: boolean;
+  userPairs: string[];          // in the order they were sewn: it picks their colours
+  selected: number | null;      // the first edge of a pair being made
 };
 
 const initialState: WorkspaceState = {
   result: null, name: "", example: null, more: null,
   pane: { exampleRight: null, moreSim: null },
   busy: false, modelStatus: "idle", error: null, latest: null,
+  annotate: false, userPairs: [], selected: null,
 };
 
 /** A file the reader chose, or a URL input resolved for an example. */
@@ -121,6 +128,19 @@ const workspaceSlice = createSlice({
   reducers: {
     modelLoading(state) { state.modelStatus = "loading"; },
     errorSet(state, action: PayloadAction<string | null>) { state.error = action.payload; },
+    annotateToggled(state) { state.annotate = !state.annotate; state.selected = null; },
+    /** Click one edge then another to sew them together; click a paired edge to undo it. */
+    edgeClicked(state, { payload: n }: PayloadAction<number>) {
+      const { selected, change } = annotationClick(state.selected, toPairSet(state.userPairs), n);
+      if (change) state.userPairs = change.remove ? removePair(state.userPairs, change.key)
+                                                  : addPair(state.userPairs, change.key);
+      state.selected = selected;
+    },
+    pairsCleared(state) { state.userPairs = []; state.selected = null; },
+    /** A saved ground truth was loaded in place of the hand-drawn one. */
+    pairsLoaded(state, { payload }: PayloadAction<string[]>) {
+      state.userPairs = payload; state.error = null;
+    },
   },
   extraReducers: (b) => b
     .addCase(openPattern.pending, (state, { meta }) => {
@@ -149,5 +169,24 @@ const workspaceSlice = createSlice({
     }),
 });
 
-export const { modelLoading, errorSet } = workspaceSlice.actions;
+export const { modelLoading, errorSet, annotateToggled, edgeClicked, pairsCleared, pairsLoaded } =
+  workspaceSlice.actions;
+
+/* Derived values more than one feature reads.  Typed against the slice alone, not the
+   store, so this module does not import store.ts and close a cycle. */
+type WithWorkspace = { workspace: WorkspaceState };
+const EMPTY: string[] = [];
+const selectResult = (s: WithWorkspace) => s.workspace.result;
+const selectUserPairList = (s: WithWorkspace) => s.workspace.userPairs;
+
+export const selectPred = createSelector([(s: WithWorkspace) => s.workspace.result?.pred ?? EMPTY], toPairSet);
+export const selectUserPairs = createSelector([selectUserPairList], toPairSet);
+/** The ground truth the prediction is scored against: hand-drawn outranks the file's, so a
+    DXF becomes scorable. */
+export const selectTruth = createSelector(
+  [selectUserPairList, (s: WithWorkspace) => s.workspace.result?.gt ?? EMPTY],
+  (mine, file) => toPairSet(mine.length ? mine : file));
+export const selectScored = createSelector([selectResult, selectTruth], (r, truth) => !!r && truth.size > 0);
+export const selectStats = createSelector([selectResult, selectPred, selectTruth],
+  (r, pred, truth) => (r ? scoreStats(pred, truth) : null));
 export default workspaceSlice.reducer;

@@ -4,15 +4,14 @@
 
    The load itself now lives in the store (app/workspaceSlice); what is left here moves
    there feature by feature. */
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import type { Pattern } from "@/core-algorithm/pattern";
 import type { Scores } from "@/core-algorithm/inference";
-import { toPairSet } from "@/adapters/pairs";
+import { toPairList, toPairSet } from "@/adapters/pairs";
 import { getResult } from "@/adapters/resultCache";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { errorSet, openPattern } from "@/app/workspaceSlice";
-import { annotationClick } from "@/features/annotation";
-import { scoreStats } from "@/features/evaluation";
+import { annotateToggled, edgeClicked, errorSet, openPattern, pairsCleared, pairsLoaded,
+         selectScored, selectStats, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
 import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl,
          type ExampleKey } from "@/features/input";
 import { pickRightPane } from "@/features/preview3d";
@@ -27,11 +26,12 @@ export type Result = {
 
 export function useWorkspace() {
   const dispatch = useAppDispatch();
-  const { result: meta, busy, modelStatus, error: err, name, example, more, pane } =
+  const { result: meta, busy, modelStatus, error: err, name, example, more, pane, annotate, selected } =
     useAppSelector((s) => s.workspace);
-  const [annotate, setAnnotate] = useState(false);
-  const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
-  const [selected, setSelected] = useState<number | null>(null);
+  const userPairs = useAppSelector(selectUserPairs);
+  const truth = useAppSelector(selectTruth);
+  const scored = useAppSelector(selectScored);
+  const stats = useAppSelector(selectStats);
 
   /* The result as the components still take it: the store's small part, the cache's big
      part, and the layout drawn from the pattern.  Each piece is memoised on what it is
@@ -45,24 +45,7 @@ export function useWorkspace() {
         M: meta.edges, x: objects.x, scores: objects.scores }
     : null), [meta, objects, placed, pred, gt]);
 
-  /** Click one edge then another to sew them together; click a paired edge to undo it.
-
-      Two things to keep right here.  StrictMode invokes a state updater twice to check it
-      is pure, so the updater must not have side effects -- setUserPairs cannot live
-      inside setSelected -- and it must be idempotent, which a has/delete/add toggle is
-      not: run twice it adds and then removes, and the pair silently vanishes.  So the
-      add-or-remove decision is made out here and the updater just applies it. */
-  const onEdgeClick = useCallback((n: number) => {
-    const { selected: next, change } = annotationClick(selected, userPairs, n);
-    if (change) {
-      setUserPairs((p) => {
-        const q = new Set(p);
-        if (change.remove) q.delete(change.key); else q.add(change.key);
-        return q;
-      });
-    }
-    setSelected(next);
-  }, [selected, userPairs]);
+  const onEdgeClick = useCallback((n: number) => { dispatch(edgeClicked(n)); }, [dispatch]);
 
   const runFile = useCallback((file: File) => {
     dispatch(openPattern({ source: "file", file }));
@@ -82,10 +65,6 @@ export function useWorkspace() {
 
   const setErr = useCallback((m: string | null) => { dispatch(errorSet(m)); }, [dispatch]);
 
-  // hand-drawn ground truth outranks the file's, so a DXF becomes scorable
-  const truth = userPairs.size ? userPairs : res?.gt ?? new Set<string>();
-  const scored = !!res && truth.size > 0;
-  const stats = res ? scoreStats(res.pred, truth) : null;
   const exact = !!stats && stats.fp === 0 && stats.fn === 0;
   /* The input brought its own stitch list -- a specification, or the example whose
      hand-drawn truth is checked in. Nothing to draw. */
@@ -103,10 +82,10 @@ export function useWorkspace() {
     res, busy, loadingModel: modelStatus === "loading", err, name, example, more, truth, scored,
     stats, hasOwnGt, right,
     annotate, userPairs, selected,
-    setErr, setUserPairs,
-    toggleAnnotate: () => { setAnnotate((v) => !v); setSelected(null); },
-    clearPairs: () => { setUserPairs(new Set()); setSelected(null); },
-    loadPairs: (p: Set<string>) => { setUserPairs(p); setErr(null); },
+    setErr,
+    toggleAnnotate: () => { dispatch(annotateToggled()); },
+    clearPairs: () => { dispatch(pairsCleared()); },
+    loadPairs: (p: Set<string>) => { dispatch(pairsLoaded(toPairList(p))); },
     onEdgeClick, runFile, runExample, runMore,
   };
 }
