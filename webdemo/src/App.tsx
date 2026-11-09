@@ -1,5 +1,5 @@
 import { AnnotateToggle, AnnotationTools } from "@/features/annotation";
-import { ReportPanel, ReportToggle, ResultBar, useEvaluationState } from "@/features/evaluation";
+import { ReportPanel, ReportToggle, ResultBar } from "@/features/evaluation";
 import { DropZone, ExampleNote, MoreGarments } from "@/features/input";
 import { RightPane } from "@/features/preview3d";
 import { FocusHint, LabelsToggle, LineToggles, PatternSvg } from "@/features/stitch-view";
@@ -10,7 +10,6 @@ import s from "./App.module.css";
 export default function App() {
   const w = useWorkspace();
   const { res } = w;
-  const evaluation = useEvaluationState();
 
   return (
     <div className={s.app}>
@@ -40,7 +39,7 @@ export default function App() {
       {res && (
         <div className={shared.examples}>
           <AnnotateToggle hasOwnGt={w.hasOwnGt} annotate={w.annotate} onToggle={w.toggleAnnotate} />
-          <ReportToggle scored={w.scored} showReport={evaluation.showReport} onToggle={evaluation.toggleReport} />
+          <ReportToggle />
           <LabelsToggle />
           {w.annotate && (
             <AnnotationTools res={res} name={w.name} userPairs={w.userPairs}
@@ -49,13 +48,11 @@ export default function App() {
         </div>
       )}
 
-      {res && w.scored && evaluation.showReport && <ReportPanel res={res} truth={w.truth} name={w.name} />}
+      <ReportPanel />
 
       {res && (
         <>
-          <ResultBar name={w.name} panels={res.pattern.panels.length} edges={res.M}
-                     predicted={res.pred.size} ms={res.ms}
-                     stats={w.scored ? w.stats : null} handDrawn={w.userPairs.size} />
+          <ResultBar />
 
           {w.example && <ExampleNote example={w.example} />}
 

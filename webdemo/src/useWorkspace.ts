@@ -11,7 +11,7 @@ import { toPairList, toPairSet } from "@/adapters/pairs";
 import { getResult } from "@/adapters/resultCache";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { annotateToggled, errorSet, openPattern, pairsCleared, pairsLoaded,
-         selectScored, selectStats, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
+         selectStats, selectUserPairs } from "@/app/workspaceSlice";
 import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl,
          type ExampleKey } from "@/features/input";
 import { pickRightPane } from "@/features/preview3d";
@@ -29,8 +29,6 @@ export function useWorkspace() {
   const { result: meta, busy, modelStatus, error: err, name, example, more, pane, annotate } =
     useAppSelector((s) => s.workspace);
   const userPairs = useAppSelector(selectUserPairs);
-  const truth = useAppSelector(selectTruth);
-  const scored = useAppSelector(selectScored);
   const stats = useAppSelector(selectStats);
 
   /* The result as the components still take it: the store's small part, the cache's big
@@ -78,8 +76,7 @@ export function useWorkspace() {
   });
 
   return {
-    res, busy, loadingModel: modelStatus === "loading", err, name, example, more, truth, scored,
-    stats, hasOwnGt, right,
+    res, busy, loadingModel: modelStatus === "loading", err, name, example, more, hasOwnGt, right,
     annotate, userPairs,
     setErr,
     toggleAnnotate: () => { dispatch(annotateToggled()); },
