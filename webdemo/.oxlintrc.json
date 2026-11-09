@@ -21,7 +21,7 @@
       }
     },
     {
-      "files": ["src/features/*/ui/**"],
+      "files": ["src/features/*/ui/**", "src/features/*/state/**"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
           { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },

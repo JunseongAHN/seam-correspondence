@@ -9,7 +9,7 @@ import { scoreStats } from "@/features/evaluation";
 import { EXAMPLES, exampleGtUrl, MORE, moreSpecFile, moreSpecUrl, parseInput,
          type ExampleKey } from "@/features/input";
 import { pickRightPane } from "@/features/preview3d";
-import { placePanels, type Placed, type Show } from "@/features/stitch-view";
+import { placePanels, type Placed } from "@/features/stitch-view";
 
 export type Result = {
   pattern: Pattern; placed: Placed[]; keys: Array<[string, number]>;
@@ -25,13 +25,11 @@ export function useWorkspace() {
   // the first prediction also fetches the model, which takes far longer than running it
   const [loadingModel, setLoadingModel] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [show, setShow] = useState<Show>({ correct: true, fp: true, fn: true, gt: false });
   const [name, setName] = useState("");
   const [example, setExample] = useState<ExampleKey | null>(null);
   const [more, setMore] = useState<string | null>(null);   // which held-out garment
   const [showReport, setShowReport] = useState(false);
   const [annotate, setAnnotate] = useState(false);
-  const [labels, setLabels] = useState(true);
   const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
 
@@ -126,8 +124,8 @@ export function useWorkspace() {
 
   return {
     res, busy, loadingModel, err, name, example, more, truth, scored, stats, exact, hasOwnGt, right,
-    show, labels, showReport, annotate, userPairs, selected,
-    setErr, setShow, setLabels, setUserPairs,
+    showReport, annotate, userPairs, selected,
+    setErr, setUserPairs,
     toggleReport: () => setShowReport((v) => !v),
     toggleAnnotate: () => { setAnnotate((v) => !v); setSelected(null); },
     clearPairs: () => { setUserPairs(new Set()); setSelected(null); },
