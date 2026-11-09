@@ -5,13 +5,22 @@ import { makeStore } from "./store";
 import { errorSet, openPattern, type OpenArg } from "./workspaceSlice";
 
 // Everything real but the model: parsing, features and ground truth run as in the page.
-const model = vi.hoisted(() => ({ loaded: false, fail: null as Error | null }));
+/* `held`, when set, collects each prediction unfinished so a test decides when -- and in
+   which order -- they end. */
+const model = vi.hoisted(() => ({
+  loaded: false, fail: null as Error | null,
+  held: null as null | Array<{ finish: () => void; fail: (e: Error) => void }>,
+}));
 vi.mock("@/core-algorithm/inference", async (orig) => {
   const real = await orig<typeof import("@/core-algorithm/inference")>();
   return {
     ...real,
     modelLoaded: () => model.loaded,
     predict: vi.fn(async () => {
+      if (model.held) {
+        const held = model.held;
+        await new Promise<void>((finish, fail) => held.push({ finish, fail }));
+      }
       if (model.fail) throw model.fail;
       model.loaded = true;
       return { pairs: new Set(["2-3", "0-1"]), ms: 7, scores: { best: new Int32Array(16), prob: () => 0 } };
@@ -27,7 +36,7 @@ const respond = (routes: Record<string, () => Response>) =>
   vi.stubGlobal("fetch", vi.fn(async (u: string) => (routes[u] ?? (() => new Response("", { status: 404 })))()));
 
 describe("openPattern", () => {
-  beforeEach(() => { model.loaded = false; model.fail = null; });
+  beforeEach(() => { model.loaded = false; model.fail = null; model.held = null; });
   afterEach(() => { vi.unstubAllGlobals(); retainOnly(null); });
 
   it("puts the small part of a result in the store and the rest in the cache", async () => {
@@ -125,5 +134,72 @@ describe("openPattern", () => {
     const store = makeStore();
     await store.dispatch(openPattern(file("not a pattern", "bad.json")));
     expect(store.getState().workspace.modelStatus).toBe("idle");
+  });
+
+  describe("when loads overlap", () => {
+    const flush = () => new Promise((r) => setTimeout(r, 0));
+    /** Start two loads; both predictions wait until the test lets them finish. */
+    async function twoLoads() {
+      model.held = [];
+      const store = makeStore();
+      const first = store.dispatch(openPattern(file(spec, "first_specification.json")));
+      await flush();
+      const second = store.dispatch(openPattern(file(spec, "second_specification.json")));
+      await flush();
+      const [a, b] = model.held;
+      return { store, first, second, a, b };
+    }
+
+    it("does not let an older load that finishes late overwrite the newer result", async () => {
+      const { store, first, second, a, b } = await twoLoads();
+      b.finish(); await second;
+      const shown = store.getState().workspace.result;
+      a.finish(); await first;
+      const w = store.getState().workspace;
+      expect(w.result?.name).toBe("second_specification.json");
+      expect(w.result).toBe(shown);
+      expect([w.name, w.busy, w.error]).toEqual(["second_specification.json", false, null]);
+      expect(getResult(w.result?.id)?.pattern.name).toBe("second");
+    });
+
+    it("drops the late load's objects from the cache and keeps the shown one", async () => {
+      const { store, first, second, a, b } = await twoLoads();
+      b.finish(); await second;
+      const shownId = store.getState().workspace.result?.id;
+      a.finish(); const late = await first;
+      const lateId = (late.payload as { result: { id: string } }).result.id;
+      expect(getResult(lateId)).toBeUndefined();
+      expect(getResult(shownId)).toBeDefined();
+    });
+
+    it("stays busy while the newer load runs, though the older one has ended", async () => {
+      const { store, first, second, a, b } = await twoLoads();
+      a.finish(); await first;
+      expect(store.getState().workspace.busy).toBe(true);
+      expect(store.getState().workspace.result).toBeNull();
+      b.finish(); await second;
+      expect(store.getState().workspace.result?.name).toBe("second_specification.json");
+    });
+
+    it("does not let an older load that fails late clear the newer result or set an error", async () => {
+      const { store, first, second, a, b } = await twoLoads();
+      b.finish(); await second;
+      model.fail = new Error("boom");
+      a.finish(); await first;
+      const w = store.getState().workspace;
+      expect([w.result?.name, w.error]).toEqual(["second_specification.json", null]);
+      expect(getResult(w.result?.id)).toBeDefined();
+    });
+
+    it("still learns from a stale load that the model is now in memory", async () => {
+      model.held = [];
+      const store = makeStore();
+      const first = store.dispatch(openPattern(file(spec, "first_specification.json")));
+      await flush();
+      await store.dispatch(openPattern(file("not a pattern", "bad.json")));   // fails before the model
+      expect(store.getState().workspace.modelStatus).toBe("loading");
+      model.held[0].finish(); await first;
+      expect(store.getState().workspace.modelStatus).toBe("ready");
+    });
   });
 });

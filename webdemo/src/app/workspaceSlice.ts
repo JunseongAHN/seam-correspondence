@@ -6,7 +6,7 @@
    the model's scores are in adapters/resultCache, and `result.id` finds them. */
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { toPairList } from "@/adapters/pairs";
-import { putResult, retainOnly } from "@/adapters/resultCache";
+import { dropResult, putResult, retainOnly } from "@/adapters/resultCache";
 import { gtPairs, modelLoaded, patternToTensors, predict } from "@/core-algorithm/inference";
 import { gtFromDoc } from "@/features/annotation/logic";
 import { parseInput, type ExampleKey } from "@/features/input/logic";
@@ -36,12 +36,14 @@ export type WorkspaceState = {
   busy: boolean;
   modelStatus: ModelStatus;
   error: string | null;
+  /** the newest openPattern; an older one that finishes later is ignored */
+  latest: string | null;
 };
 
 const initialState: WorkspaceState = {
   result: null, name: "", example: null, more: null,
   pane: { exampleRight: null, moreSim: null },
-  busy: false, modelStatus: "idle", error: null,
+  busy: false, modelStatus: "idle", error: null, latest: null,
 };
 
 /** A file the reader chose, or a URL input resolved for an example. */
@@ -59,10 +61,15 @@ type Failed = { stage: "fetch" | "load"; message: string; model: ModelStatus | n
 
 const message = (e: any) => String(e?.message ?? e);
 
-/** One pipeline for every input: text -> Pattern -> features -> ONNX -> pairs. */
-export const openPattern = createAsyncThunk<Opened, OpenArg, { rejectValue: Failed }>(
+/** One pipeline for every input: text -> Pattern -> features -> ONNX -> pairs.
+
+    Loads can overlap -- the drop zone takes a file while an example is still running --
+    and the slower one used to win.  Only the newest is applied now; see `latest`. */
+export const openPattern = createAsyncThunk<Opened, OpenArg,
+    { rejectValue: Failed; state: { workspace: WorkspaceState } }>(
   "workspace/openPattern",
-  async (arg, { dispatch, rejectWithValue }) => {
+  async (arg, { dispatch, getState, rejectWithValue, requestId }) => {
+    const isLatest = () => getState().workspace.latest === requestId;
     let text: string, fileName: string;
     try {
       if (arg.source === "file") { text = await arg.file.text(); fileName = arg.file.name; }
@@ -88,7 +95,8 @@ export const openPattern = createAsyncThunk<Opened, OpenArg, { rejectValue: Fail
         gt = gtFromDoc(await g.json(), t.keys);
       }
       const id = putResult({ pattern, keys: t.keys, x: t.x, scores });
-      retainOnly(id);
+      // a stale load must not evict the result the page is showing
+      if (isLatest()) retainOnly(id); else dropResult(id);
       return {
         result: { id, name: fileName, panels: pattern.panels.length, edges: t.M, ms,
                   pred: toPairList(pairs), gt: toPairList(gt) },
@@ -98,7 +106,7 @@ export const openPattern = createAsyncThunk<Opened, OpenArg, { rejectValue: Fail
                                    : { exampleRight: null, moreSim: null },
       };
     } catch (e) {
-      retainOnly(null);
+      if (isLatest()) retainOnly(null);
       return rejectWithValue({ stage: "load", message: message(e),
                                model: modelLoaded() ? "ready" : triedModel ? "error" : null });
     }
@@ -115,20 +123,28 @@ const workspaceSlice = createSlice({
     errorSet(state, action: PayloadAction<string | null>) { state.error = action.payload; },
   },
   extraReducers: (b) => b
-    .addCase(openPattern.pending, (state) => { state.busy = true; state.error = null; })
-    .addCase(openPattern.fulfilled, (state, { payload }) => {
+    .addCase(openPattern.pending, (state, { meta }) => {
+      state.latest = meta.requestId; state.busy = true; state.error = null;
+    })
+    /* There is one model, whichever load fetched it, so a stale load still reports that it
+       is now in memory.  Nothing else of a stale load is applied -- not even a model
+       failure, which would hide "loading the model" while the newer load is still at it. */
+    .addCase(openPattern.fulfilled, (state, { payload, meta }) => {
+      state.modelStatus = "ready";
+      if (meta.requestId !== state.latest) return;
       state.result = payload.result;
       state.name = payload.result.name;
       state.example = payload.example;
       state.more = payload.more;
       state.pane = payload.pane;
-      state.modelStatus = "ready";
       state.busy = false;
     })
-    .addCase(openPattern.rejected, (state, { payload, error }) => {
+    .addCase(openPattern.rejected, (state, { payload, error, meta }) => {
+      const stale = meta.requestId !== state.latest;
+      if (payload?.model && (!stale || payload.model === "ready")) state.modelStatus = payload.model;
+      if (stale) return;
       state.busy = false;
       state.error = payload?.message ?? String(error.message);
-      if (payload?.model) state.modelStatus = payload.model;
       if (payload?.stage === "load") { state.result = null; state.example = null; state.more = null; }
     }),
 });

@@ -26,6 +26,11 @@ export function getResult(id: string | null | undefined): ResultObjects | undefi
   return id ? results.get(id) : undefined;
 }
 
+/** Forget one result: a load that finished after a newer one started never reaches the page. */
+export function dropResult(id: string): void {
+  results.delete(id);
+}
+
 /** Forget every result but `id`.  The page shows one result at a time, so once the store
     points at a new one the others are garbage -- including any a stale load put here. */
 export function retainOnly(id: string | null): void {
