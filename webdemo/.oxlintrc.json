@@ -11,6 +11,16 @@
   },
   "overrides": [
     {
+      "files": ["src/adapters/**"],
+      "rules": {
+        "no-restricted-imports": ["error", { "patterns": [
+          { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },
+          { "group": ["@/features", "@/features/**", "@/app", "@/app/**"], "message": "adapters sit below features and the store: they must not import either." },
+          { "group": ["react", "react/*", "react-dom", "react-dom/*"], "message": "adapters are plain TS: no React." }
+        ] }]
+      }
+    },
+    {
       "files": ["src/core-algorithm/**"],
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
