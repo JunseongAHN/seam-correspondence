@@ -29,8 +29,11 @@ export function patternGeometry(placed: Placed[], { x0, y1, pad }: Frame) {
         arc += Math.hypot(poly[q][0] - poly[q - 1][0], poly[q][1] - poly[q - 1][1]);
       if (p.blowUp) arc /= p.blowUp;      // undo the display stretch on a thin piece
       const m = edgeMid(p, i);
+      const a = poly[0], b = poly[poly.length - 1];
       return { d: `M ${poly.map(tx).join(" L ")}`, arc,
-               mx: m[0] - x0 + pad, my: y1 - m[1] + pad };
+               mx: m[0] - x0 + pad, my: y1 - m[1] + pad,
+               // the ends, for the edge's direction when its label is placed beside it
+               ax: a[0] - x0 + pad, ay: y1 - a[1] + pad, bx: b[0] - x0 + pad, by: y1 - b[1] + pad };
     });
     return { name: p.name, blowUp: p.blowUp, cx, cy, edges };
   });

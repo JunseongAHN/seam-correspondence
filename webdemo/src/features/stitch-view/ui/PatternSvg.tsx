@@ -18,9 +18,10 @@ import { getResult } from "@/adapters/resultCache";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { edgeClicked, selectPred, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
 import {
-  clientToUser, dragView, edgeStyle, focusNodes, isLit, midpointsByNode, nodeIndex,
+  clientToUser, dragView, edgeStyle, focusNodes, isLit, layoutLabels, midpointsByNode, nodeIndex,
   pairGroups, pairPartners, patternGeometry, placePanels, stitchIndexByEdge, strokeScale,
-  svgFrame, unitsPerPixel, zoomAt, type Drag, type Placed, type View,
+  svgFrame, unitsPerPixel, zoomAt, type Drag, type LabelEdge, type LabelObstacle, type Placed,
+  type View,
 } from "../logic";
 import type { Pattern } from "@/core-algorithm/pattern";
 import s from "./PatternSvg.module.css";
@@ -125,6 +126,25 @@ function PatternView({
   const focusSet = useMemo(() => focusNodes(focus, group, partners), [focus, group, partners]);
   const lit = (a: number, b: number) => isLit(focusSet, a, b);
 
+  /* Edge labels placed so they keep clear of each other and of the panel names.  Their
+     size in user units follows S, so a zoom lays them out again -- and a label hidden for
+     want of room comes back once there is room. */
+  const placedLabels = useMemo(() => {
+    if (!labels) return new Map<string, { x: number; y: number; visible: boolean }>();
+    const edges: LabelEdge[] = geom.flatMap((g) => g.edges.map((e, i) => {
+      const ni = node.get(`${g.name}#${i}`);
+      return { id: `${g.name}#${i}`, mid: [e.mx, e.my], a: [e.ax, e.ay], b: [e.bx, e.by],
+               center: [g.cx, g.cy], text: `${i} · ${e.arc.toFixed(1)}`, length: e.arc,
+               focused: focusSet !== null && ni !== undefined && focusSet.has(ni) };
+    }));
+    const obstacles: LabelObstacle[] = geom.flatMap((g) => [
+      { x: g.cx, y: g.cy, text: g.name, fontSize: 4 * S, baseline: "alphabetic" as const },
+      ...(g.blowUp ? [{ x: g.cx, y: g.cy + 4.6 * S, text: `width ×${g.blowUp.toFixed(1)}, not to scale`,
+                        fontSize: 3.1 * S, baseline: "alphabetic" as const }] : []),
+    ]);
+    return new Map(layoutLabels(edges, { fontSize: 4.6 * S, obstacles }).map((l) => [l.id, l]));
+  }, [labels, geom, node, S, focusSet]);
+
   const stitchOf = useMemo(
     () => (annotate ? new Map<string, number>() : stitchIndexByEdge(pattern, gt, keys)),
     [annotate, pattern, gt, keys]);
@@ -228,12 +248,16 @@ function PatternView({
       <g className="labels">
         {geom.map((g) => (
           <g key={g.name}>
-            {labels && g.edges.map((e, i) => (
-              <text key={i} x={e.mx} y={e.my + 1.6 * S} className={s.elabel}
-                    style={{ fontSize: 4.6 * S }}>
-                {i} · {e.arc.toFixed(1)}
-              </text>
-            ))}
+            {labels && g.edges.map((e, i) => {
+              const at = placedLabels.get(`${g.name}#${i}`);
+              if (!at?.visible) return null;    // no room for it at this zoom
+              return (
+                <text key={i} x={at.x} y={at.y} dominantBaseline="middle" className={s.elabel}
+                      style={{ fontSize: 4.6 * S }}>
+                  {i} · {e.arc.toFixed(1)}
+                </text>
+              );
+            })}
             <text x={g.cx} y={g.cy} className={s.plabel} style={{ fontSize: 4 * S }}>{g.name}</text>
             {g.blowUp && (
               <text x={g.cx} y={g.cy + 4.6 * S} className={`${s.plabel} ${s.scalenote}`}
