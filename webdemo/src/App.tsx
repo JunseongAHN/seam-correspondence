@@ -1,39 +1,31 @@
+import { useAppSelector } from "@/app/hooks";
 import { AnnotateToggle, AnnotationTools } from "@/features/annotation";
 import { ReportPanel, ReportToggle, ResultBar } from "@/features/evaluation";
-import { DropZone, ExampleNote, MoreGarments } from "@/features/input";
-import { RightPane } from "@/features/preview3d";
+import { ExampleNote, InputSection } from "@/features/input";
+import { RightPane, selectRightPane } from "@/features/preview3d";
 import { FocusHint, LabelsToggle, LineToggles, PatternSvg } from "@/features/stitch-view";
-import { useWorkspace } from "./useWorkspace";
 import shared from "@/styles/shared.module.css";
+import ErrorLine from "./ErrorLine";
+import Header from "./Header";
 import s from "./App.module.css";
 
+/** Where everything goes.  Each component reads what it shows, and when, from the store;
+    App decides only the two things that are layout: whether the toolbar row exists, and
+    whether the pattern stands alone or beside a 3D pane. */
 export default function App() {
-  const w = useWorkspace();
+  // an empty toolbar row would still take its margin, so the row itself waits for a result
+  const loaded = useAppSelector((st) => st.workspace.result !== null);
+  const twoPanes = useAppSelector(selectRightPane) !== null;
 
   return (
     <div className={s.app}>
-      <header>
-        <h1>AutoSew — sewing pattern → stitch prediction</h1>
-        <p className={s.sub}>
-          A 2D sewing pattern in, the stitching between panel edges out, from an ONNX
-          model in your browser. A DXF has no stitch list — draw the ground truth to
-          score the prediction, and to get a failure report from{" "}
-          <strong>claude-sonnet-5</strong>.
-        </p>
-        {/* The one limit a reader has to know before judging anything on this page. */}
-        <p className={s.limit}>
-          Currently only one-to-one correspondence is available — the training data
-          contains no multi-edge stitches, so gathers cannot be expressed.
-        </p>
-      </header>
+      <Header />
 
-      <DropZone />
+      <InputSection />
 
-      <MoreGarments />
+      <ErrorLine />
 
-      {w.err && <div className={shared.err}>{w.err}</div>}
-
-      {w.loaded && (
+      {loaded && (
         <div className={shared.examples}>
           <AnnotateToggle />
           <ReportToggle />
@@ -44,30 +36,27 @@ export default function App() {
 
       <ReportPanel />
 
-      {w.loaded && (
+      <ResultBar />
+
+      <ExampleNote />
+
+      <LineToggles />
+
+      {twoPanes ? (
+        <div className={s.split}>
+          <section>
+            <h2 className={shared.paneTitle}>predicted stitching · 2D</h2>
+            {/* the only prop left: beside a 3D pane the pattern matches its 62vh height */}
+            <PatternSvg height="62vh" />
+          </section>
+          <section>
+            <RightPane />
+          </section>
+        </div>
+      ) : (
         <>
-          <ResultBar />
-
-          <ExampleNote />
-
-          <LineToggles />
-
-          {w.right ? (
-            <div className={s.split}>
-              <section>
-                <h2 className={shared.paneTitle}>predicted stitching · 2D</h2>
-                <PatternSvg height="62vh" />
-              </section>
-              <section>
-                <RightPane pane={w.right} />
-              </section>
-            </div>
-          ) : (
-            <>
-              <FocusHint />
-              <PatternSvg />
-            </>
-          )}
+          <FocusHint />
+          <PatternSvg />
         </>
       )}
     </div>
