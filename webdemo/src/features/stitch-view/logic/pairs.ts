@@ -73,6 +73,12 @@ export function focusNodes(focus: number | null, group: Map<number, number>,
 export const isLit = (focusSet: Set<number> | null, a: number, b: number) =>
   focusSet === null || focusSet.has(a) || focusSet.has(b);
 
+/** In the scored view a click shows the clicked edge's own stitches -- its ground truth and
+    what was predicted for it -- not every line touching its partners, which would bring in
+    their other pairs too. */
+export const touchesFocus = (focus: number | null, a: number, b: number) =>
+  focus === null || a === focus || b === focus;
+
 /* Which ground-truth stitch each edge belongs to, so both sides share a colour.  A
    specification carries that list; a DXF does not, and its ground truth arrives as node
    pairs instead -- without this fallback a scored DXF would render entirely grey. */

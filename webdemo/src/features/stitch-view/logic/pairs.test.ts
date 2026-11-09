@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { edgeStyle, focusNodes, isLit, nodeIndex, pairGroups, pairPartners,
-         stitchIndexByEdge } from "./pairs";
+         stitchIndexByEdge, touchesFocus } from "./pairs";
 import type { Pattern } from "@/core-algorithm/pattern";
 
 describe("pairGroups", () => {
@@ -93,5 +93,18 @@ describe("edgeStyle", () => {
   });
   it("greys a dimmed stitch but keeps its width", () => {
     expect(edgeStyle({ ...base, stitch: 2, dim: true }).color).toBe("#c9c9c9");
+  });
+});
+
+describe("touchesFocus", () => {
+  it("draws every line when nothing is focused", () => {
+    expect(touchesFocus(null, 4, 9)).toBe(true);
+  });
+  it("draws the clicked edge's own lines, from either end", () => {
+    expect([touchesFocus(3, 3, 8), touchesFocus(3, 1, 3)]).toEqual([true, true]);
+  });
+  /* 3 is predicted with 8, but 8's ground truth is 5: that line belongs to 8, not to 3 */
+  it("does not draw a line between a partner and some third edge", () => {
+    expect(touchesFocus(3, 8, 5)).toBe(false);
   });
 });

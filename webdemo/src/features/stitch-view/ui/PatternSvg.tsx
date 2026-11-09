@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { edgeClicked, selectPred, selectTruth, selectUserPairs } from "@/app/workspaceSlice";
 import {
   clientToUser, dragView, edgeStyle, focusNodes, isLit, layoutLabels, midpointsByNode, nodeIndex,
+  touchesFocus,
   pairGroups, pairPartners, patternGeometry, placePanels, stitchIndexByEdge, strokeScale,
   svgFrame, unitsPerPixel, zoomAt, type Drag, type LabelEdge, type LabelObstacle, type Placed,
   type View,
@@ -239,7 +240,7 @@ function PatternView({
         const w = focusSet === null ? undefined : 1.4;
         const draw = (k: string, cls: string, pfx: string) => {
           const [a, b] = k.split("-").map(Number);
-          return lit(a, b) ? line(a, b, cls, `${pfx}${k}`, w) : null;
+          return touchesFocus(focus, a, b) ? line(a, b, cls, `${pfx}${k}`, w) : null;
         };
         return (
           <>
