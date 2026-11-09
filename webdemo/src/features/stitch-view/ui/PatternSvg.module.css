@@ -2,18 +2,22 @@
   border: 1px solid var(--hairline); border-radius: var(--radius); touch-action: none; }
 /* hand-drawn ground truth */
 .canvas.annotating { cursor: crosshair; }
+/* --k is how far the view is zoomed against the whole pattern (1 when not zoomed).  Halos
+   and stitch lines are multiplied by it so they thin out with the labels and edges as you
+   zoom in, instead of staying their size and swamping a deep zoom in white and red. */
 @media (prefers-color-scheme: dark) { .canvas { background: #fff; } }
 
 .plabel { font-size: 2.4px; fill: #999; text-anchor: middle; paint-order: stroke; stroke: #fff;
-  stroke-width: .6px; stroke-linejoin: round; pointer-events: none; }
+  stroke-width: calc(.6px * var(--k, 1)); stroke-linejoin: round; pointer-events: none; }
 .plabel.scalenote { fill: #b45309; opacity: .85; }
 .elabel { fill: #444; text-anchor: middle; paint-order: stroke; stroke: #fff;
-  stroke-width: .6px; stroke-linejoin: round; pointer-events: none; }
+  stroke-width: calc(.6px * var(--k, 1)); stroke-linejoin: round; pointer-events: none; }
 
-.ok { stroke: #16a34a; stroke-width: 0.8; }
-.fp { stroke: #dc2626; stroke-width: 1.1; }
-.fn { stroke: #111; stroke-width: 0.8; stroke-dasharray: 2 1.6; }
-.gtline { stroke: var(--accent); stroke-width: 0.5; opacity: .5; }
+.ok { stroke: #16a34a; stroke-width: calc(0.8px * var(--k, 1)); }
+.fp { stroke: #dc2626; stroke-width: calc(1.1px * var(--k, 1)); }
+.fn { stroke: #111; stroke-width: calc(0.8px * var(--k, 1));
+  stroke-dasharray: calc(2px * var(--k, 1)) calc(1.6px * var(--k, 1)); }
+.gtline { stroke: var(--accent); stroke-width: calc(0.5px * var(--k, 1)); opacity: .5; }
 /* DXF input: no ground truth exists, so predictions are shown neutrally
    rather than as false positives. */
 .predline { stroke: #6a3cff; stroke-width: 0.45; opacity: .45; }

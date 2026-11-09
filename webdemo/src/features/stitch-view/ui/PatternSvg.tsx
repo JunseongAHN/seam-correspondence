@@ -100,6 +100,8 @@ function PatternView({
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<Drag | null>(null);
   const S = strokeScale(v);
+  // how far in the view is zoomed: the CSS scales halos and unfocused stitch lines by it
+  const k = S / strokeScale({ x: 0, y: 0, w: W, h: H });
 
   /* React registers wheel listeners as passive, so preventDefault inside onWheel is
      ignored and the page scrolls along with the zoom.  Block it with a native listener. */
@@ -163,7 +165,7 @@ function PatternView({
 
   return (
     <svg ref={svgRef} className={`${s.canvas}${annotate ? ` ${s.annotating}` : ""}`}
-         style={height ? { height } : undefined}
+         style={{ ...(height ? { height } : {}), "--k": k } as React.CSSProperties}
          viewBox={`${v.x} ${v.y} ${v.w} ${v.h}`} preserveAspectRatio="xMidYMid meet"
          onWheel={onWheel}
          onPointerDown={(e) => {
