@@ -28,7 +28,6 @@ export function useWorkspace() {
   const [name, setName] = useState("");
   const [example, setExample] = useState<ExampleKey | null>(null);
   const [more, setMore] = useState<string | null>(null);   // which held-out garment
-  const [showReport, setShowReport] = useState(false);
   const [annotate, setAnnotate] = useState(false);
   const [userPairs, setUserPairs] = useState<Set<string>>(new Set());
   const [selected, setSelected] = useState<number | null>(null);
@@ -124,9 +123,8 @@ export function useWorkspace() {
 
   return {
     res, busy, loadingModel, err, name, example, more, truth, scored, stats, exact, hasOwnGt, right,
-    showReport, annotate, userPairs, selected,
+    annotate, userPairs, selected,
     setErr, setUserPairs,
-    toggleReport: () => setShowReport((v) => !v),
     toggleAnnotate: () => { setAnnotate((v) => !v); setSelected(null); },
     clearPairs: () => { setUserPairs(new Set()); setSelected(null); },
     loadPairs: (p: Set<string>) => { setUserPairs(p); setErr(null); },
