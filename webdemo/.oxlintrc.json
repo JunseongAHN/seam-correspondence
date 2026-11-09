@@ -15,7 +15,7 @@
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
           { "group": ["@/core-algorithm/*/**", "../*/**"], "message": "Import a core-algorithm module through its index.ts." },
-          { "group": ["@/features", "@/features/**", "../../**"], "message": "core-algorithm must not depend on features." },
+          { "group": ["@/features", "@/features/**", "@/app", "@/app/**", "../../**"], "message": "core-algorithm must not depend on features or the store." },
           { "group": ["react", "react/*", "react-dom", "react-dom/*"], "message": "core-algorithm is plain TS: no React." }
         ] }]
       }
@@ -26,7 +26,8 @@
         "no-restricted-imports": ["error", { "patterns": [
           { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },
           { "group": ["@/features", "@/features/**", "../../**"], "message": "Features must not import each other; use ../logic for this feature's own logic." },
-          { "group": ["../logic/**"], "message": "Import this feature's logic through ../logic (its index.ts)." }
+          { "group": ["../logic/**"], "message": "Import this feature's logic through ../logic (its index.ts)." },
+          { "group": ["@/app/store"], "message": "Read the store through @/app/hooks: a feature importing store.ts closes a cycle through the slices." }
         ] }]
       }
     },
@@ -35,9 +36,39 @@
       "rules": {
         "no-restricted-imports": ["error", { "patterns": [
           { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },
-          { "group": ["@/features", "@/features/**", "../../**", "../ui", "../ui/**"], "message": "logic must not import ui or another feature." },
+          { "group": ["@/features", "@/features/**", "../../**", "../ui", "../ui/**", "../state", "../state/**"], "message": "logic must not import ui, state or another feature." },
+          { "group": ["@/app", "@/app/**"], "message": "logic is plain TS: it must not know about the store." },
           { "group": ["react", "react/*", "react-dom", "react-dom/*"], "message": "logic is plain TS: no React." }
         ] }]
+      }
+    },
+    {
+      "files": ["src/app/**"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },
+            { "group": ["@/features", "@/features/*", "@/features/*/ui", "@/features/*/ui/**", "@/features/*/logic/**", "@/features/*/state/**"], "message": "app/ imports only features/<f>/logic (and, in store.ts, features/<f>/state)." },
+            { "group": ["@/features/*/state"], "message": "Only app/store.ts imports a feature's state." }
+          ],
+          "paths": [
+            { "name": "@/features/input/logic", "importNames": ["EXAMPLES", "MORE", "exampleGtUrl", "moreSpecUrl"], "message": "The example catalogue belongs to input: it passes what a load needs in the openPattern payload." }
+          ]
+        }]
+      }
+    },
+    {
+      "files": ["src/app/store.ts"],
+      "rules": {
+        "no-restricted-imports": ["error", {
+          "patterns": [
+            { "group": ["@/core-algorithm/*/**"], "message": "Import a core-algorithm module through its index.ts." },
+            { "group": ["@/features", "@/features/*", "@/features/*/ui", "@/features/*/ui/**", "@/features/*/logic/**", "@/features/*/state/**"], "message": "app/ imports only features/<f>/logic (and, in store.ts, features/<f>/state)." }
+          ],
+          "paths": [
+            { "name": "@/features/input/logic", "importNames": ["EXAMPLES", "MORE", "exampleGtUrl", "moreSpecUrl"], "message": "The example catalogue belongs to input: it passes what a load needs in the openPattern payload." }
+          ]
+        }]
       }
     }
   ]

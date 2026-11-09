@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "@kitware/vtk.js": "^36.10.0",
+    "@reduxjs/toolkit": "^2.13.0",
     "dxf-parser": "^1.1.2",
     "onnxruntime-web": "^1.29.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-redux": "^9.3.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.2",
